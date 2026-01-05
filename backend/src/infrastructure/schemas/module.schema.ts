@@ -60,3 +60,4 @@ export class ModuleModel {
 }
 
 export const ModuleSchema = SchemaFactory.createForClass(ModuleModel);
+export type ModuleDocument = ModuleModel & Document;

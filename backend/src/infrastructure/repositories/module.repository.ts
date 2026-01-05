@@ -30,7 +30,7 @@ export class ModuleRepository implements IModuleRepository {
       learningoutcomes: (doc.learningOutcomes ||
         raw.learningoutcomes ||
         '') as string,
-      module_tags: doc.module_tags,
+      module_tags: doc.tags,
       interests_match_score: (doc.interestsMatchScore ??
         raw.interests_match_score) as number,
       popularity_score: (doc.popularityScore ?? raw.popularity_score) as number,
