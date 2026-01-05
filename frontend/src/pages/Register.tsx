@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export default function Register() {
   return (
-    <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-6 py-4">
       <div className="w-full max-w-sm">
         <h1 className="text-white text-4xl font-normal text-center mb-8">Register</h1>
         
