@@ -51,7 +51,10 @@ export default function Register() {
             />
           </div>
 
-          <button className="w-full bg-indigo-300 hover:bg-indigo-400 text-neutral-900 font-medium rounded-lg px-4 py-3 mt-4 transition-colors">
+          <button 
+            style={{ backgroundColor: '#c4b5fd' }}
+            className="w-full hover:bg-violet-400 text-black font-medium rounded-lg px-4 py-3 mt-4 transition-colors"
+          >
             Register
           </button>
         </div>
