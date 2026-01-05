@@ -15,32 +15,24 @@ export class ModuleRepository implements IModuleRepository {
   private mapToEntity(doc: ModuleDocument): Module {
     const rawDoc = doc.toObject ? doc.toObject({ flattenMaps: true }) : doc;
     const raw = rawDoc as Record<string, unknown>;
-    return {
-      id: doc._id.toString(),
-      name: doc.name,
-      shortdescription: (doc.shortDescription ||
-        raw.shortdescription ||
-        '') as string,
-      description: doc.description,
-      content: doc.content,
-      studycredit: doc.studyCredits ?? raw.studycredit ?? 0,
-      location: doc.location,
-      contactId: doc.contactId,
-      level: doc.level,
-      learningoutcomes: (doc.learningOutcomes ||
-        raw.learningoutcomes ||
-        '') as string,
-      module_tags: doc.tags,
-      interests_match_score: (doc.interestsMatchScore ??
-        raw.interests_match_score) as number,
-      popularity_score: (doc.popularityScore ?? raw.popularity_score) as number,
-      estimated_difficulty: (doc.estimatedDifficulty ??
-        raw.estimated_difficulty) as number,
-      available_spots: (doc.availableSpots ?? raw.available_spots) as
-        | number
-        | undefined,
-      start_date: (doc.startDate || raw.start_date) as Date | undefined,
-    };
+    return new Module(
+      doc._id.toString(),
+      doc.name,
+      (doc.shortDescription || raw.shortdescription || '') as string,
+      doc.description,
+      doc.content,
+      doc.studyCredits ?? (raw.studycredit as number) ?? 0,
+      doc.location,
+      doc.contactId,
+      doc.level,
+      (doc.learningOutcomes || raw.learningoutcomes || '') as string,
+      doc.tags,
+      (doc.interestsMatchScore ?? raw.interests_match_score) as number | undefined,
+      (doc.popularityScore ?? raw.popularity_score) as number | undefined,
+      (doc.estimatedDifficulty ?? raw.estimated_difficulty) as number | undefined,
+      (doc.availableSpots ?? raw.available_spots) as number | undefined,
+      (doc.startDate || raw.start_date) as Date | undefined,
+    );
   }
 
   async findAll(): Promise<Module[]> {

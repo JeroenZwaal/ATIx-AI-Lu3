@@ -8,6 +8,7 @@ export default function Keuzemodules() {
   const [isLoading, setIsLoading] = useState(true);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [showAiKeuze, setShowAiKeuze] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadModules();
@@ -16,10 +17,13 @@ export default function Keuzemodules() {
   const loadModules = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       const data = await moduleService.getAllModules();
       setModules(data);
+      console.log('Loaded modules:', data);
     } catch (error) {
       console.error('Failed to load modules:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load modules');
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +87,7 @@ export default function Keuzemodules() {
         <h1 className="text-4xl font-bold text-black mb-4 text-center">Keuzemodules</h1>
         
         <p className="text-gray-700 mb-6 text-center max-w-3xl mx-auto">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+          Hier vind je alle keuzemodules die je kunt volgen binnen je opleiding. Bekijk het aanbod, ontdek wat bij jou past en kies de module die aansluit op jouw interesses en ambities.
         </p>
 
         {/* Search Bar */}
@@ -126,11 +130,38 @@ export default function Keuzemodules() {
           </button>
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <p className="font-bold">Error:</p>
+            <p>{error}</p>
+            <button 
+              onClick={loadModules}
+              className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Opnieuw proberen
+            </button>
+          </div>
+        )}
+
         {/* Module Cards */}
         {isLoading ? (
           <div className="text-center py-12 text-gray-600">Laden...</div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button 
+              onClick={loadModules}
+              className="bg-gray-700 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
+            >
+              Opnieuw proberen
+            </button>
+          </div>
         ) : modules.length === 0 ? (
-          <div className="text-center py-12 text-gray-600">Geen modules gevonden</div>
+          <div className="text-center py-12 text-gray-600">
+            <p>Geen modules gevonden</p>
+            <p className="text-sm mt-2">Check de console voor meer details</p>
+          </div>
         ) : (
           <div className="space-y-6">
             {modules.map((module) => (

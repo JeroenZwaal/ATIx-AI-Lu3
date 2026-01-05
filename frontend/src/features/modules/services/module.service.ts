@@ -11,17 +11,27 @@ class ModuleService {
   }
 
   async getAllModules(): Promise<Module[]> {
-    const response = await fetch(`${environment.apiUrl}/modules`, {
-      method: 'GET',
-      headers: this.getAuthHeaders(),
-    });
+    try {
+      const response = await fetch(`${environment.apiUrl}/modules`, {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to fetch modules');
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Module endpoint not found. Backend controller may be missing.');
+        }
+        const error = await response.json().catch(() => ({ message: `HTTP ${response.status}: ${response.statusText}` }));
+        throw new Error(error.message || 'Failed to fetch modules');
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Cannot connect to backend. Is the server running?');
+      }
+      throw error;
     }
-
-    return response.json();
   }
 
   async getModuleById(id: string): Promise<Module> {
