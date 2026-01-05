@@ -9,13 +9,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
-  @Get('connection-test')
-  getConnectionTest(): object {
-    return {
-      status: 'OK',
-      message: 'Database connection is successful',
-      timestamp: new Date().toISOString(),
-    };
-  }
 }

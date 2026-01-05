@@ -1,14 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-@Schema({
-    collection: 'modules',
-    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
-})
+export type ModuleDocument = ModuleModel & Document;
 
+@Schema({ timestamps: true })
 export class ModuleModel {
   @Prop({ required: true, unique: true, name: 'id' })
-  id!: number;
+  externalId!: number;
 
   @Prop({ required: true, trim: true })
   name!: string;
@@ -55,8 +53,15 @@ export class ModuleModel {
   @Prop({ name: 'start_date' })
   startDate?: Date;
 
-  created_at: Date;
-  updated_at: Date;
+  @Prop({ required: true })
+  combinedText!: string;
 }
 
 export const ModuleSchema = SchemaFactory.createForClass(ModuleModel);
+
+ModuleSchema.index({ externalId: 1 });
+ModuleSchema.index({
+  name: 'text',
+  description: 'text',
+  shortDescription: 'text',
+});
