@@ -1,24 +1,30 @@
-export interface User {
-  id: string;
-  email: string;
-  passwordHash: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber?: string;
-  bio?: string;
-  skills: string[];
-  interests: string[];
-  studentNumber?: string;
-  studyProgram?: string;
-  yearOfStudy?: number;
-  twoFactorEnabled: boolean;
-  twoFactorSecret?: string;
-  refreshToken?: string;
-  createdAt: Date;
-  updatedAt: Date;
+export class User {
+  constructor(
+    public readonly _id: string,
+    public readonly email: string,
+    public readonly passwordHash: string,
+    public readonly firstName: string,
+    public readonly lastName: string,
+    public readonly skills: string[],
+    public readonly interests: string[],
+    public readonly favorites: UserFavorite[],
+    public readonly twoFactorEnabled: boolean,
+    public readonly createdAt: Date,
+    public readonly updatedAt: Date,
+    public readonly phoneNumber?: string,
+    public readonly bio?: string,
+    public readonly studentNumber?: string,
+    public readonly studyProgram?: string,
+    public readonly yearOfStudy?: number,
+    public readonly twoFactorSecret?: string,
+    public readonly refreshToken?: string,
+  ) {}
 }
 
-export type CreateUserData = Omit<User, 'id' | 'createdAt' | 'updatedAt'>;
-export type UpdateUserData = Partial<
-  Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'email'>
->;
+export class UserFavorite {
+  constructor(
+    public readonly moduleId: string,
+    public readonly addedAt: Date,
+    public readonly moduleName: string,
+  ) {}
+}

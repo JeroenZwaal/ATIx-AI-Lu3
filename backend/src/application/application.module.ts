@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
+import { RepositoryModule } from 'src/infrastructure/repositoy.module';
 
 @Module({
-  imports: [],
+  imports: [RepositoryModule],
   controllers: [],
   providers: [],
 })

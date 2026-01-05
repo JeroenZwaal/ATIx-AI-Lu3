@@ -1,8 +1,17 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [MongooseModule.forRoot(process.env.MONGO_URI as string)],
-  exports: [MongooseModule],
+  imports: [
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGODB_URI') || 'mongodb://localhost:27017/avanskeuzekompas',
+      }),
+      inject: [ConfigService],
+    }),
+  ],
 })
+
 export class DatabaseModule {}
