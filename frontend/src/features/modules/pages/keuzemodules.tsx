@@ -181,18 +181,7 @@ export default function Keuzemodules() {
           <>
             <div className="space-y-6 mb-8">
               {currentModules.map((module) => (
-              <div key={module.id} className="bg-gray-200 rounded-lg p-6 flex gap-6">
-                {/* Circular Image */}
-                <div className="flex-shrink-0">
-                  <div className="w-24 h-24 rounded-full bg-gray-300 overflow-hidden">
-                    <img
-                      src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=200&h=200&fit=crop"
-                      alt={module.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-
+              <div key={module.id} className="bg-gray-200 rounded-lg p-6">
                 {/* Module Content */}
                 <div className="flex-1">
                   {/* Tags */}
