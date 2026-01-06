@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { moduleService } from '../services/module.service';
 import { useAuth } from '../../auth/hooks/useAuth.tsx';
@@ -6,14 +6,28 @@ import type { Module } from '../../../shared/types/index';
 
 const MODULES_PER_PAGE = 10;
 
+interface FilterState {
+    studyCredits: Set<number>;
+    themes: Set<string>;
+    difficulties: Set<string>;
+    locations: Set<string>;
+}
+
 export default function Keuzemodules() {
     const [modules, setModules] = useState<Module[]>([]);
+    const [allModules, setAllModules] = useState<Module[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [favorites, setFavorites] = useState<Set<string>>(new Set());
     const [showAiKeuze, setShowAiKeuze] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [filters, setFilters] = useState<FilterState>({
+        studyCredits: new Set<number>(),
+        themes: new Set<string>(),
+        difficulties: new Set<string>(),
+        locations: new Set<string>(),
+    });
     const { logout, user } = useAuth();
     const navigate = useNavigate();
 
@@ -31,6 +45,7 @@ export default function Keuzemodules() {
             setIsLoading(true);
             setError(null);
             const data = await moduleService.getAllModules();
+            setAllModules(data);
             setModules(data);
             setCurrentPage(1);
             console.log('Loaded modules:', data);
@@ -51,7 +66,7 @@ export default function Keuzemodules() {
         try {
             setIsLoading(true);
             const data = await moduleService.searchModules(searchQuery);
-            setModules(data);
+            setAllModules(data);
             setCurrentPage(1);
         } catch (error) {
             console.error('Failed to search modules:', error);
@@ -59,6 +74,176 @@ export default function Keuzemodules() {
             setIsLoading(false);
         }
     };
+
+    // Extract unique values for filter options
+    const availableStudyCredits = useMemo(() => {
+        const credits = new Set<number>();
+        allModules.forEach((module) => {
+            if (module.studycredit) {
+                credits.add(module.studycredit);
+            }
+        });
+        return Array.from(credits).sort((a, b) => a - b);
+    }, [allModules]);
+
+    const availableThemes = useMemo(() => {
+        const themes = new Set<string>();
+        allModules.forEach((module) => {
+            if (module.tags && Array.isArray(module.tags)) {
+                module.tags.forEach((tag) => {
+                    if (tag && tag !== 'NL' && tag !== 'EN') {
+                        themes.add(tag);
+                    }
+                });
+            }
+        });
+        return Array.from(themes).sort();
+    }, [allModules]);
+
+    const availableDifficulties = useMemo(() => {
+        const difficulties = new Set<string>();
+        allModules.forEach((module) => {
+            if (module.level) {
+                const level = module.level.toUpperCase();
+                if (level.includes('NLQF5') || level.includes('5')) {
+                    difficulties.add('NLQF5');
+                }
+                if (level.includes('NLQF6') || level.includes('6')) {
+                    difficulties.add('NLQF6');
+                }
+            }
+        });
+        return Array.from(difficulties).sort();
+    }, [allModules]);
+
+    const availableLocations = useMemo(() => {
+        const locations = new Set<string>();
+        allModules.forEach((module) => {
+            if (module.location) {
+                const location = module.location.trim();
+                if (location) {
+                    locations.add(location);
+                }
+            }
+        });
+        return Array.from(locations).sort();
+    }, [allModules]);
+
+    // Apply filters live
+    const filteredModules = useMemo(() => {
+        let filtered = [...allModules];
+
+        if (filters.studyCredits.size > 0) {
+            filtered = filtered.filter((module) => filters.studyCredits.has(module.studycredit));
+        }
+
+        if (filters.themes.size > 0) {
+            filtered = filtered.filter(
+                (module) =>
+                    module.tags &&
+                    Array.isArray(module.tags) &&
+                    module.tags.some((tag) => filters.themes.has(tag)),
+            );
+        }
+
+        if (filters.difficulties.size > 0) {
+            filtered = filtered.filter((module) => {
+                if (!module.level) return false;
+                const level = module.level.toUpperCase();
+                return (
+                    (filters.difficulties.has('NLQF5') &&
+                        (level.includes('NLQF5') || level.includes('5'))) ||
+                    (filters.difficulties.has('NLQF6') &&
+                        (level.includes('NLQF6') || level.includes('6')))
+                );
+            });
+        }
+
+        if (filters.locations.size > 0) {
+            filtered = filtered.filter((module) =>
+                filters.locations.has(module.location.trim()),
+            );
+        }
+
+        return filtered;
+    }, [allModules, filters]);
+
+    // Apply search query to filter modules by name
+    const searchFilteredModules = useMemo(() => {
+        if (!searchQuery.trim()) {
+            return filteredModules;
+        }
+        const query = searchQuery.toLowerCase();
+        return filteredModules.filter(
+            (module) =>
+                module.name.toLowerCase().includes(query) ||
+                module.shortdescription?.toLowerCase().includes(query) ||
+                module.description?.toLowerCase().includes(query),
+        );
+    }, [filteredModules, searchQuery]);
+
+    useEffect(() => {
+        setModules(searchFilteredModules);
+        setCurrentPage(1);
+    }, [searchFilteredModules]);
+
+    const toggleFilter = (
+        filterType: keyof FilterState,
+        value: number | string,
+    ) => {
+        setFilters((prev) => {
+            const newFilters = { ...prev };
+            if (filterType === 'studyCredits') {
+                const currentSet = new Set(newFilters.studyCredits);
+                if (currentSet.has(value as number)) {
+                    currentSet.delete(value as number);
+                } else {
+                    currentSet.add(value as number);
+                }
+                newFilters.studyCredits = currentSet;
+            } else if (filterType === 'themes') {
+                const currentSet = new Set(newFilters.themes);
+                if (currentSet.has(value as string)) {
+                    currentSet.delete(value as string);
+                } else {
+                    currentSet.add(value as string);
+                }
+                newFilters.themes = currentSet;
+            } else if (filterType === 'difficulties') {
+                const currentSet = new Set(newFilters.difficulties);
+                if (currentSet.has(value as string)) {
+                    currentSet.delete(value as string);
+                } else {
+                    currentSet.add(value as string);
+                }
+                newFilters.difficulties = currentSet;
+            } else if (filterType === 'locations') {
+                const currentSet = new Set(newFilters.locations);
+                if (currentSet.has(value as string)) {
+                    currentSet.delete(value as string);
+                } else {
+                    currentSet.add(value as string);
+                }
+                newFilters.locations = currentSet;
+            }
+            return newFilters;
+        });
+    };
+
+    const clearFilters = () => {
+        setFilters({
+            studyCredits: new Set<number>(),
+            themes: new Set<string>(),
+            difficulties: new Set<string>(),
+            locations: new Set<string>(),
+        });
+    };
+
+    const hasActiveFilters =
+        filters.studyCredits.size > 0 ||
+        filters.themes.size > 0 ||
+        filters.difficulties.size > 0 ||
+        filters.locations.size > 0;
 
     const toggleFavorite = (moduleId: string) => {
         setFavorites((prev) => {
@@ -70,12 +255,6 @@ export default function Keuzemodules() {
             }
             return newFavorites;
         });
-    };
-
-    const getLanguageTag = (tags: string[] | undefined): string => {
-        if (!tags || !Array.isArray(tags)) return 'NL';
-        const langTag = tags.find((tag) => tag === 'NL' || tag === 'EN');
-        return langTag || 'NL';
     };
 
     const getLevelTag = (level: string): string => {
@@ -190,6 +369,117 @@ export default function Keuzemodules() {
                     </button>
                 </div>
 
+                {/* Filter Panel */}
+                {!showAiKeuze && (
+                    <div className="bg-gray-800 rounded-lg p-6 mb-8">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-white">Filters</h2>
+                            {hasActiveFilters && (
+                                <button
+                                    onClick={clearFilters}
+                                    className="text-sm text-white hover:text-orange-400 underline transition-colors"
+                                >
+                                    Filters wissen
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="space-y-8">
+                            {/* Moeilijkheidsgraad Filter */}
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-4">Moeilijkheidsgraad</h3>
+                                <div className="flex flex-wrap gap-4">
+                                    {availableDifficulties.map((difficulty) => (
+                                        <label
+                                            key={difficulty}
+                                            className="flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.difficulties.has(difficulty)}
+                                                onChange={() => toggleFilter('difficulties', difficulty)}
+                                                className="w-5 h-5 text-orange-500 bg-gray-700 border-gray-600 rounded focus:ring-orange-500 focus:ring-2"
+                                            />
+                                            <span className="text-white">{difficulty}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Locatie Filter */}
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-4">Locatie</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {availableLocations.map((location) => (
+                                        <label
+                                            key={location}
+                                            className="flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.locations.has(location)}
+                                                onChange={() => toggleFilter('locations', location)}
+                                                className="w-5 h-5 text-orange-500 bg-gray-700 border-gray-600 rounded focus:ring-orange-500 focus:ring-2"
+                                            />
+                                            <span className="text-white">{location}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Studiepunten Filter */}
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-4">Studiepunten</h3>
+                                <div className="flex flex-wrap gap-4">
+                                    {availableStudyCredits.map((credits) => (
+                                        <label
+                                            key={credits}
+                                            className="flex items-center gap-2 cursor-pointer"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.studyCredits.has(credits)}
+                                                onChange={() => toggleFilter('studyCredits', credits)}
+                                                className="w-5 h-5 text-orange-500 bg-gray-700 border-gray-600 rounded focus:ring-orange-500 focus:ring-2"
+                                            />
+                                            <span className="text-white">{credits} ETC</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Thema Filter */}
+                            {availableThemes.length > 0 && (
+                                <div>
+                                    <h3 className="text-xl font-bold text-white mb-4">Thema</h3>
+                                    <div className="flex flex-wrap gap-4">
+                                        {availableThemes.map((theme) => (
+                                            <label
+                                                key={theme}
+                                                className="flex items-center gap-2 cursor-pointer"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={filters.themes.has(theme)}
+                                                    onChange={() => toggleFilter('themes', theme)}
+                                                    className="w-5 h-5 text-orange-500 bg-gray-700 border-gray-600 rounded focus:ring-orange-500 focus:ring-2"
+                                                />
+                                                <span className="text-white">{theme}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {hasActiveFilters && (
+                            <div className="mt-6 text-sm text-white">
+                                {filteredModules.length} module(s) gevonden
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {/* Error Message */}
                 {error && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -238,7 +528,7 @@ export default function Keuzemodules() {
                                                 {module.studycredit} ETC
                                             </span>
                                             <span className="bg-purple-800 text-white px-3 py-1 rounded text-sm font-medium">
-                                                {getLanguageTag(module.tags)}
+                                                {module.location || 'Onbekend'}
                                             </span>
                                         </div>
 
