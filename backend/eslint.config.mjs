@@ -44,7 +44,14 @@ export default tseslint.config(
           format: ['PascalCase'],
         },
       ],
-      'prettier/prettier': ['error', { endOfLine: 'auto' }],
+      'prettier/prettier': [
+        'error',
+        {
+          endOfLine: 'auto',
+          tabWidth: 4,
+          useTabs: false,
+        },
+      ],
     },
   },
 );
