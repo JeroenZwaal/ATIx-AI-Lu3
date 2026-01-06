@@ -20,7 +20,9 @@ import { ModuleSchema, ModuleModel } from './infrastructure/schemas/module.schem
     DatabaseModule,
     RepositoryModule,
     AuthModule,
-    MongooseModule.forFeature([{ name: ModuleModel.name, schema: ModuleSchema }]),
+    MongooseModule.forFeature([
+      { name: ModuleModel.name, schema: ModuleSchema },
+    ]),
   ],
   controllers: [AppController, ModuleController],
   providers: [

@@ -1,0 +1,15 @@
+# IDE - VSCode
+# Negeer alle .vscode bestanden, behalve workspace settings die het team deelt
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+

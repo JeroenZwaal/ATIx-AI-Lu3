@@ -7,9 +7,7 @@ import { UserDocument } from '../schemas/user.schema';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
-    constructor(
-        @InjectModel('User') private readonly userModel: Model<UserDocument>,
-    ) {}
+    constructor(@InjectModel('User') private readonly userModel: Model<UserDocument>) {}
 
     async findById(id: string): Promise<User | null> {
         // Validate and sanitize ID to prevent NoSQL injection
@@ -31,52 +29,52 @@ export class UserRepository implements IUserRepository {
 
     async findAll(): Promise<User[]> {
         try {
-        console.log('UserRepository.findAll() called');
-        const userDocs = await this.userModel.find();
-        console.log(`Found ${userDocs.length} users in database`);
-        
-        const users = userDocs.map(doc => {
-            console.log('Mapping user document:', doc._id);
-            return this.mapToEntity(doc);
-        });
-        
-        console.log('Successfully mapped all users');
-        return users;
+            console.log('UserRepository.findAll() called');
+            const userDocs = await this.userModel.find();
+            console.log(`Found ${userDocs.length} users in database`);
+
+            const users = userDocs.map((doc) => {
+                console.log('Mapping user document:', doc._id);
+                return this.mapToEntity(doc);
+            });
+
+            console.log('Successfully mapped all users');
+            return users;
         } catch (error) {
-        console.error('Error in UserRepository.findAll():', error);
-        throw error;
+            console.error('Error in UserRepository.findAll():', error);
+            throw error;
         }
     }
 
     async create(user: User): Promise<User> {
         const userDoc = new this.userModel({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        passwordHash: user.passwordHash,
-        skills: user.skills,
-        interests: user.interests,
-        favorites: user.favorites.map(fav => ({
-            module_id: fav.moduleId,
-            added_at: fav.addedAt,
-            module_name: fav.moduleName,
-        })),
-        studyProgram: user.studyProgram,
-        studyYear: user.yearOfStudy,
-        studyLocation: user.studyLocation,
-        studyCredits: user.studyCredits,
-        twoFactorEnabled: user.twoFactorEnabled,
-        twoFactorSecret: user.twoFactorSecret,
-        refreshToken: user.refreshToken,
-        created_at: user.createdAt,
-        updated_at: user.updatedAt,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            passwordHash: user.passwordHash,
+            skills: user.skills,
+            interests: user.interests,
+            favorites: user.favorites.map((fav) => ({
+                module_id: fav.moduleId,
+                added_at: fav.addedAt,
+                module_name: fav.moduleName,
+            })),
+            studyProgram: user.studyProgram,
+            studyYear: user.yearOfStudy,
+            studyLocation: user.studyLocation,
+            studyCredits: user.studyCredits,
+            twoFactorEnabled: user.twoFactorEnabled,
+            twoFactorSecret: user.twoFactorSecret,
+            refreshToken: user.refreshToken,
+            created_at: user.createdAt,
+            updated_at: user.updatedAt,
         });
-        
+
         const savedDoc = await userDoc.save();
         return this.mapToEntity(savedDoc);
     }
 
-    async update(id: string, userData: Partial<User>): Promise<User | null> {
+    update(id: string, userData: Partial<User>): Promise<User | null> {
         throw new Error('Method not implemented.');
     }
 
@@ -96,7 +94,7 @@ export class UserRepository implements IUserRepository {
         }
         const user = await this.userModel.findById(new Types.ObjectId(userId));
         if (!user) {
-        throw new Error(`User with ID ${userId} not found`);
+            throw new Error(`User with ID ${userId} not found`);
         }
         user.favorites.push({
             module_id: favorite.moduleId,
@@ -118,9 +116,9 @@ export class UserRepository implements IUserRepository {
         }
         const user = await this.userModel.findById(new Types.ObjectId(userId));
         if (!user) {
-        throw new Error(`User with ID ${userId} not found`);
+            throw new Error(`User with ID ${userId} not found`);
         }
-        user.favorites = user.favorites.filter(fav => fav.module_id !== moduleId);
+        user.favorites = user.favorites.filter((fav) => fav.module_id !== moduleId);
         const updatedUser = await user.save();
         return this.mapToEntity(updatedUser);
     }
@@ -139,53 +137,50 @@ export class UserRepository implements IUserRepository {
 
     private mapToEntity(userDoc: UserDocument): User {
         try {
-        console.log('Mapping user document to entity, _id:', userDoc._id);
-        console.log('UserDoc keys:', Object.keys(userDoc));
-        
-        const favorites = userDoc.favorites?.map(fav => 
-            new UserFavorite(
-            fav.module_id,
-            fav.added_at,
-            fav.module_name,
-            )
-        ) || [];
+            console.log('Mapping user document to entity, _id:', userDoc._id);
+            console.log('UserDoc keys:', Object.keys(userDoc));
 
-        let id: string;
-        if (userDoc._id) {
-            id = userDoc._id.toString();
-        } else {
-            id = Math.random().toString(36).substr(2, 9);
-            console.warn('No _id found for user document, generating temporary ID:', id);
-        }
-        
-        console.log('Using ID:', id);
+            const favorites =
+                userDoc.favorites?.map(
+                    (fav) => new UserFavorite(fav.module_id, fav.added_at, fav.module_name),
+                ) || [];
 
-        const user = new User(
-            id,
-            userDoc.email,
-            userDoc.passwordHash,
-            userDoc.firstName,
-            userDoc.lastName,
-            userDoc.skills || [],
-            userDoc.interests || [],
-            favorites,
-            userDoc.twoFactorEnabled,
-            userDoc.created_at,
-            userDoc.updated_at,
-            userDoc.studyProgram,
-            userDoc.studyYear,
-            userDoc.studyLocation,
-            userDoc.studyCredits,
-            userDoc.twoFactorSecret,
-            userDoc.refreshToken,
-        );
-        
-        console.log('Successfully created User entity');
-        return user;
+            let id: string;
+            if (userDoc._id) {
+                id = userDoc._id.toString();
+            } else {
+                id = Math.random().toString(36).substr(2, 9);
+                console.warn('No _id found for user document, generating temporary ID:', id);
+            }
+
+            console.log('Using ID:', id);
+
+            const user = new User(
+                id,
+                userDoc.email,
+                userDoc.passwordHash,
+                userDoc.firstName,
+                userDoc.lastName,
+                userDoc.skills || [],
+                userDoc.interests || [],
+                favorites,
+                userDoc.twoFactorEnabled,
+                userDoc.created_at,
+                userDoc.updated_at,
+                userDoc.studyProgram,
+                userDoc.studyYear,
+                userDoc.studyLocation,
+                userDoc.studyCredits,
+                userDoc.twoFactorSecret,
+                userDoc.refreshToken,
+            );
+
+            console.log('Successfully created User entity');
+            return user;
         } catch (error) {
-        console.error('Error in mapToEntity:', error);
-        console.error('UserDoc:', userDoc);
-        throw error;
+            console.error('Error in mapToEntity:', error);
+            console.error('UserDoc:', userDoc);
+            throw error;
         }
     }
 }
