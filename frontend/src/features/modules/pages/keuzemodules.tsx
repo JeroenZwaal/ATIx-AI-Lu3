@@ -20,6 +20,7 @@ export default function Keuzemodules() {
     const [isLoading, setIsLoading] = useState(true);
     const [favorites, setFavorites] = useState<Set<string>>(new Set());
     const [showAiKeuze, setShowAiKeuze] = useState(true);
+    const [showFilters, setShowFilters] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [filters, setFilters] = useState<FilterState>({
@@ -267,7 +268,7 @@ export default function Keuzemodules() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-100 w-full overflow-x-hidden">
+        <div className="min-h-screen bg-neutral-950 w-full overflow-x-hidden">
             {/* Navigation Header */}
             <nav className="bg-gray-800 text-white px-6 py-4 w-full">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -306,9 +307,9 @@ export default function Keuzemodules() {
 
             {/* Main Content */}
             <div className="max-w-6xl mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-black mb-4 text-center">Keuzemodules</h1>
+                <h1 className="text-4xl font-bold text-white mb-4 text-center">Keuzemodules</h1>
 
-                <p className="text-gray-700 mb-6 text-center max-w-3xl mx-auto">
+                <p className="text-gray-300 mb-6 text-center max-w-3xl mx-auto">
                     Hier vind je alle keuzemodules die je kunt volgen binnen je opleiding. Bekijk
                     het aanbod, ontdek wat bij jou past en kies de module die aansluit op jouw
                     interesses en ambities.
@@ -343,21 +344,31 @@ export default function Keuzemodules() {
                 {/* Filter Buttons */}
                 <div className="flex gap-4 justify-center mb-8">
                     <button
-                        onClick={() => setShowAiKeuze(false)}
-                        className={`px-6 py-3 rounded-lg font-semibold text-base transition-colors ${
-                            !showAiKeuze
-                                ? 'bg-gray-800 text-white shadow-md'
-                                : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                        onClick={() => {
+                            setShowAiKeuze(false);
+                            setShowFilters(!showFilters);
+                        }}
+                        style={{
+                            backgroundColor: !showAiKeuze && showFilters ? '#c4b5fd' : '#a78bfa',
+                        }}
+                        className={`px-6 py-3 rounded-lg font-medium text-base transition-colors ${
+                            !showAiKeuze && showFilters
+                                ? 'hover:bg-violet-400 text-black'
+                                : 'hover:bg-violet-500 text-black'
                         }`}
                     >
                         Filters
                     </button>
                     <button
-                        onClick={() => setShowAiKeuze(true)}
-                        className={`px-6 py-3 rounded-lg font-semibold text-base transition-colors ${
+                        onClick={() => {
+                            setShowAiKeuze(true);
+                            setShowFilters(false);
+                        }}
+                        style={{ backgroundColor: showAiKeuze ? '#c4b5fd' : '#a78bfa' }}
+                        className={`px-6 py-3 rounded-lg font-medium text-base transition-colors ${
                             showAiKeuze
-                                ? 'bg-gray-800 text-white shadow-md'
-                                : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                                ? 'hover:bg-violet-400 text-black'
+                                : 'hover:bg-violet-500 text-black'
                         }`}
                     >
                         Ai Keuze
@@ -365,130 +376,137 @@ export default function Keuzemodules() {
                 </div>
 
                 {/* Filter Panel */}
-                {!showAiKeuze && (
-                    <div className="bg-white rounded-lg p-6 mb-8 border border-gray-200 shadow-sm">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-2xl font-bold text-black">Filters</h2>
+                {!showAiKeuze && showFilters && (
+                    <div className="mb-8">
+                        <div className="flex items-center justify-end mb-4">
                             {hasActiveFilters && (
                                 <button
                                     onClick={clearFilters}
-                                    className="text-sm text-gray-600 hover:text-orange-500 underline transition-colors"
+                                    className="text-sm text-gray-300 hover:text-violet-400 underline transition-colors"
                                 >
                                     Filters wissen
                                 </button>
                             )}
                         </div>
-
-                        <div className="space-y-8">
-                            {/* Moeilijkheidsgraad Filter */}
-                            <div>
-                                <h3 className="text-xl font-bold text-black mb-4">
-                                    Moeilijkheidsgraad
-                                </h3>
-                                <div className="flex flex-wrap gap-4">
-                                    {availableDifficulties.map((difficulty) => (
-                                        <label
-                                            key={difficulty}
-                                            className="flex items-center gap-2 cursor-pointer"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={filters.difficulties.has(difficulty)}
-                                                onChange={() =>
-                                                    toggleFilter('difficulties', difficulty)
-                                                }
-                                                className="w-5 h-5 text-orange-500 bg-white border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
-                                            />
-                                            <span className="text-black">{difficulty}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Locatie Filter */}
-                            <div>
-                                <h3 className="text-xl font-bold text-black mb-4">Locatie</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {availableLocations.map((location) => (
-                                        <label
-                                            key={location}
-                                            className="flex items-center gap-2 cursor-pointer"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={filters.locations.has(location)}
-                                                onChange={() => toggleFilter('locations', location)}
-                                                className="w-5 h-5 text-orange-500 bg-white border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
-                                            />
-                                            <span className="text-black">{location}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Studiepunten Filter */}
-                            <div>
-                                <h3 className="text-xl font-bold text-black mb-4">Studiepunten</h3>
-                                <div className="flex flex-wrap gap-4">
-                                    {availableStudyCredits.map((credits) => (
-                                        <label
-                                            key={credits}
-                                            className="flex items-center gap-2 cursor-pointer"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                checked={filters.studyCredits.has(credits)}
-                                                onChange={() =>
-                                                    toggleFilter('studyCredits', credits)
-                                                }
-                                                className="w-5 h-5 text-orange-500 bg-white border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
-                                            />
-                                            <span className="text-black">{credits} ETC</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Thema Filter */}
-                            {availableThemes.length > 0 && (
+                        <div className="bg-neutral-950 rounded-lg p-6 border border-gray-800">
+                            <div className="space-y-8">
+                                {/* Moeilijkheidsgraad Filter */}
                                 <div>
-                                    <h3 className="text-xl font-bold text-black mb-4">Thema</h3>
+                                    <h3 className="text-xl font-bold text-white mb-4">
+                                        Moeilijkheidsgraad
+                                    </h3>
                                     <div className="flex flex-wrap gap-4">
-                                        {availableThemes.map((theme) => (
+                                        {availableDifficulties.map((difficulty) => (
                                             <label
-                                                key={theme}
+                                                key={difficulty}
                                                 className="flex items-center gap-2 cursor-pointer"
                                             >
                                                 <input
                                                     type="checkbox"
-                                                    checked={filters.themes.has(theme)}
-                                                    onChange={() => toggleFilter('themes', theme)}
-                                                    className="w-5 h-5 text-orange-500 bg-white border-gray-300 rounded focus:ring-orange-500 focus:ring-2"
+                                                    checked={filters.difficulties.has(difficulty)}
+                                                    onChange={() =>
+                                                        toggleFilter('difficulties', difficulty)
+                                                    }
+                                                    className="w-5 h-5 text-violet-500 bg-neutral-800 border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
                                                 />
-                                                <span className="text-black">{theme}</span>
+                                                <span className="text-white">{difficulty}</span>
                                             </label>
                                         ))}
                                     </div>
                                 </div>
+
+                                {/* Locatie Filter */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-white mb-4">Locatie</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {availableLocations.map((location) => (
+                                            <label
+                                                key={location}
+                                                className="flex items-center gap-2 cursor-pointer"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={filters.locations.has(location)}
+                                                    onChange={() =>
+                                                        toggleFilter('locations', location)
+                                                    }
+                                                    className="w-5 h-5 text-violet-500 bg-neutral-800 border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
+                                                />
+                                                <span className="text-white">{location}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Studiepunten Filter */}
+                                <div>
+                                    <h3 className="text-xl font-bold text-white mb-4">
+                                        Studiepunten
+                                    </h3>
+                                    <div className="flex flex-wrap gap-4">
+                                        {availableStudyCredits.map((credits) => (
+                                            <label
+                                                key={credits}
+                                                className="flex items-center gap-2 cursor-pointer"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={filters.studyCredits.has(credits)}
+                                                    onChange={() =>
+                                                        toggleFilter('studyCredits', credits)
+                                                    }
+                                                    className="w-5 h-5 text-violet-500 bg-neutral-800 border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
+                                                />
+                                                <span className="text-white">{credits} ETC</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Thema Filter */}
+                                {availableThemes.length > 0 && (
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white mb-4">Thema</h3>
+                                        <div className="flex flex-wrap gap-4">
+                                            {availableThemes.map((theme) => (
+                                                <label
+                                                    key={theme}
+                                                    className="flex items-center gap-2 cursor-pointer"
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={filters.themes.has(theme)}
+                                                        onChange={() =>
+                                                            toggleFilter('themes', theme)
+                                                        }
+                                                        className="w-5 h-5 text-violet-500 bg-neutral-800 border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
+                                                    />
+                                                    <span className="text-white">{theme}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {hasActiveFilters && (
+                                <div className="mt-6 text-sm text-gray-300">
+                                    {filteredModules.length} module(s) gevonden
+                                </div>
                             )}
                         </div>
-
-                        {hasActiveFilters && (
-                            <div className="mt-6 text-sm text-gray-600">
-                                {filteredModules.length} module(s) gevonden
-                            </div>
-                        )}
                     </div>
                 )}
 
                 {/* Error Message */}
                 {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-4">
                         <p className="font-bold">Error:</p>
                         <p>{error}</p>
                         <button
                             onClick={loadModules}
-                            className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+                            style={{ backgroundColor: '#c4b5fd' }}
+                            className="mt-2 text-black px-4 py-2 rounded-lg font-medium hover:bg-violet-400 transition-colors"
                         >
                             Opnieuw proberen
                         </button>
@@ -503,7 +521,8 @@ export default function Keuzemodules() {
                         <p className="text-red-600 mb-4">{error}</p>
                         <button
                             onClick={loadModules}
-                            className="bg-gray-800 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-700 transition-colors shadow-sm"
+                            style={{ backgroundColor: '#c4b5fd' }}
+                            className="text-black px-6 py-2.5 rounded-lg font-medium hover:bg-violet-400 transition-colors"
                         >
                             Opnieuw proberen
                         </button>
@@ -517,7 +536,7 @@ export default function Keuzemodules() {
                     <>
                         <div className="space-y-6 mb-8">
                             {currentModules.map((module) => (
-                                <div key={module.id} className="bg-gray-200 rounded-lg p-6">
+                                <div key={module.id} className="bg-gray-800 rounded-lg p-6">
                                     {/* Module Content */}
                                     <div className="flex-1">
                                         {/* Tags */}
@@ -525,22 +544,22 @@ export default function Keuzemodules() {
                                             <span className="bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">
                                                 {getLevelTag(module.level)}
                                             </span>
-                                            <span className="bg-red-800 text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">
                                                 {module.studycredit} ETC
                                             </span>
-                                            <span className="bg-purple-800 text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-medium">
                                                 {module.location || 'Onbekend'}
                                             </span>
                                         </div>
 
                                         {/* Title */}
-                                        <h2 className="text-xl font-bold text-black mb-2">
+                                        <h2 className="text-xl font-bold text-white mb-2">
                                             {module.name ||
                                                 'Lorem ipsum dolor sit amet, consectetur'}
                                         </h2>
 
                                         {/* Description */}
-                                        <p className="text-gray-700 mb-4">
+                                        <p className="text-gray-300 mb-4">
                                             {module.shortdescription ||
                                                 module.description ||
                                                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat'}
@@ -548,7 +567,10 @@ export default function Keuzemodules() {
 
                                         {/* Action Buttons */}
                                         <div className="flex items-center gap-4 justify-end">
-                                            <button className="bg-gray-800 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-700 transition-colors shadow-sm">
+                                            <button
+                                                style={{ backgroundColor: '#c4b5fd' }}
+                                                className="text-black px-6 py-2.5 rounded-lg font-medium hover:bg-violet-400 transition-colors"
+                                            >
                                                 Meer weten
                                             </button>
                                             <button
@@ -557,14 +579,14 @@ export default function Keuzemodules() {
                                             >
                                                 {favorites.has(module.id) ? (
                                                     <svg
-                                                        className="w-6 h-6 text-black fill-current"
+                                                        className="w-6 h-6 text-white fill-current"
                                                         viewBox="0 0 24 24"
                                                     >
                                                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                                     </svg>
                                                 ) : (
                                                     <svg
-                                                        className="w-6 h-6 text-black"
+                                                        className="w-6 h-6 text-white"
                                                         fill="none"
                                                         stroke="currentColor"
                                                         viewBox="0 0 24 24"
@@ -590,10 +612,13 @@ export default function Keuzemodules() {
                                 <button
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 1}
-                                    className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                                    style={{
+                                        backgroundColor: currentPage === 1 ? '#374151' : '#c4b5fd',
+                                    }}
+                                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                                         currentPage === 1
-                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                            : 'bg-gray-800 text-white hover:bg-gray-700 shadow-sm'
+                                            ? 'text-gray-500 cursor-not-allowed'
+                                            : 'text-black hover:bg-violet-400'
                                     }`}
                                 >
                                     Vorige
@@ -611,10 +636,16 @@ export default function Keuzemodules() {
                                                     <button
                                                         key={page}
                                                         onClick={() => handlePageChange(page)}
-                                                        className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                                                        style={{
+                                                            backgroundColor:
+                                                                currentPage === page
+                                                                    ? '#c4b5fd'
+                                                                    : '#a78bfa',
+                                                        }}
+                                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                                                             currentPage === page
-                                                                ? 'bg-gray-800 text-white shadow-md'
-                                                                : 'bg-white text-gray-700 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                                                                ? 'text-black hover:bg-violet-400'
+                                                                : 'text-black hover:bg-violet-500'
                                                         }`}
                                                     >
                                                         {page}
@@ -625,7 +656,7 @@ export default function Keuzemodules() {
                                                 page === currentPage + 2
                                             ) {
                                                 return (
-                                                    <span key={page} className="px-2 text-gray-500">
+                                                    <span key={page} className="px-2 text-gray-400">
                                                         ...
                                                     </span>
                                                 );
@@ -638,10 +669,14 @@ export default function Keuzemodules() {
                                 <button
                                     onClick={() => handlePageChange(currentPage + 1)}
                                     disabled={currentPage === totalPages}
-                                    className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                                    style={{
+                                        backgroundColor:
+                                            currentPage === totalPages ? '#374151' : '#c4b5fd',
+                                    }}
+                                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                                         currentPage === totalPages
-                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                            : 'bg-gray-800 text-white hover:bg-gray-700 shadow-sm'
+                                            ? 'text-gray-500 cursor-not-allowed'
+                                            : 'text-black hover:bg-violet-400'
                                     }`}
                                 >
                                     Volgende
@@ -649,7 +684,7 @@ export default function Keuzemodules() {
                             </div>
                         )}
 
-                        <div className="text-center text-gray-600 text-sm mt-4">
+                        <div className="text-center text-gray-300 text-sm mt-4">
                             Pagina {currentPage} van {totalPages} ({modules.length} modules totaal)
                         </div>
                     </>
