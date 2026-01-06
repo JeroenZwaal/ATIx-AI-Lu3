@@ -8,26 +8,12 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
-        try {
-            return await this.authService.register(registerDto);
-        } catch (error) {
-            if (error instanceof Error && error.message.includes('already exists')) {
-                throw new HttpException('User with this email already exists', HttpStatus.CONFLICT);
-            }
-            throw new HttpException('Registration failed', HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return await this.authService.register(registerDto);
     }
 
     @Post('login')
     async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
-        try {
-            return await this.authService.login(loginDto);
-        } catch (error) {
-            if (error instanceof Error && error.message.includes('Invalid credentials')) {
-                throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
-            }
-            throw new HttpException('Login failed', HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return await this.authService.login(loginDto);
     }
 
     @Post('logout')
