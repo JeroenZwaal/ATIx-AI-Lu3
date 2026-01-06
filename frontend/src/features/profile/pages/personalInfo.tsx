@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from "react-router-dom";
+// import { CreateProfileDto } from '../types/profile.types';
 
 export default function PersonalInfo() {
     const [opleiding, setOpleiding] = useState('');
@@ -11,7 +12,12 @@ export default function PersonalInfo() {
     const navigate = useNavigate();
 
     function handleNext() {
+        if(!opleiding || !leerjaar || !studielocatie || !studiepunten) {
+            alert("Vul alle velden in.");
+            return;
+        }
         const form = { opleiding, leerjaar, studielocatie, studiepunten };
+        console.log(form);
         navigate('/profile/skillsAndIntrests', { state: form });
     }
 
@@ -93,20 +99,12 @@ export default function PersonalInfo() {
                 Volgende
             </button>
             </div>
-
-            <div className="text-center mt-6">
-            <p className="text-white text-sm">
-                Al een profiel?{' '}
-                <br />
-                Ga naar de <span className="font-bold">login</span> pagina.
-            </p>
-            </div>
         </div>
 
         <div className="fixed bottom-4 left-4 text-red-600 text-xl font-bold">
             Avans
         </div>
     </div>
-  );
+    );
 };
 
