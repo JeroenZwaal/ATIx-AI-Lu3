@@ -1,15 +1,12 @@
-import AppRoutes from './AppRoutes.tsx'
-import { AuthProvider } from './features/auth/hooks/useAuth.tsx'
-import { ProfileProvider } from './features/profile/hooks/useProfile.tsx'
+import AppRoutes from './AppRoutes.tsx';
+import { AuthProvider } from './features/auth/AuthProvider.tsx';
 
 function App() {
-  return (
-    <AuthProvider>
-      <ProfileProvider>
-        <AppRoutes />
-      </ProfileProvider>
-    </AuthProvider>
-  )
+    return (
+        <AuthProvider>
+            <AppRoutes />
+        </AuthProvider>
+    );
 }
 
-export default App
+export default App;

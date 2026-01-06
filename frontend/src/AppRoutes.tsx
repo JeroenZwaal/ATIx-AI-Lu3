@@ -23,9 +23,18 @@ export default function AppRoutes() {
           } 
         />
 
-        <Route path="/" element={<Navigate to="/login" />} />
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
-    </Router>
-  );
+                <Route
+                    path="/dashboard"
+                    element={
+                        <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
+                            <h1 className="text-white text-4xl">Dashboard - Coming Soon</h1>
+                        </div>
+                    }
+                />
+
+                <Route path="/" element={<Navigate to="/login" />} />
+                <Route path="*" element={<Navigate to="/login" />} />
+            </Routes>
+        </Router>
+    );
 }
