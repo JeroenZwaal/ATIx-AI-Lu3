@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { User, AuthContextType } from './types/auth.types';
 import { authService } from './services/auth.service';
-import { AuthContext } from './AuthContext';
+import { AUTH_CONTEXT } from './AuthContext';
 
 // Auth provider component
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -84,5 +84,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error,
     };
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return <AUTH_CONTEXT.Provider value={value}>{children}</AUTH_CONTEXT.Provider>;
 }
