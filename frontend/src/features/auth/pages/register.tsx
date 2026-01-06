@@ -71,7 +71,10 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-6 py-4">
       <div className="w-full max-w-sm">
-        <h1 className="text-white text-4xl font-normal text-center mb-8">Register</h1>
+        <div className="text-center mb-8">
+          <h1 className="text-red-600 text-base font-bold mb-4">Avans</h1>
+          <h2 className="text-white text-4xl font-normal">Register</h2>
+        </div>
         
         <form onSubmit={handleSubmit} className="bg-neutral-800 rounded-3xl p-6 space-y-4">
           {(showError && error) || validationError ? (
