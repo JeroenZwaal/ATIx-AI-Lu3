@@ -26,11 +26,14 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #f3f4f6;
+  overflow-x: hidden;
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
+  background-color: #f3f4f6;
 }
 
 h1 {

@@ -15,8 +15,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const savedToken = localStorage.getItem('token');
         if (savedToken) {
-            setToken(savedToken);
-            // Here you could also validate the token and get user info
+            try {
+                const parts = savedToken.split('.');
+                if (parts.length === 3) {
+                    const payload = JSON.parse(atob(parts[1]));
+                    if (payload.exp && payload.exp * 1000 > Date.now()) {
+                        setToken(savedToken);
+                    } else {
+                        localStorage.removeItem('token');
+                    }
+                } else {
+                    localStorage.removeItem('token');
+                }
+            } catch {
+                localStorage.removeItem('token');
+            }
         }
     }, []);
 
@@ -32,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             setUser(response.user);
             setToken(response.access_token);
+            localStorage.setItem('token', response.access_token);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
             throw err;
@@ -59,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             setUser(response.user);
             setToken(response.access_token);
+            localStorage.setItem('token', response.access_token);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
             throw err;
@@ -72,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
         setToken(null);
         setError(null);
+        localStorage.removeItem('token');
     };
 
     const value: AuthContextType = {
