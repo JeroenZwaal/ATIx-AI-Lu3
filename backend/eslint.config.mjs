@@ -26,10 +26,25 @@ export default tseslint.config(
   },
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+      '@typescript-eslint/naming-convention': [
+        'warn',
+        {
+          selector: 'variable',
+          format: ['camelCase', 'UPPER_CASE'],
+        },
+        {
+          selector: 'function',
+          format: ['camelCase'],
+        },
+        {
+          selector: 'typeLike',
+          format: ['PascalCase'],
+        },
+      ],
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
 );
