@@ -11,9 +11,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Load token from localStorage on mount
+    // Load token and user from localStorage on mount
     useEffect(() => {
         const savedToken = localStorage.getItem('token');
+        const savedUser = localStorage.getItem('user');
+        
         if (savedToken) {
             try {
                 const parts = savedToken.split('.');
@@ -21,14 +23,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     const payload = JSON.parse(atob(parts[1]));
                     if (payload.exp && payload.exp * 1000 > Date.now()) {
                         setToken(savedToken);
+                        if (savedUser) {
+                            setUser(JSON.parse(savedUser));
+                        }
                     } else {
                         localStorage.removeItem('token');
+                        localStorage.removeItem('user');
                     }
                 } else {
                     localStorage.removeItem('token');
+                    localStorage.removeItem('user');
                 }
             } catch {
                 localStorage.removeItem('token');
+                localStorage.removeItem('user');
             }
         }
     }, []);
@@ -46,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(response.user);
             setToken(response.access_token);
             localStorage.setItem('token', response.access_token);
+            localStorage.setItem('user', JSON.stringify(response.user));
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
             throw err;
@@ -74,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setUser(response.user);
             setToken(response.access_token);
             localStorage.setItem('token', response.access_token);
+            localStorage.setItem('user', JSON.stringify(response.user));
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
             throw err;
@@ -88,6 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setToken(null);
         setError(null);
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
     };
 
     const value: AuthContextType = {
