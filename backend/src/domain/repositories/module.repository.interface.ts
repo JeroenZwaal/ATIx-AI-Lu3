@@ -6,7 +6,6 @@ export interface IModuleRepository {
   findByExternalId(externalId: number): Promise<Module | null>;
   search(query: string): Promise<Module[]>;
   count(): Promise<number>;
-  saveMany(modules: Omit<Module, 'id'>[]): Promise<void>;
   deleteAll(): Promise<void>;
 }
 
