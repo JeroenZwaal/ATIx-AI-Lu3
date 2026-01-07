@@ -33,5 +33,6 @@ import { MODULESCHEMA, ModuleModel } from './infrastructure/schemas/module.schem
       useClass: ModuleRepository,
     },
   ],
+  exports: ['IModuleRepository', RepositoryModule],
 })
 export class AppModule {}

@@ -5,8 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthService } from '../application/services/auth.service';
 import { AuthController } from '../interfaces/controllers/auth.controller';
 import { JwtStrategy } from '../infrastructure/auth/jwt.strategy';
-import { UserRepository } from '../infrastructure/repositories/user.repository';
-import { USERSCHEMA } from '../infrastructure/schemas/user.schema';
+import { RepositoryModule } from '../infrastructure/repositoy.module';
 
 @Module({
     imports: [
@@ -15,24 +14,10 @@ import { USERSCHEMA } from '../infrastructure/schemas/user.schema';
             secret: process.env.JWT_SECRET || 'your-secret-key',
             signOptions: { expiresIn: '24h' },
         }),
-        MongooseModule.forFeature([{ name: 'User', schema: USERSCHEMA }]),
+        RepositoryModule,
     ],
     controllers: [AuthController],
-    providers: [
-        AuthService,
-        JwtStrategy,
-        {
-            provide: 'IUserRepository',
-            useClass: UserRepository,
-        },
-    ],
-    exports: [
-        AuthService,
-        JwtStrategy,
-        {
-            provide: 'IUserRepository',
-            useClass: UserRepository,
-        },
-    ],
+    providers: [AuthService, JwtStrategy],
+    exports: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

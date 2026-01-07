@@ -1,13 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserFavorite } from '../../domain/entities/user.entity';
 import type { IUserRepository } from '../../domain/repositories/user.repository.interface';
+import type { IModuleRepository } from '../../domain/repositories/module.repository.interface';
 import { UserDocument } from '../schemas/user.schema';
+import { Module } from '../../domain/entities/module.entity';
 
 @Injectable()
 export class UserRepository implements IUserRepository {
-    constructor(@InjectModel('User') private readonly userModel: Model<UserDocument>) {}
+    constructor(
+        @InjectModel('User') private readonly userModel: Model<UserDocument>,
+        @Inject('IModuleRepository') private readonly moduleRepository: IModuleRepository,
+    ) {}
 
     async findById(id: string): Promise<User | null> {
         // Validate and sanitize ID to prevent NoSQL injection
@@ -96,6 +101,11 @@ export class UserRepository implements IUserRepository {
         if (!user) {
             throw new Error(`User with ID ${userId} not found`);
         }
+        // Check if favorite already exists
+        const alreadyExists = user.favorites.some((fav) => fav.module_id === favorite.moduleId);
+        if (alreadyExists) {
+            return this.mapToEntity(user);
+        }
         user.favorites.push({
             module_id: favorite.moduleId,
             added_at: favorite.addedAt,
@@ -133,6 +143,25 @@ export class UserRepository implements IUserRepository {
 
     disable2FA(id: string): Promise<void> {
         throw new Error('Method not implemented.');
+    }
+
+    async getFavorites(userId: string): Promise<Module[]> {
+        if (!userId || typeof userId !== 'string' || !Types.ObjectId.isValid(userId)) {
+            throw new Error(`Invalid user ID: ${userId}`);
+        }
+        const user = await this.userModel.findById(new Types.ObjectId(userId));
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`);
+        }
+        const moduleIds = user.favorites.map((fav) => fav.module_id);
+        const modules: Module[] = [];
+        for (const moduleId of moduleIds) {
+            const module = await this.moduleRepository.findById(moduleId);
+            if (module) {
+                modules.push(module);
+            }
+        }
+        return modules;
     }
 
     private mapToEntity(userDoc: UserDocument): User {

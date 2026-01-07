@@ -1,4 +1,5 @@
 import { User, UserFavorite } from '../entities/user.entity';
+import { Module } from '../entities/module.entity';
 
 export interface IUserRepository {
     findById(id: string): Promise<User | null>;
@@ -11,6 +12,7 @@ export interface IUserRepository {
     updateRefreshToken(id: string, refreshToken: string | null): Promise<void>;
     enable2FA(id: string, secret: string): Promise<void>;
     disable2FA(id: string): Promise<void>;
+    getFavorites(userId: string): Promise<Module[]>;
 }
 
 export const USER_REPOSITORY = Symbol('IUserRepository');

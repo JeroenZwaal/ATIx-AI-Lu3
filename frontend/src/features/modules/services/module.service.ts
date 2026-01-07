@@ -68,6 +68,63 @@ class ModuleService {
 
         return response.json();
     }
+
+    async getFavorites(): Promise<string[]> {
+        const response = await fetch(`${environment.apiUrl}/modules/favorites`, {
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to get favorites');
+        }
+        const modules = await response.json();
+        return modules.map((module: Module) => module.id);
+    }
+
+    async saveFavorite(moduleId: string): Promise<void> {
+        const response = await fetch(`${environment.apiUrl}/modules/favorite/${moduleId}`, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+        });
+        if (!response.ok) {
+            const error = await response
+                .json()
+                .catch(() => ({ message: 'Failed to save favorite' }));
+            throw new Error(error.message || 'Failed to save favorite');
+        }
+        // Don't try to parse empty response
+        if (response.status === 204 || response.headers.get('content-length') === '0') {
+            return;
+        }
+        const text = await response.text();
+        if (!text) {
+            return;
+        }
+        return JSON.parse(text);
+    }
+
+    async removeFavorite(moduleId: string): Promise<void> {
+        const response = await fetch(`${environment.apiUrl}/modules/favorite/${moduleId}`, {
+            method: 'DELETE',
+            headers: this.getAuthHeaders(),
+        });
+        if (!response.ok) {
+            const error = await response
+                .json()
+                .catch(() => ({ message: 'Failed to remove favorite' }));
+            throw new Error(error.message || 'Failed to remove favorite');
+        }
+        // Don't try to parse empty response
+        if (response.status === 204 || response.headers.get('content-length') === '0') {
+            return;
+        }
+        const text = await response.text();
+        if (!text) {
+            return;
+        }
+        return JSON.parse(text);
+    }
 }
 
 export const moduleService = new ModuleService();
