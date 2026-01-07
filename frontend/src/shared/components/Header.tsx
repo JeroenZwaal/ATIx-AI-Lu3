@@ -32,46 +32,46 @@ export default function Header() {
             
             <header className="text-white py-2 px-4 md:px-6 relative z-50">
                 {/* Desktop Navigation */}
-                <div className="hidden md:flex items-center justify-between relative px-6 py-3 rounded-2xl bg-[#2a2a2a] shadow-lg">
-                <Link to="/dashboard" className="text-2xl font-bold !text-red-600 hover:!text-red-500 transition-colors">
-                    Avans
-                </Link>
+                <div className="hidden md:flex items-center justify-between px-6 py-3">
+                    <Link to="/dashboard" className="text-2xl font-bold !text-red-600 hover:!text-red-500 transition-colors">
+                        Avans
+                    </Link>
 
-                <nav className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-1 bg-[#3a3a3a] rounded-full p-1">
-                    {NAV_LINKS.map((link) => {
-                        const isActive = location.pathname === link.path;
-                        return (
-                            <Link
-                                key={link.label}
-                                to={link.path}
-                                className={`
-                                    ${isActive
-                                        ? '!text-black bg-white hover:bg-gray-100' 
-                                        : '!text-white bg-[#3a3a3a] hover:bg-[#4a4a4a]'
-                                    }
-                                    transition-all duration-200 px-5 py-2 rounded-full font-medium text-sm
-                                `}
-                            >
-                                {link.label}
-                            </Link>
-                        );
-                    })}
-                </nav>
+                    <nav className="flex items-center gap-1 bg-[#2a2a2a] rounded-full p-1 shadow-lg">
+                        {NAV_LINKS.map((link) => {
+                            const isActive = location.pathname === link.path;
+                            return (
+                                <Link
+                                    key={link.label}
+                                    to={link.path}
+                                    className={`
+                                        ${isActive
+                                            ? '!text-black bg-white hover:bg-gray-100' 
+                                            : '!text-white bg-[#2a2a2a] hover:bg-[#3a3a3a]'
+                                        }
+                                        transition-all duration-200 px-5 py-2 rounded-full font-medium text-sm
+                                    `}
+                                >
+                                    {link.label}
+                                </Link>
+                            );
+                        })}
+                    </nav>
 
-                <div className="flex items-center gap-3">
-                    {user && (
-                        <span className="text-sm text-gray-300">
-                            {user.firstName} {user.lastName}
-                        </span>
-                    )}
-                    <button
-                        onClick={handleLogout}
-                        className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
-                    >
-                        Uitloggen
-                    </button>
+                    <div className="flex items-center gap-3">
+                        {user && (
+                            <span className="text-sm text-gray-300">
+                                {user.firstName} {user.lastName}
+                            </span>
+                        )}
+                        <button
+                            onClick={handleLogout}
+                            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                        >
+                            Uitloggen
+                        </button>
+                    </div>
                 </div>
-            </div>
 
             {/* Mobile Navigation */}
             <div className="md:hidden rounded-2xl bg-[#2a2a2a] shadow-lg relative">
