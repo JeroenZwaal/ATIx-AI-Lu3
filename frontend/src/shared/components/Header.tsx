@@ -38,7 +38,7 @@ const NavLink = ({ link, isActive, onClick }: { link: typeof NAV_LINKS[0]; isAct
         onClick={onClick}
         className={`
             ${isActive ? '!text-black bg-white hover:bg-gray-100' : '!text-white bg-[#2a2a2a] hover:bg-[#3a3a3a]'}
-            transition-all duration-200 px-5 py-2 rounded-full font-medium text-sm
+            transition-all duration-200 px-6 py-2.5 rounded-full font-medium text-sm
         `}
     >
         {link.label}
@@ -91,7 +91,7 @@ export default function Header() {
                         <Logo />
                     </div>
 
-                    <nav className="flex items-center gap-1 bg-[#2a2a2a] rounded-full p-1 shadow-lg">
+                    <nav className="flex items-center gap-2 bg-[#2a2a2a] rounded-full p-1.5 shadow-lg">
                         {NAV_LINKS.map((link) => (
                             <NavLink key={link.label} link={link} isActive={location.pathname === link.path} />
                         ))}
@@ -118,7 +118,7 @@ export default function Header() {
 
                     {mobileMenuOpen && (
                         <div className="absolute left-4 right-4 top-full mt-2 bg-[#2a2a2a] rounded-2xl shadow-lg z-40 overflow-hidden">
-                            <nav className="flex flex-col px-4 py-6 space-y-2">
+                            <nav className="flex flex-col px-5 py-8 space-y-3">
                                 {NAV_LINKS.map((link) => (
                                     <MobileNavLink
                                         key={link.label}
@@ -127,9 +127,9 @@ export default function Header() {
                                         onClick={closeMobileMenu}
                                     />
                                 ))}
-                                <div className="pt-4 border-t border-gray-600 space-y-3">
+                                <div className="pt-5 border-t border-gray-600 space-y-3">
                                     {user && (
-                                        <div className="px-4 py-3 bg-[#3a3a3a] rounded-lg text-center">
+                                        <div className="text-center">
                                             <div className="text-white font-medium">{user.firstName} {user.lastName}</div>
                                         </div>
                                     )}
