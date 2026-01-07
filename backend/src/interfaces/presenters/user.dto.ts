@@ -1,13 +1,13 @@
-import { IsString, IsArray } from 'class-validator';
+import { IsString, IsArray, IsNumber } from 'class-validator';
 
 export class UpdateUserDto {
     @IsString()
     studyProgram: string;
     @IsString()
     studyLocation: string;
-    @IsString()
+    @IsNumber()
     studyCredits: number;
-    @IsString()
+    @IsNumber()
     yearOfStudy: number;
     @IsArray()
     skills: string[];
