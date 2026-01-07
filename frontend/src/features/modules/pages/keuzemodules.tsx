@@ -1,7 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { moduleService } from '../services/module.service';
-import { useAuth } from '../../auth/hooks/useAuth.tsx';
 import type { Module } from '../../../shared/types/index';
 
 const MODULES_PER_PAGE = 10;
@@ -29,13 +27,6 @@ export default function Keuzemodules() {
         difficulties: new Set<string>(),
         locations: new Set<string>(),
     });
-    const { logout, user } = useAuth();
-    const navigate = useNavigate();
-
-    const handleLogout = async () => {
-        await logout();
-        navigate('/login');
-    };
 
     useEffect(() => {
         loadModules();
