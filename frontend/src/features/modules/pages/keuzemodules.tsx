@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { moduleService } from '../services/module.service';
 import { useAuth } from '../../auth/hooks/useAuth.tsx';
 import type { Module } from '../../../shared/types/index';
@@ -14,13 +14,8 @@ export default function Keuzemodules() {
     const [showAiKeuze, setShowAiKeuze] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const { logout, user } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
-
-    const handleLogout = async () => {
-        await logout();
-        navigate('/login');
-    };
 
     useEffect(() => {
         loadModules();
@@ -94,42 +89,6 @@ export default function Keuzemodules() {
 
     return (
         <div className="min-h-screen bg-gray-100 w-full overflow-x-hidden">
-            {/* Navigation Header */}
-            <nav className="bg-gray-800 text-white px-6 py-4 w-full">
-                <div className="max-w-7xl mx-auto flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                        <h1 className="text-xl font-bold">Avans KeuzeKompas</h1>
-                        <div className="flex gap-4">
-                            <Link
-                                to="/dashboard"
-                                className="hover:text-orange-400 transition-colors"
-                            >
-                                Dashboard
-                            </Link>
-                            <Link
-                                to="/keuzemodules"
-                                className="hover:text-orange-400 transition-colors font-semibold"
-                            >
-                                Keuzemodules
-                            </Link>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        {user && (
-                            <span className="text-sm">
-                                {user.firstName} {user.lastName}
-                            </span>
-                        )}
-                        <button
-                            onClick={handleLogout}
-                            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition-colors text-sm"
-                        >
-                            Uitloggen
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
             {/* Main Content */}
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <h1 className="text-4xl font-bold text-black mb-4 text-center">Keuzemodules</h1>

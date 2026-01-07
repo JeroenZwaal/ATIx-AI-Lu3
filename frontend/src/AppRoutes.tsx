@@ -4,6 +4,7 @@ import RegisterPage from './features/auth/pages/register';
 import DashboardPage from './features/auth/pages/dashboard';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import KeuzemodulesPage from './features/modules/pages/keuzemodules';
+import Layout from './shared/components/Layout';
 
 function LogoutRedirect() {
     localStorage.removeItem('token');
@@ -17,23 +18,12 @@ export default function AppRoutes() {
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                <Route
-                    path="/dashboard"
-                    element={
-                        <ProtectedRoute>
-                            <DashboardPage />
-                        </ProtectedRoute>
-                    }
-                />
-
-                <Route
-                    path="/keuzemodules"
-                    element={
-                        <ProtectedRoute>
-                            <KeuzemodulesPage />
-                        </ProtectedRoute>
-                    }
-                />
+                
+                {/* Protected routes with Layout */}
+                <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                    <Route path="/dashboard" element={<DashboardPage />} />
+                    <Route path="/keuzemodules" element={<KeuzemodulesPage />} />
+                </Route>
 
                 <Route path="/logout" element={<LogoutRedirect />} />
                 <Route path="/" element={<Navigate to="/login" />} />
