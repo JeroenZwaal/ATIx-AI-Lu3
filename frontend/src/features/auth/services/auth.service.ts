@@ -53,15 +53,15 @@ class AuthService {
     }
 
     saveToken(token: string): void {
-        localStorage.setItem('authToken', token);
+        localStorage.setItem('token', token);
     }
 
     getToken(): string | null {
-        return localStorage.getItem('authToken');
+        return localStorage.getItem('token');
     }
 
     removeToken(): void {
-        localStorage.removeItem('authToken');
+        localStorage.removeItem('token');
     }
 
     isAuthenticated(): boolean {
@@ -69,8 +69,12 @@ class AuthService {
         if (!token) return false;
 
         try {
-            // Basic JWT expiration check
-            const payload = JSON.parse(atob(token.split('.')[1]));
+            const parts = token.split('.');
+            if (parts.length !== 3) return false;
+            
+            const payload = JSON.parse(atob(parts[1]));
+            if (!payload.exp) return false;
+            
             return payload.exp * 1000 > Date.now();
         } catch {
             return false;

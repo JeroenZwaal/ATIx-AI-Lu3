@@ -1,6 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.tsx';
+
+function isValidToken(token: string | null): boolean {
+    if (!token) return false;
+
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return false;
+        
+        const payload = JSON.parse(atob(parts[1]));
+        if (!payload.exp) return false;
+        
+        return payload.exp * 1000 > Date.now();
+    } catch {
+        return false;
+    }
+}
 
 export default function Login() {
     const [formData, setFormData] = useState({
@@ -8,9 +24,18 @@ export default function Login() {
         password: '',
     });
     const [showError, setShowError] = useState(false);
-
-    const { login, isLoading, error } = useAuth();
+    const { login, isLoading, error, token } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        const currentToken = token || storedToken;
+        if (currentToken && isValidToken(currentToken)) {
+            navigate('/dashboard', { replace: true });
+        } else if (storedToken && !isValidToken(storedToken)) {
+            localStorage.removeItem('token');
+        }
+    }, [token, navigate]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -23,10 +48,9 @@ export default function Login() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         try {
             await login(formData.email, formData.password);
-            navigate('/dashboard'); // Redirect after successful login
+            navigate('/dashboard', { replace: true });
         } catch {
             setShowError(true);
         }
