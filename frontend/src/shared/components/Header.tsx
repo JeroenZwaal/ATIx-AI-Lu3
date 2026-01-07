@@ -59,10 +59,10 @@ const MobileNavLink = ({ link, isActive, onClick }: { link: typeof NAV_LINKS[0];
 );
 
 const HamburgerIcon = ({ isOpen }: { isOpen: boolean }) => (
-    <div className="w-6 h-5 flex flex-col justify-between">
-        <span className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
-        <span className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : ''}`} />
-        <span className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+    <div className="w-6 h-6 flex flex-col justify-center items-center relative">
+        <span className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute rotate-45' : 'mb-1.5'}`} />
+        <span className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : 'mb-1.5'}`} />
+        <span className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute -rotate-45' : ''}`} />
     </div>
 );
 
