@@ -2,9 +2,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
+
 // import { CreateProfileDto } from '../types/profile.types';
 
 export default function PersonalInfo() {
+    const [showStudielocatieInfo, setShowStudielocatieInfo] = useState(false);
     const [opleiding, setOpleiding] = useState('');
     const [leerjaar, setLeerjaar] = useState('');
     const [studielocatie, setStudielocatie] = useState('');
@@ -13,7 +15,7 @@ export default function PersonalInfo() {
     const { setDraft } = useProfile();
 
     function handleNext() {
-        if(!opleiding || !leerjaar || !studielocatie || !studiepunten) {
+        if(!opleiding || !leerjaar || !studiepunten) {
             alert("Vul alle velden in.");
             return;
         }
@@ -73,17 +75,47 @@ export default function PersonalInfo() {
                 className="w-full bg-neutral-600 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neutral-500"
                 />
             </div>
+            {showStudielocatieInfo && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+                <div className="bg-neutral-900 rounded-2xl p-6 w-full max-w-sm text-white relative">
 
+                <h3 className="text-lg font-medium mb-2">Studielocatie</h3>
+
+                <p className="text-sm text-gray-300 leading-relaxed">
+                    Vul hier een locatie in waar je zou willen studeren.
+                    Dit veld is NIET verplicht om in te vullen!
+                </p>
+
+                <button
+                    onClick={() => setShowStudielocatieInfo(false)}
+                    className="mt-6 w-full rounded-lg bg-violet-400 hover:bg-violet-300 text-white font-medium py-2 transition"
+                >
+                    Sluiten
+                </button>
+                </div>
+            </div>
+            )}
             <div>
-                <label htmlFor="studielocatie" className="block text-white text-sm mb-2">
-                Studielocatie
+                <label htmlFor="studielocatie" className="flex items-center gap-2 text-white text-sm mb-2">
+                    Studielocatie
+
+                    {/* Info icon */}
+                    <button
+                    type="button"
+                    onClick={() => setShowStudielocatieInfo(true)}
+                    className="flex h-5 w-5 items-center justify-center rounded-full bg-neutral-700 text-xs font-bold text-white hover:bg-neutral-500 transition"
+                    aria-label="Studielocatie informatie"
+                    >
+                    i
+                    </button>
                 </label>
+
                 <input
-                type="text"
-                id="studielocatie"
-                value={studielocatie}
-                onChange={(e) => setStudielocatie(e.target.value)}
-                className="w-full bg-neutral-600 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neutral-500"
+                    type="text"
+                    id="studielocatie"
+                    value={studielocatie}
+                    onChange={(e) => setStudielocatie(e.target.value)}
+                    className="w-full bg-neutral-600 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neutral-500"
                 />
             </div>
 
@@ -115,6 +147,7 @@ export default function PersonalInfo() {
         <div className="fixed bottom-4 left-4 text-red-600 text-xl font-bold">
             Avans
         </div>
+        
     </div>
     );
 };
