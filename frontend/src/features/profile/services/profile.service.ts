@@ -10,16 +10,18 @@ export class ProfileService {
         };
     }
     async createProfile(createProfileData: CreateProfileDto): Promise<UpdateProfileResponse> {
-        console.log("test in api call");
-        const newUser : ProfileApi = {
+        console.log('test in api call');
+        const newUser: ProfileApi = {
             studyProgram: createProfileData.opleiding,
-            studyLocation: createProfileData.studielocatie,
+            ...(createProfileData.studielocatie && {
+                studyLocation: createProfileData.studielocatie,
+            }),
             studyCredits: Number(createProfileData.studiepunten),
             yearOfStudy: Number(createProfileData.leerjaar),
             skills: createProfileData.skills,
             interests: createProfileData.interests,
-        }
-        console.log("Creating profile with data:", newUser);
+        };
+        console.log('Creating profile with data:', newUser);
         const response = await fetch(`${environment.apiUrl}/user/updateProfile`, {
             method: 'POST',
             headers: this.getAuthHeaders(),
@@ -56,7 +58,7 @@ export class ProfileService {
             }
             throw new Error(errorText);
         }
-        
+
         return response.json();
     }
 }

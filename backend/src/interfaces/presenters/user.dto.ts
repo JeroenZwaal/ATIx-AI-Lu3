@@ -1,10 +1,11 @@
-import { IsString, IsArray, IsNumber } from 'class-validator';
+import { IsString, IsArray, IsNumber, IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
     @IsString()
     studyProgram: string;
+    @IsOptional()
     @IsString()
-    studyLocation: string;
+    studyLocation?: string;
     @IsNumber()
     studyCredits: number;
     @IsNumber()
