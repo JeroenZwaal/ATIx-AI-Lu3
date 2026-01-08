@@ -53,7 +53,8 @@ export default function SkillsAndIntrests(): JSX.Element {
     const location = useLocation();
     const { createProfile, draft, userProfile, fetchUserProfile } = useProfile();
 
-    // if we have a profile from the backend, prefill skills/interests
+    // if we have a profile from the backend, prefill skills/interests, but only
+    // when the local inputs are still empty so we don't overwrite user edits
     React.useEffect(() => {
         // fetch if not present yet
         if (!userProfile) {
@@ -61,9 +62,14 @@ export default function SkillsAndIntrests(): JSX.Element {
             return;
         }
 
-        if (userProfile?.skills?.length) setSkills(userProfile.skills);
-        if (userProfile?.interests?.length) setInterests(userProfile.interests);
-    }, [userProfile, fetchUserProfile]);
+        // Only prefill when the local state is empty (length === 0)
+        if (skills.length === 0 && userProfile?.skills?.length) {
+            setSkills(userProfile.skills);
+        }
+        if (interests.length === 0 && userProfile?.interests?.length) {
+            setInterests(userProfile.interests);
+        }
+    }, [userProfile, fetchUserProfile, skills.length, interests.length]);
 
     // Prefer draft from context (set on previous step). If not available (fallback), use navigation state.
     const personalInfo = (draft as PersonalInfo | null) ?? (location.state as PersonalInfo | undefined) ?? null;

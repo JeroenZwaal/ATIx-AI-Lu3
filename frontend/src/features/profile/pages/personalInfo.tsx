@@ -21,11 +21,22 @@ export default function PersonalInfo() {
 
     useEffect(() => {
         if (!userProfile) return;
-        setOpleiding(userProfile.studyProgram ?? '');
-        setLeerjaar(String(userProfile.yearOfStudy ?? ''));
-        setStudiepunten(String(userProfile.studyCredits ?? ''));
-        setStudielocatie(userProfile.studyLocation ?? '');
-    }, [userProfile]);
+
+        // Only set values if the inputs are still empty so we don't overwrite
+        // any edits the user may have started typing.
+        if (opleiding === '') {
+            setOpleiding(userProfile.studyProgram ?? '');
+        }
+        if (leerjaar === '') {
+            setLeerjaar(String(userProfile.yearOfStudy ?? ''));
+        }
+        if (studiepunten === '') {
+            setStudiepunten(String(userProfile.studyCredits ?? ''));
+        }
+        if (studielocatie === '') {
+            setStudielocatie(userProfile.studyLocation ?? '');
+        }
+    }, [userProfile, opleiding, leerjaar, studiepunten, studielocatie]);
 
     function handleNext() {
         if(!opleiding || !leerjaar || !studiepunten) {
@@ -62,6 +73,9 @@ export default function PersonalInfo() {
                 <p className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-black">1</p>
                 {/* Step 2 */}
                 <p className="relative z-10 ml-auto flex h-8 w-8 items-center justify-center rounded-full bg-gray-600 text-sm font-medium text-white">2</p>
+            </div>
+            <div>
+                <p> Vul hieronder je persoonlijke gegevens in om je profiel aan te maken die de Ai recommender zal gebruiken om modules voor jou te vinden.</p>
             </div>
             <div>
                 <label htmlFor="email" className="block text-white text-sm mb-2">
