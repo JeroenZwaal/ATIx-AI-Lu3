@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './features/auth/pages/login';
 import RegisterPage from './features/auth/pages/register';
-import DashboardPage from './features/auth/pages/dashboard';
+import DashboardPage from './features/dashboard/pages/dashboard';
 import ProtectedRoute from './shared/components/ProtectedRoute';
 import KeuzemodulesPage from './features/modules/pages/keuzemodules';
 import ModuleDetailPage from './features/modules/pages/moduledetail';
