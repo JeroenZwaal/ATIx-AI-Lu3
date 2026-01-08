@@ -11,6 +11,7 @@ export interface IUserRepository {
     updateRefreshToken(id: string, refreshToken: string | null): Promise<void>;
     enable2FA(id: string, secret: string): Promise<void>;
     disable2FA(id: string): Promise<void>;
+    getFavorites(userId: string): Promise<UserFavorite[]>;
 }
 
 export const USER_REPOSITORY = Symbol('IUserRepository');

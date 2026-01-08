@@ -1,4 +1,5 @@
 import { environment } from '../../../shared/environments/environment';
+import type { Module } from '../../../shared/types';
 import type { LoginDto, RegisterDto, AuthResponse } from '../types/auth.types';
 
 class AuthService {
@@ -78,6 +79,60 @@ class AuthService {
             return payload.exp * 1000 > Date.now();
         } catch {
             return false;
+        }
+    }
+    async getFavorites(): Promise<Module[]> {
+        const response = await fetch(`${environment.apiUrl}/auth/favorites`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.getToken()}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to fetch favorites');
+        }
+
+        return response.json();
+    }
+
+    async toggleFavorite(moduleId: string, isCurrentlyFavorite: boolean): Promise<void> {
+        if (isCurrentlyFavorite) {
+            await this.removeFavorite(moduleId);
+        } else {
+            await this.addFavorite(moduleId);
+        }
+    }
+
+    async addFavorite(moduleId: string): Promise<void> {
+        const response = await fetch(`${environment.apiUrl}/auth/favorites/${moduleId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.getToken()}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to add favorite');
+        }
+    }
+
+    async removeFavorite(moduleId: string): Promise<void> {
+        const response = await fetch(`${environment.apiUrl}/auth/favorites/${moduleId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${this.getToken()}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to remove favorite');
         }
     }
 }
