@@ -1,16 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function Settings() {
-    const [language, setLanguage] = useState<'nl' | 'en'>('nl');
-    const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-
-    useEffect(() => {
-        const savedLanguage = localStorage.getItem('language') as 'nl' | 'en' | null;
-        const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-        
-        if (savedLanguage) setLanguage(savedLanguage);
-        if (savedTheme) setTheme(savedTheme);
-    }, []);
+    const [language, setLanguage] = useState<'nl' | 'en'>(() => {
+        const saved = localStorage.getItem('language') as 'nl' | 'en' | null;
+        return saved || 'nl';
+    });
+    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+        const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
+        return saved || 'dark';
+    });
 
     const handleLanguageChange = (newLanguage: 'nl' | 'en') => {
         setLanguage(newLanguage);
@@ -26,16 +24,17 @@ export default function Settings() {
         <div className="min-h-screen bg-neutral-950 w-full overflow-x-hidden">
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <h1 className="text-4xl font-bold text-white mb-4 text-center">Instellingen</h1>
-                
+
                 <p className="text-gray-300 mb-8 text-center max-w-3xl mx-auto">
-                    Pas je voorkeuren aan voor taal en thema. Alle wijzigingen worden automatisch opgeslagen.
+                    Pas je voorkeuren aan voor taal en thema. Alle wijzigingen worden automatisch
+                    opgeslagen.
                 </p>
 
                 <div className="space-y-6 max-w-3xl mx-auto">
                     {/* Taal Instelling */}
                     <div className="bg-gray-800 rounded-lg p-6">
                         <h2 className="text-xl font-bold text-white mb-4">Taal / Language</h2>
-                        
+
                         <div className="flex gap-4">
                             <button
                                 onClick={() => handleLanguageChange('nl')}
@@ -65,7 +64,7 @@ export default function Settings() {
                     {/* Theme Instelling */}
                     <div className="bg-gray-800 rounded-lg p-6">
                         <h2 className="text-xl font-bold text-white mb-4">Thema / Theme</h2>
-                        
+
                         <div className="flex gap-4">
                             <button
                                 onClick={() => handleThemeChange('light')}
@@ -95,7 +94,7 @@ export default function Settings() {
                     {/* LocalStorage Status */}
                     <div className="bg-gray-800 rounded-lg p-6">
                         <h2 className="text-xl font-bold text-white mb-4">LocalStorage Status</h2>
-                        
+
                         <div className="space-y-3">
                             <div className="bg-neutral-900 rounded-lg p-4">
                                 <div className="flex items-center justify-between">
@@ -105,7 +104,7 @@ export default function Settings() {
                                     </span>
                                 </div>
                             </div>
-                            
+
                             <div className="bg-neutral-900 rounded-lg p-4">
                                 <div className="flex items-center justify-between">
                                     <span className="text-gray-400 font-medium">Thema:</span>
