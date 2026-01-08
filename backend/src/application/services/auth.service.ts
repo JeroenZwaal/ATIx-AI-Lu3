@@ -156,23 +156,7 @@ export class AuthService {
             throw new NotFoundException('Module not found');
         }
 
-        const favorite = new UserFavorite(
-            moduleId,
-            new Date(),
-            module.name,
-            '', // moduleDescription
-            '', // moduleShortDescription
-            0, // moduleStudyCredits
-            '', // moduleLocation
-            '', // moduleLevel
-            [], // moduleTags
-            '', // moduleCombinedText
-            0, // moduleInterestsMatchScore
-            0, // modulePopularityScore
-            0, // moduleEstimatedDifficulty
-            0, // moduleAvailableSpots
-            new Date(), // moduleStartDate
-        );
+        const favorite = new UserFavorite(moduleId, new Date(), module.name);
 
         await this.userRepository.addFavorite(userId, favorite);
     }

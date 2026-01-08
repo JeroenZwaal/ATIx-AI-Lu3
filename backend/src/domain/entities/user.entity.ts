@@ -25,17 +25,5 @@ export class UserFavorite {
         public readonly moduleId: string,
         public readonly addedAt: Date,
         public readonly moduleName: string,
-        public readonly moduleDescription: string,
-        public readonly moduleShortDescription: string,
-        public readonly moduleStudyCredits: number,
-        public readonly moduleLocation: string,
-        public readonly moduleLevel: string,
-        public readonly moduleTags: string[],
-        public readonly moduleCombinedText: string,
-        public readonly moduleInterestsMatchScore: number,
-        public readonly modulePopularityScore: number,
-        public readonly moduleEstimatedDifficulty: number,
-        public readonly moduleAvailableSpots: number,
-        public readonly moduleStartDate: Date,
     ) {}
 }

@@ -138,19 +138,7 @@ export class UserRepository implements IUserRepository {
                     new UserFavorite(
                         fav.module_id,
                         fav.added_at,
-                        fav.module_name,
-                        '', // moduleDescription
-                        '', // moduleShortDescription
-                        0, // moduleStudyCredits
-                        '', // moduleLocation
-                        '', // moduleLevel
-                        [], // moduleTags
-                        '', // moduleCombinedText
-                        0, // moduleInterestsMatchScore
-                        0, // modulePopularityScore
-                        0, // moduleEstimatedDifficulty
-                        0, // moduleAvailableSpots
-                        new Date(), // moduleStartDate
+                        fav.module_name, // moduleStartDate
                     ),
             ) || []
         );
@@ -179,19 +167,7 @@ export class UserRepository implements IUserRepository {
                         new UserFavorite(
                             fav.module_id,
                             fav.added_at,
-                            fav.module_name,
-                            '', // moduleDescription
-                            '', // moduleShortDescription
-                            0, // moduleStudyCredits
-                            '', // moduleLocation
-                            '', // moduleLevel
-                            [], // moduleTags
-                            '', // moduleCombinedText
-                            0, // moduleInterestsMatchScore
-                            0, // modulePopularityScore
-                            0, // moduleEstimatedDifficulty
-                            0, // moduleAvailableSpots
-                            new Date(), // moduleStartDate
+                            fav.module_name, // moduleStartDate
                         ),
                 ) || [];
 
