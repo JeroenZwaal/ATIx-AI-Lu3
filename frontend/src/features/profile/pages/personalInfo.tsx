@@ -1,5 +1,5 @@
 // PersonalInfo.tsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 
@@ -12,7 +12,20 @@ export default function PersonalInfo() {
     const [studielocatie, setStudielocatie] = useState('');
     const [studiepunten, setStudiepunten] = useState('');
     const navigate = useNavigate();
-    const { setDraft } = useProfile();
+    const { setDraft, userProfile, fetchUserProfile } = useProfile();
+
+    // fetch profile on mount (if not already fetched) and populate fields when available
+    useEffect(() => {
+        fetchUserProfile().catch(() => {});
+    }, [fetchUserProfile]);
+
+    useEffect(() => {
+        if (!userProfile) return;
+        setOpleiding(userProfile.studyProgram ?? '');
+        setLeerjaar(String(userProfile.yearOfStudy ?? ''));
+        setStudiepunten(String(userProfile.studyCredits ?? ''));
+        setStudielocatie(userProfile.studyLocation ?? '');
+    }, [userProfile]);
 
     function handleNext() {
         if(!opleiding || !leerjaar || !studiepunten) {

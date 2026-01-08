@@ -8,6 +8,7 @@ import {
 import { User } from '../../domain/entities/user.entity';
 import type { IUserRepository } from '../../domain/repositories/user.repository.interface';
 import { UpdateUserDto } from 'src/interfaces/presenters/user.dto';
+import { response } from 'express';
 
 @Injectable()
 export class UserService {
@@ -138,4 +139,21 @@ export class UserService {
         await this.userRepository.update(currentUser._id, sanitized);
         return;
     }
+
+    async getProfile(user: User): Promise<UpdateUserDto> {
+        const userProfile = await this.userRepository.findById(user._id);
+        if (!userProfile) {
+            throw new UnauthorizedException('User not found');
+        }
+        const responseUser: UpdateUserDto = {
+            studyProgram: userProfile.studyProgram? userProfile.studyProgram : '',
+            studyLocation: userProfile.studyLocation? userProfile.studyLocation : '',
+            studyCredits: userProfile.studyCredits? userProfile.studyCredits : 0,
+            yearOfStudy: userProfile.yearOfStudy? userProfile.yearOfStudy : 0,
+            skills: userProfile.skills,
+            interests: userProfile.interests,
+        };
+        return responseUser;
+    }
+
 }

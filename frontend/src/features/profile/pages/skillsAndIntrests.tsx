@@ -51,7 +51,19 @@ export default function SkillsAndIntrests(): JSX.Element {
     };
 
     const location = useLocation();
-    const { createProfile, draft } = useProfile();
+    const { createProfile, draft, userProfile, fetchUserProfile } = useProfile();
+
+    // if we have a profile from the backend, prefill skills/interests
+    React.useEffect(() => {
+        // fetch if not present yet
+        if (!userProfile) {
+            fetchUserProfile().catch(() => {});
+            return;
+        }
+
+        if (userProfile?.skills?.length) setSkills(userProfile.skills);
+        if (userProfile?.interests?.length) setInterests(userProfile.interests);
+    }, [userProfile, fetchUserProfile]);
 
     // Prefer draft from context (set on previous step). If not available (fallback), use navigation state.
     const personalInfo = (draft as PersonalInfo | null) ?? (location.state as PersonalInfo | undefined) ?? null;

@@ -93,6 +93,7 @@ export class UserRepository implements IUserRepository {
         return this.mapToEntity(updatedUser);
     }
 
+
     async delete(id: string): Promise<boolean> {
         // Validate and sanitize ID to prevent NoSQL injection
         if (!id || typeof id !== 'string' || !Types.ObjectId.isValid(id)) {

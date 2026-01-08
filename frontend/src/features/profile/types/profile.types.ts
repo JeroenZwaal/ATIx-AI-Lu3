@@ -36,14 +36,12 @@ export interface PersonalInfo {
 }
 
 export interface ProfileContextType{
-  // user: User | null;
-  // token: string | null;
   createProfile: (createProfileData: CreateProfileDto) => Promise<UpdateProfileResponse>;
   draft: Partial<CreateProfileDto> | null;
   setDraft: (draft: Partial<CreateProfileDto> | null) => void;
-  // login: (email: string, password: string) => Promise<void>;
-  // register: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
-  // logout: () => Promise<void>;
-  // isLoading: boolean;
-  // error: string | null;
+
+  /** Latest profile as returned by the API (or null if not fetched) */
+  userProfile: ProfileApi | null;
+  /** Fetches the profile from the API and stores it in context (returns null on error) */
+  fetchUserProfile: () => Promise<ProfileApi | null>;
 }

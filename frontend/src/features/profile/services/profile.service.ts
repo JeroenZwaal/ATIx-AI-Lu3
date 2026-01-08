@@ -39,6 +39,26 @@ export class ProfileService {
 
         return response.json();
     }
+
+    async getUserProfile(): Promise<ProfileApi> {
+        const response = await fetch(`${environment.apiUrl}/user/getProfile`, {
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+            let errorText = 'Get profile failed';
+            try {
+                const error = await response.json();
+                errorText = error.message || errorText;
+            } catch (_) {
+                // ignore JSON parse errors
+            }
+            throw new Error(errorText);
+        }
+        
+        return response.json();
+    }
 }
 
 export const profileService = new ProfileService();

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, HttpStatus, HttpException, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, HttpStatus, HttpException, UseGuards, Get } from '@nestjs/common';
 import { UserService } from '../../application/services/user.service';
 import { UpdateUserDto } from '../presenters/user.dto';
 import { CURRENTUSER } from '../decorators/current.user.decorator';
@@ -27,4 +27,17 @@ export class UserController {
             throw new HttpException(error as string, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('getProfile')
+    async getProfile(@CURRENTUSER() user: User): Promise<UpdateUserDto> {
+        try {
+            const userProfile = await this.userService.getProfile(user);
+            return userProfile;
+        } catch (error: unknown) {
+            console.error('Get profile error:', error);
+            throw new HttpException(error as string, HttpStatus.INTERNAL_SERVER_ERROR);
+        }       
+    }
+
 }
