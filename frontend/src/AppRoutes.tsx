@@ -6,6 +6,7 @@ import ProtectedRoute from './shared/components/ProtectedRoute';
 import KeuzemodulesPage from './features/modules/pages/keuzemodules';
 import PersonalInfo from './features/profile/pages/personalInfo';
 import SkillsAndIntrests from './features/profile/pages/skillsAndIntrests';
+import ModuleDetailPage from './features/modules/pages/moduledetail';
 import Layout from './shared/components/Layout';
 
 function LogoutRedirect() {
@@ -22,11 +23,18 @@ export default function AppRoutes() {
                 <Route path="profile/skillsAndIntrests" element={<SkillsAndIntrests />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
-                
+
                 {/* Protected routes with Layout */}
-                <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                <Route
+                    element={
+                        <ProtectedRoute>
+                            <Layout />
+                        </ProtectedRoute>
+                    }
+                >
                     <Route path="/dashboard" element={<DashboardPage />} />
                     <Route path="/keuzemodules" element={<KeuzemodulesPage />} />
+                    <Route path="/keuzemodules/:id" element={<ModuleDetailPage />} />
                 </Route>
 
                 <Route path="/logout" element={<LogoutRedirect />} />

@@ -10,20 +10,22 @@ const NAV_LINKS = [
 ];
 
 const Logo = () => (
-    <Link to="/dashboard" className="text-2xl font-bold !text-red-600 hover:!text-red-500 transition-colors">
+    <Link
+        to="/dashboard"
+        className="text-2xl font-bold !text-red-600 hover:!text-red-500 transition-colors"
+    >
         Avans
     </Link>
 );
 
-const UserInfo = ({ user }: { user: any }) => (
+const UserInfo = ({ user }: { user: any }) =>
     user ? (
         <span className="text-sm text-gray-300">
             {user.firstName} {user.lastName}
         </span>
-    ) : null
-);
+    ) : null;
 
-const LogoutButton = ({ onClick, className = "" }: { onClick: () => void; className?: string }) => (
+const LogoutButton = ({ onClick, className = '' }: { onClick: () => void; className?: string }) => (
     <button
         onClick={onClick}
         className={`bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg transition-colors font-medium ${className}`}
@@ -32,7 +34,15 @@ const LogoutButton = ({ onClick, className = "" }: { onClick: () => void; classN
     </button>
 );
 
-const NavLink = ({ link, isActive, onClick }: { link: typeof NAV_LINKS[0]; isActive: boolean; onClick?: () => void }) => (
+const NavLink = ({
+    link,
+    isActive,
+    onClick,
+}: {
+    link: (typeof NAV_LINKS)[0];
+    isActive: boolean;
+    onClick?: () => void;
+}) => (
     <Link
         to={link.path}
         onClick={onClick}
@@ -45,7 +55,15 @@ const NavLink = ({ link, isActive, onClick }: { link: typeof NAV_LINKS[0]; isAct
     </Link>
 );
 
-const MobileNavLink = ({ link, isActive, onClick }: { link: typeof NAV_LINKS[0]; isActive: boolean; onClick: () => void }) => (
+const MobileNavLink = ({
+    link,
+    isActive,
+    onClick,
+}: {
+    link: (typeof NAV_LINKS)[0];
+    isActive: boolean;
+    onClick: () => void;
+}) => (
     <Link
         to={link.path}
         onClick={onClick}
@@ -60,9 +78,15 @@ const MobileNavLink = ({ link, isActive, onClick }: { link: typeof NAV_LINKS[0];
 
 const HamburgerIcon = ({ isOpen }: { isOpen: boolean }) => (
     <div className="w-6 h-6 flex flex-col justify-center items-center relative">
-        <span className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute rotate-45' : 'mb-1.5'}`} />
-        <span className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : 'mb-1.5'}`} />
-        <span className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute -rotate-45' : ''}`} />
+        <span
+            className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute rotate-45' : 'mb-1.5'}`}
+        />
+        <span
+            className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : 'mb-1.5'}`}
+        />
+        <span
+            className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute -rotate-45' : ''}`}
+        />
     </div>
 );
 
@@ -82,9 +106,12 @@ export default function Header() {
     return (
         <>
             {mobileMenuOpen && (
-                <div className="fixed inset-0 backdrop-blur-md z-30 md:hidden" onClick={closeMobileMenu} />
+                <div
+                    className="fixed inset-0 backdrop-blur-md z-30 md:hidden"
+                    onClick={closeMobileMenu}
+                />
             )}
-            
+
             <header className="text-white py-2 px-4 md:px-6 relative z-50">
                 <div className="hidden md:flex items-center px-6 py-3">
                     <div className="flex-1">
@@ -93,7 +120,14 @@ export default function Header() {
 
                     <nav className="flex items-center gap-2 bg-[#2a2a2a] rounded-full p-1.5 shadow-lg">
                         {NAV_LINKS.map((link) => (
-                            <NavLink key={link.label} link={link} isActive={location.pathname === link.path} />
+                            <NavLink
+                                key={link.label}
+                                link={link}
+                                isActive={
+                                    location.pathname === link.path ||
+                                    location.pathname.startsWith(link.path + '/')
+                                }
+                            />
                         ))}
                     </nav>
 
@@ -123,14 +157,19 @@ export default function Header() {
                                     <MobileNavLink
                                         key={link.label}
                                         link={link}
-                                        isActive={location.pathname === link.path}
+                                        isActive={
+                                            location.pathname === link.path ||
+                                            location.pathname.startsWith(link.path + '/')
+                                        }
                                         onClick={closeMobileMenu}
                                     />
                                 ))}
                                 <div className="pt-5 border-t border-gray-600 space-y-3">
                                     {user && (
                                         <div className="text-center">
-                                            <div className="text-white font-medium">{user.firstName} {user.lastName}</div>
+                                            <div className="text-white font-medium">
+                                                {user.firstName} {user.lastName}
+                                            </div>
                                         </div>
                                     )}
                                     <LogoutButton
