@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { moduleService } from '../services/module.service';
 import type { Module } from '../../../shared/types/index';
 
@@ -12,6 +13,7 @@ interface FilterState {
 }
 
 export default function Keuzemodules() {
+    const navigate = useNavigate();
     const [modules, setModules] = useState<Module[]>([]);
     const [allModules, setAllModules] = useState<Module[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -523,6 +525,9 @@ export default function Keuzemodules() {
                                         {/* Action Buttons */}
                                         <div className="flex items-center gap-4 justify-end">
                                             <button
+                                                onClick={() =>
+                                                    navigate(`/keuzemodules/${module.id}`)
+                                                }
                                                 style={{ backgroundColor: '#c4b5fd' }}
                                                 className="text-black px-6 py-2.5 rounded-lg font-medium hover:bg-violet-400 transition-colors"
                                             >
