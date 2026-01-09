@@ -1,4 +1,11 @@
 export const nl = {
+    nav: {
+        dashboard: 'Dashboard',
+        modules: 'Keuzemodules',
+        aiModules: 'AI Keuzemodules',
+        settings: 'Instellingen',
+        logout: 'Uitloggen',
+    },
     settings: {
         title: 'Instellingen',
         description: 'Pas je voorkeuren aan voor taal en thema. Alle wijzigingen worden automatisch opgeslagen.',

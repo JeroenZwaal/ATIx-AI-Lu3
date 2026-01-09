@@ -1,13 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/hooks/useAuth';
-
-const NAV_LINKS = [
-    { label: 'Dashboard', path: '/dashboard' },
-    { label: 'Keuzemodules', path: '/keuzemodules' },
-    { label: 'AI Keuzemodules', path: '/aikeuzemodules' },
-    { label: 'Instellingen', path: '/settings' },
-];
+import { useLanguage } from '../contexts/useLanguage';
 
 const Logo = () => (
     <Link
@@ -25,21 +19,26 @@ const UserInfo = ({ user }: { user: any }) =>
         </span>
     ) : null;
 
-const LogoutButton = ({ onClick, className = '' }: { onClick: () => void; className?: string }) => (
+const LogoutButton = ({ onClick, className = '', label }: { onClick: () => void; className?: string; label: string }) => (
     <button
         onClick={onClick}
         className={`bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg transition-colors font-medium ${className}`}
     >
-        Uitloggen
+        {label}
     </button>
 );
+
+interface NavLinkType {
+    label: string;
+    path: string;
+}
 
 const NavLink = ({
     link,
     isActive,
     onClick,
 }: {
-    link: (typeof NAV_LINKS)[0];
+    link: NavLinkType;
     isActive: boolean;
     onClick?: () => void;
 }) => (
@@ -60,7 +59,7 @@ const MobileNavLink = ({
     isActive,
     onClick,
 }: {
-    link: (typeof NAV_LINKS)[0];
+    link: NavLinkType;
     isActive: boolean;
     onClick: () => void;
 }) => (
@@ -93,8 +92,16 @@ const HamburgerIcon = ({ isOpen }: { isOpen: boolean }) => (
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { logout, user } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const location = useLocation();
+
+    const navLinks = [
+        { label: t.nav.dashboard, path: '/dashboard' },
+        { label: t.nav.modules, path: '/keuzemodules' },
+        { label: t.nav.aiModules, path: '/aikeuzemodules' },
+        { label: t.nav.settings, path: '/settings' },
+    ];
 
     const handleLogout = async () => {
         await logout();
@@ -119,9 +126,9 @@ export default function Header() {
                     </div>
 
                     <nav className="flex items-center gap-2 bg-[#2a2a2a] rounded-full p-1.5 shadow-lg">
-                        {NAV_LINKS.map((link) => (
+                        {navLinks.map((link) => (
                             <NavLink
-                                key={link.label}
+                                key={link.path}
                                 link={link}
                                 isActive={
                                     location.pathname === link.path ||
@@ -133,7 +140,7 @@ export default function Header() {
 
                     <div className="flex-1 flex items-center justify-end gap-3">
                         <UserInfo user={user} />
-                        <LogoutButton onClick={handleLogout} className="text-sm" />
+                        <LogoutButton onClick={handleLogout} className="text-sm" label={t.nav.logout} />
                     </div>
                 </div>
 
@@ -153,9 +160,9 @@ export default function Header() {
                     {mobileMenuOpen && (
                         <div className="absolute left-4 right-4 top-full mt-2 bg-[#2a2a2a] rounded-2xl shadow-lg z-40 overflow-hidden">
                             <nav className="flex flex-col px-5 py-8 space-y-3">
-                                {NAV_LINKS.map((link) => (
+                                {navLinks.map((link) => (
                                     <MobileNavLink
-                                        key={link.label}
+                                        key={link.path}
                                         link={link}
                                         isActive={
                                             location.pathname === link.path ||
@@ -178,6 +185,7 @@ export default function Header() {
                                             closeMobileMenu();
                                         }}
                                         className="w-full"
+                                        label={t.nav.logout}
                                     />
                                 </div>
                             </nav>
