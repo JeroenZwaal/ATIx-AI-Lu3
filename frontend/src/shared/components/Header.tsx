@@ -111,7 +111,7 @@ export default function Header() {
                     onClick={closeMobileMenu}
                 />
             )}
-            
+
             <header className="sticky top-0 bg-neutral-950 text-white py-2 px-4 md:px-6 z-50">
                 <div className="hidden md:flex items-center max-w-6xl mx-auto px-6 py-3">
                     <div className="flex-1">
