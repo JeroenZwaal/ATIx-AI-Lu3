@@ -123,6 +123,27 @@ export class UserRepository implements IUserRepository {
         return this.mapToEntity(updatedUser);
     }
 
+    async getFavorites(userId: string): Promise<UserFavorite[]> {
+        // Validate and sanitize userId to prevent NoSQL injection
+        if (!userId || typeof userId !== 'string' || !Types.ObjectId.isValid(userId)) {
+            throw new Error(`Invalid user ID: ${userId}`);
+        }
+        const user = await this.userModel.findById(new Types.ObjectId(userId));
+        if (!user) {
+            throw new Error(`User with ID ${userId} not found`);
+        }
+        return (
+            user.favorites?.map(
+                (fav) =>
+                    new UserFavorite(
+                        fav.module_id,
+                        fav.added_at,
+                        fav.module_name, // moduleStartDate
+                    ),
+            ) || []
+        );
+    }
+
     updateRefreshToken(id: string, refreshToken: string | null): Promise<void> {
         throw new Error('Method not implemented.');
     }
@@ -142,7 +163,12 @@ export class UserRepository implements IUserRepository {
 
             const favorites =
                 userDoc.favorites?.map(
-                    (fav) => new UserFavorite(fav.module_id, fav.added_at, fav.module_name),
+                    (fav) =>
+                        new UserFavorite(
+                            fav.module_id,
+                            fav.added_at,
+                            fav.module_name, // moduleStartDate
+                        ),
                 ) || [];
 
             let id: string;

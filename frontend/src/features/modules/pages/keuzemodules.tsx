@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { moduleService } from '../services/module.service';
+import authService from '../../auth/services/auth.service';
 import type { Module } from '../../../shared/types/index';
 import { useLanguage } from '../../../shared/contexts/useLanguage';
 
@@ -34,7 +35,18 @@ export default function Keuzemodules() {
 
     useEffect(() => {
         loadModules();
+        loadFavorites();
     }, []);
+
+    const loadFavorites = async () => {
+        try {
+            const favoriteModules = await authService.getFavorites();
+            const favoriteIds = new Set(favoriteModules.map((module) => module.id));
+            setFavorites(favoriteIds);
+        } catch (err) {
+            console.error('Error loading favorites:', err);
+        }
+    };
 
     const loadModules = async () => {
         try {
@@ -181,6 +193,22 @@ export default function Keuzemodules() {
         setCurrentPage(1);
     }, [searchFilteredModules]);
 
+    const sortedModules = useMemo(() => {
+        return [...searchFilteredModules].sort((a, b) => {
+            const aIsFavorite = favorites.has(a.id);
+            const bIsFavorite = favorites.has(b.id);
+
+            if (aIsFavorite && !bIsFavorite) return -1;
+            if (!aIsFavorite && bIsFavorite) return 1;
+            return 0;
+        });
+    }, [searchFilteredModules, favorites]);
+
+    useEffect(() => {
+        setModules(sortedModules);
+        setCurrentPage(1);
+    }, [sortedModules]);
+
     const toggleFilter = (filterType: keyof FilterState, value: number | string) => {
         setFilters((prev) => {
             const newFilters = { ...prev };
@@ -236,16 +264,35 @@ export default function Keuzemodules() {
         filters.difficulties.size > 0 ||
         filters.locations.size > 0;
 
-    const toggleFavorite = (moduleId: string) => {
+    const toggleFavorite = async (moduleId: string) => {
+        const isFavorite = favorites.has(moduleId);
+
+        // Optimistic update
         setFavorites((prev) => {
             const newFavorites = new Set(prev);
-            if (newFavorites.has(moduleId)) {
+            if (isFavorite) {
                 newFavorites.delete(moduleId);
             } else {
                 newFavorites.add(moduleId);
             }
             return newFavorites;
         });
+
+        try {
+            await authService.toggleFavorite(moduleId, isFavorite);
+        } catch (err) {
+            // Revert on error
+            setFavorites((prev) => {
+                const newFavorites = new Set(prev);
+                if (isFavorite) {
+                    newFavorites.add(moduleId);
+                } else {
+                    newFavorites.delete(moduleId);
+                }
+                return newFavorites;
+            });
+            console.error('Error toggling favorite:', err);
+        }
     };
 
     const getLevelTag = (level: string): string => {
