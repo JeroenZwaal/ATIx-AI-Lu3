@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { moduleService } from '../services/module.service';
 import type { Module } from '../../../shared/types/index';
+import { useLanguage } from '../../../shared/contexts/useLanguage';
 
 export default function ModuleDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { t } = useLanguage();
     const [module, setModule] = useState<Module | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -16,7 +18,7 @@ export default function ModuleDetail() {
 
     const loadModule = async () => {
         if (!id) {
-            setError('Geen module ID gevonden');
+            setError(t.moduleDetail.noModuleId);
             setIsLoading(false);
             return;
         }
@@ -46,7 +48,7 @@ export default function ModuleDetail() {
         return (
             <div className="bg-neutral-950 w-full overflow-x-hidden">
                 <div className="max-w-4xl mx-auto px-4 py-8">
-                    <div className="text-center py-12 text-gray-300">Laden...</div>
+                    <div className="text-center py-12 text-gray-300">{t.modules.loading}</div>
                 </div>
             </div>
         );
@@ -57,14 +59,14 @@ export default function ModuleDetail() {
             <div className="bg-neutral-950 w-full overflow-x-hidden">
                 <div className="max-w-4xl mx-auto px-4 py-8">
                     <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-4">
-                        <p className="font-bold">Error:</p>
-                        <p>{error || 'Module niet gevonden'}</p>
+                        <p className="font-bold">{t.modules.error}</p>
+                        <p>{error || t.moduleDetail.moduleNotFound}</p>
                         <button
                             onClick={handleBack}
                             style={{ backgroundColor: '#c4b5fd' }}
                             className="mt-2 text-black px-4 py-2 rounded-lg font-medium hover:bg-violet-400 transition-colors"
                         >
-                            Terug naar overzicht
+                            {t.moduleDetail.backToOverview}
                         </button>
                     </div>
                 </div>
@@ -88,7 +90,7 @@ export default function ModuleDetail() {
                             d="M10 19l-7-7m0 0l7-7m-7 7h18"
                         />
                     </svg>
-                    <span>Terug naar overzicht</span>
+                    <span>{t.moduleDetail.backToOverview}</span>
                 </button>
 
                 {/* Module Content */}
@@ -102,7 +104,7 @@ export default function ModuleDetail() {
                             {module.studycredit} ETC
                         </span>
                         <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-medium">
-                            {module.location || 'Onbekend'}
+                            {module.location || t.moduleDetail.unknown}
                         </span>
                     </div>
 
@@ -127,7 +129,7 @@ export default function ModuleDetail() {
                             style={{ backgroundColor: '#c4b5fd' }}
                             className="w-full sm:w-auto text-black px-8 py-3 rounded-lg font-medium hover:bg-violet-400 transition-colors"
                         >
-                            Inschrijven
+                            {t.moduleDetail.enroll}
                         </button>
                     </div>
                 </div>
