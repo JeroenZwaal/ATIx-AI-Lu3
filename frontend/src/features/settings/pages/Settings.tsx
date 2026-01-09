@@ -1,19 +1,12 @@
 import { useState } from 'react';
+import { useLanguage } from '../../../shared/contexts/useLanguage';
 
 export default function Settings() {
-    const [language, setLanguage] = useState<'nl' | 'en'>(() => {
-        const saved = localStorage.getItem('language') as 'nl' | 'en' | null;
-        return saved || 'nl';
-    });
+    const { language, setLanguage, t } = useLanguage();
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
         return saved || 'dark';
     });
-
-    const handleLanguageChange = (newLanguage: 'nl' | 'en') => {
-        setLanguage(newLanguage);
-        localStorage.setItem('language', newLanguage);
-    };
 
     const handleThemeChange = (newTheme: 'light' | 'dark') => {
         setTheme(newTheme);
@@ -23,21 +16,20 @@ export default function Settings() {
     return (
         <div className="min-h-screen bg-neutral-950 w-full overflow-x-hidden">
             <div className="max-w-6xl mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-white mb-4 text-center">Instellingen</h1>
+                <h1 className="text-4xl font-bold text-white mb-4 text-center">{t.settings.title}</h1>
 
                 <p className="text-gray-300 mb-8 text-center max-w-3xl mx-auto">
-                    Pas je voorkeuren aan voor taal en thema. Alle wijzigingen worden automatisch
-                    opgeslagen.
+                    {t.settings.description}
                 </p>
 
                 <div className="space-y-6 max-w-3xl mx-auto">
                     {/* Taal Instelling */}
                     <div className="bg-gray-800 rounded-lg p-6">
-                        <h2 className="text-xl font-bold text-white mb-4">Taal / Language</h2>
+                        <h2 className="text-xl font-bold text-white mb-4">{t.settings.language.title}</h2>
 
                         <div className="flex gap-4">
                             <button
-                                onClick={() => handleLanguageChange('nl')}
+                                onClick={() => setLanguage('nl')}
                                 style={{ backgroundColor: language === 'nl' ? '#c4b5fd' : '' }}
                                 className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                                     language === 'nl'
@@ -45,10 +37,10 @@ export default function Settings() {
                                         : 'bg-neutral-700 text-gray-300 hover:bg-neutral-600'
                                 }`}
                             >
-                                Nederlands
+                                {t.settings.language.dutch}
                             </button>
                             <button
-                                onClick={() => handleLanguageChange('en')}
+                                onClick={() => setLanguage('en')}
                                 style={{ backgroundColor: language === 'en' ? '#c4b5fd' : '' }}
                                 className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                                     language === 'en'
@@ -56,14 +48,14 @@ export default function Settings() {
                                         : 'bg-neutral-700 text-gray-300 hover:bg-neutral-600'
                                 }`}
                             >
-                                English
+                                {t.settings.language.english}
                             </button>
                         </div>
                     </div>
 
                     {/* Theme Instelling */}
                     <div className="bg-gray-800 rounded-lg p-6">
-                        <h2 className="text-xl font-bold text-white mb-4">Thema / Theme</h2>
+                        <h2 className="text-xl font-bold text-white mb-4">{t.settings.theme.title}</h2>
 
                         <div className="flex gap-4">
                             <button
@@ -75,7 +67,7 @@ export default function Settings() {
                                         : 'bg-neutral-700 text-gray-300 hover:bg-neutral-600'
                                 }`}
                             >
-                                Licht / Light
+                                {t.settings.theme.light}
                             </button>
                             <button
                                 onClick={() => handleThemeChange('dark')}
@@ -86,19 +78,19 @@ export default function Settings() {
                                         : 'bg-neutral-700 text-gray-300 hover:bg-neutral-600'
                                 }`}
                             >
-                                Donker / Dark
+                                {t.settings.theme.dark}
                             </button>
                         </div>
                     </div>
 
                     {/* LocalStorage Status */}
                     <div className="bg-gray-800 rounded-lg p-6">
-                        <h2 className="text-xl font-bold text-white mb-4">LocalStorage Status</h2>
+                        <h2 className="text-xl font-bold text-white mb-4">{t.settings.localStorage.title}</h2>
 
                         <div className="space-y-3">
                             <div className="bg-neutral-900 rounded-lg p-4">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-gray-400 font-medium">Taal:</span>
+                                    <span className="text-gray-400 font-medium">{t.settings.localStorage.language}</span>
                                     <span className="text-violet-400 font-mono font-semibold">
                                         "{language}"
                                     </span>
@@ -107,7 +99,7 @@ export default function Settings() {
 
                             <div className="bg-neutral-900 rounded-lg p-4">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-gray-400 font-medium">Thema:</span>
+                                    <span className="text-gray-400 font-medium">{t.settings.localStorage.theme}</span>
                                     <span className="text-violet-400 font-mono font-semibold">
                                         "{theme}"
                                     </span>
@@ -116,7 +108,7 @@ export default function Settings() {
                         </div>
 
                         <p className="text-gray-500 text-sm mt-4 text-center">
-                            Deze waarden zijn opgeslagen in je browser's localStorage
+                            {t.settings.localStorage.description}
                         </p>
                     </div>
                 </div>
