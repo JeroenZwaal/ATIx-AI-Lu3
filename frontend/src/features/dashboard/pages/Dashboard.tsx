@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import type { Module } from '../../../shared/types/index';
 import authService from '../../auth/services/auth.service';
+import { useLanguage } from '../../../shared/contexts/useLanguage';
 
 interface DashboardProps {
     favoriteModules?: Module[];
@@ -15,6 +16,7 @@ export default function Dashboard({
     onModuleClick,
 }: DashboardProps) {
     const navigate = useNavigate();
+    const { t } = useLanguage();
 
     // State voor opgehaalde data
     const [favoriteModules, setFavoriteModules] = useState<Module[]>(propFavoriteModules || []);
@@ -77,31 +79,31 @@ export default function Dashboard({
     return (
         <div className="min-h-screen bg-neutral-950 w-full overflow-x-hidden">
             <div className="max-w-6xl mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-white mb-8 text-center">Dashboard</h1>
+                <h1 className="text-4xl font-bold text-white mb-8 text-center">{t.dashboard.title}</h1>
 
                 <div className="bg-gray-800 rounded-lg p-6">
                     <h2 className="text-2xl font-bold text-white mb-6 text-center">
-                        Favoriete Modules
+                        {t.dashboard.favoriteModules}
                     </h2>
 
                     {/* Loading state */}
                     {isLoading && (
                         <div className="text-center text-white py-8">
-                            <p>Favorieten laden...</p>
+                            <p>{t.dashboard.loading}</p>
                         </div>
                     )}
 
                     {/* Error state */}
                     {!isLoading && error && (
                         <div className="text-center text-red-400 py-8">
-                            <p>Fout: {error}</p>
+                            <p>{t.dashboard.error} {error}</p>
                         </div>
                     )}
 
                     {/* Empty state */}
                     {!isLoading && !error && favoriteModules.length === 0 && (
                         <div className="text-center text-gray-400 py-8">
-                            <p>Je hebt nog geen favoriete modules.</p>
+                            <p>{t.dashboard.noFavorites}</p>
                         </div>
                     )}
 
@@ -118,7 +120,7 @@ export default function Dashboard({
                                             {module.studycredit} ETC
                                         </span>
                                         <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-medium">
-                                            {module.location || 'Onbekend'}
+                                            {module.location || t.dashboard.unknown}
                                         </span>
                                     </div>
 
@@ -129,7 +131,7 @@ export default function Dashboard({
                                     <p className="text-gray-300 mb-4">
                                         {module.shortdescription ||
                                             module.description ||
-                                            'Geen beschrijving beschikbaar'}
+                                            t.dashboard.noDescription}
                                     </p>
 
                                     <div className="flex items-center justify-end gap-4">
@@ -137,7 +139,7 @@ export default function Dashboard({
                                             onClick={() => handleModuleClick(module.id)}
                                             className="bg-blue-800 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
                                         >
-                                            Meer weten
+                                            {t.dashboard.learnMore}
                                         </button>
                                         <button
                                             onClick={() => handleToggleFavorite(module.id)}

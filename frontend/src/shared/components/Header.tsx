@@ -3,37 +3,55 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 import { useLanguage } from '../contexts/useLanguage';
 
-const Logo = () => (
-    <Link
-        to="/dashboard"
-        className="text-2xl font-bold !text-red-600 hover:!text-red-500 transition-colors"
-    >
-        Avans
-    </Link>
-);
+interface User {
+    firstName: string;
+    lastName: string;
+}
 
-const UserInfo = ({ user }: { user: any }) =>
-    user ? (
+function Logo() {
+    return (
+        <Link
+            to="/dashboard"
+            className="text-2xl font-bold !text-red-600 hover:!text-red-500 transition-colors"
+        >
+            Avans
+        </Link>
+    );
+}
+
+function UserInfo({ user }: { user: User | null }) {
+    return user ? (
         <span className="text-sm text-gray-300">
             {user.firstName} {user.lastName}
         </span>
     ) : null;
+}
 
-const LogoutButton = ({ onClick, className = '', label }: { onClick: () => void; className?: string; label: string }) => (
-    <button
-        onClick={onClick}
-        className={`bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg transition-colors font-medium ${className}`}
-    >
-        {label}
-    </button>
-);
+function LogoutButton({
+    onClick,
+    className = '',
+    label,
+}: {
+    onClick: () => void;
+    className?: string;
+    label: string;
+}) {
+    return (
+        <button
+            onClick={onClick}
+            className={`bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg transition-colors font-medium ${className}`}
+        >
+            {label}
+        </button>
+    );
+}
 
 interface NavLinkType {
     label: string;
     path: string;
 }
 
-const NavLink = ({
+function NavLink({
     link,
     isActive,
     onClick,
@@ -41,20 +59,22 @@ const NavLink = ({
     link: NavLinkType;
     isActive: boolean;
     onClick?: () => void;
-}) => (
-    <Link
-        to={link.path}
-        onClick={onClick}
-        className={`
+}) {
+    return (
+        <Link
+            to={link.path}
+            onClick={onClick}
+            className={`
             ${isActive ? '!text-black bg-white hover:bg-gray-100' : '!text-white bg-[#2a2a2a] hover:bg-[#3a3a3a]'}
             transition-all duration-200 px-6 py-2.5 rounded-full font-medium text-sm
         `}
-    >
-        {link.label}
-    </Link>
-);
+        >
+            {link.label}
+        </Link>
+    );
+}
 
-const MobileNavLink = ({
+function MobileNavLink({
     link,
     isActive,
     onClick,
@@ -62,32 +82,36 @@ const MobileNavLink = ({
     link: NavLinkType;
     isActive: boolean;
     onClick: () => void;
-}) => (
-    <Link
-        to={link.path}
-        onClick={onClick}
-        className={`
+}) {
+    return (
+        <Link
+            to={link.path}
+            onClick={onClick}
+            className={`
             ${isActive ? '!text-black bg-white hover:bg-gray-100' : '!text-white bg-[#3a3a3a] hover:bg-[#4a4a4a]'}
             transition-all duration-200 px-4 py-3 rounded-lg font-medium text-center
         `}
-    >
-        {link.label}
-    </Link>
-);
+        >
+            {link.label}
+        </Link>
+    );
+}
 
-const HamburgerIcon = ({ isOpen }: { isOpen: boolean }) => (
-    <div className="w-6 h-6 flex flex-col justify-center items-center relative">
-        <span
-            className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute rotate-45' : 'mb-1.5'}`}
-        />
-        <span
-            className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : 'mb-1.5'}`}
-        />
-        <span
-            className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute -rotate-45' : ''}`}
-        />
-    </div>
-);
+function HamburgerIcon({ isOpen }: { isOpen: boolean }) {
+    return (
+        <div className="w-6 h-6 flex flex-col justify-center items-center relative">
+            <span
+                className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute rotate-45' : 'mb-1.5'}`}
+            />
+            <span
+                className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'opacity-0' : 'mb-1.5'}`}
+            />
+            <span
+                className={`block h-0.5 w-full bg-white transition-all duration-300 ${isOpen ? 'absolute -rotate-45' : ''}`}
+            />
+        </div>
+    );
+}
 
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -140,7 +164,11 @@ export default function Header() {
 
                     <div className="flex-1 flex items-center justify-end gap-3">
                         <UserInfo user={user} />
-                        <LogoutButton onClick={handleLogout} className="text-sm" label={t.nav.logout} />
+                        <LogoutButton
+                            onClick={handleLogout}
+                            className="text-sm"
+                            label={t.nav.logout}
+                        />
                     </div>
                 </div>
 

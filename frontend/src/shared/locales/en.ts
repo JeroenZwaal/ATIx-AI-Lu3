@@ -6,6 +6,16 @@ export const en = {
         settings: 'Settings',
         logout: 'Log out',
     },
+    dashboard: {
+        title: 'Dashboard',
+        favoriteModules: 'Favorite Modules',
+        loading: 'Loading favorites...',
+        error: 'Error:',
+        noFavorites: 'You have no favorite modules yet.',
+        unknown: 'Unknown',
+        noDescription: 'No description available',
+        learnMore: 'Learn more',
+    },
     modules: {
         title: 'Elective Modules',
         description: 'Here you will find all elective modules you can take within your program. Browse the offerings, discover what suits you and choose the module that matches your interests and ambitions.',

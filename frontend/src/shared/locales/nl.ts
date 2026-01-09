@@ -6,6 +6,16 @@ export const nl = {
         settings: 'Instellingen',
         logout: 'Uitloggen',
     },
+    dashboard: {
+        title: 'Dashboard',
+        favoriteModules: 'Favoriete Modules',
+        loading: 'Favorieten laden...',
+        error: 'Fout:',
+        noFavorites: 'Je hebt nog geen favoriete modules.',
+        unknown: 'Onbekend',
+        noDescription: 'Geen beschrijving beschikbaar',
+        learnMore: 'Meer weten',
+    },
     modules: {
         title: 'Keuzemodules',
         description: 'Hier vind je alle keuzemodules die je kunt volgen binnen je opleiding. Bekijk het aanbod, ontdek wat bij jou past en kies de module die aansluit op jouw interesses en ambities.',
