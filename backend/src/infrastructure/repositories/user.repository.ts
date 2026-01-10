@@ -93,7 +93,6 @@ export class UserRepository implements IUserRepository {
         return this.mapToEntity(updatedUser);
     }
 
-
     async delete(id: string): Promise<boolean> {
         // Validate and sanitize ID to prevent NoSQL injection
         if (!id || typeof id !== 'string' || !Types.ObjectId.isValid(id)) {
@@ -174,9 +173,6 @@ export class UserRepository implements IUserRepository {
 
     private mapToEntity(userDoc: UserDocument): User {
         try {
-            console.log('Mapping user document to entity, _id:', userDoc._id);
-            console.log('UserDoc keys:', Object.keys(userDoc));
-
             const favorites =
                 userDoc.favorites?.map(
                     (fav) =>
@@ -194,9 +190,6 @@ export class UserRepository implements IUserRepository {
                 id = Math.random().toString(36).substr(2, 9);
                 console.warn('No _id found for user document, generating temporary ID:', id);
             }
-
-            console.log('Using ID:', id);
-
             const user = new User(
                 id,
                 userDoc.email,
