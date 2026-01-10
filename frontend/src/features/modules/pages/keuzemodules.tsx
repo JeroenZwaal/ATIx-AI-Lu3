@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { moduleService } from '../services/module.service';
+import authService from '../../auth/services/auth.service';
 import type { Module } from '../../../shared/types/index';
+import { useLanguage } from '../../../shared/contexts/useLanguage';
 
 const MODULES_PER_PAGE = 10;
 
@@ -14,6 +16,7 @@ interface FilterState {
 
 export default function Keuzemodules() {
     const navigate = useNavigate();
+    const { t } = useLanguage();
     const [modules, setModules] = useState<Module[]>([]);
     const [allModules, setAllModules] = useState<Module[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +35,18 @@ export default function Keuzemodules() {
 
     useEffect(() => {
         loadModules();
+        loadFavorites();
     }, []);
+
+    const loadFavorites = async () => {
+        try {
+            const favoriteModules = await authService.getFavorites();
+            const favoriteIds = new Set(favoriteModules.map((module) => module.id));
+            setFavorites(favoriteIds);
+        } catch (err) {
+            console.error('Error loading favorites:', err);
+        }
+    };
 
     const loadModules = async () => {
         try {
@@ -179,6 +193,22 @@ export default function Keuzemodules() {
         setCurrentPage(1);
     }, [searchFilteredModules]);
 
+    const sortedModules = useMemo(() => {
+        return [...searchFilteredModules].sort((a, b) => {
+            const aIsFavorite = favorites.has(a.id);
+            const bIsFavorite = favorites.has(b.id);
+
+            if (aIsFavorite && !bIsFavorite) return -1;
+            if (!aIsFavorite && bIsFavorite) return 1;
+            return 0;
+        });
+    }, [searchFilteredModules, favorites]);
+
+    useEffect(() => {
+        setModules(sortedModules);
+        setCurrentPage(1);
+    }, [sortedModules]);
+
     const toggleFilter = (filterType: keyof FilterState, value: number | string) => {
         setFilters((prev) => {
             const newFilters = { ...prev };
@@ -234,16 +264,35 @@ export default function Keuzemodules() {
         filters.difficulties.size > 0 ||
         filters.locations.size > 0;
 
-    const toggleFavorite = (moduleId: string) => {
+    const toggleFavorite = async (moduleId: string) => {
+        const isFavorite = favorites.has(moduleId);
+
+        // Optimistic update
         setFavorites((prev) => {
             const newFavorites = new Set(prev);
-            if (newFavorites.has(moduleId)) {
+            if (isFavorite) {
                 newFavorites.delete(moduleId);
             } else {
                 newFavorites.add(moduleId);
             }
             return newFavorites;
         });
+
+        try {
+            await authService.toggleFavorite(moduleId, isFavorite);
+        } catch (err) {
+            // Revert on error
+            setFavorites((prev) => {
+                const newFavorites = new Set(prev);
+                if (isFavorite) {
+                    newFavorites.add(moduleId);
+                } else {
+                    newFavorites.delete(moduleId);
+                }
+                return newFavorites;
+            });
+            console.error('Error toggling favorite:', err);
+        }
     };
 
     const getLevelTag = (level: string): string => {
@@ -264,12 +313,10 @@ export default function Keuzemodules() {
         <div className="min-h-screen bg-neutral-950 w-full overflow-x-hidden">
             {/* Main Content */}
             <div className="max-w-6xl mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-white mb-4 text-center">Keuzemodules</h1>
+                <h1 className="text-4xl font-bold text-white mb-4 text-center">{t.modules.title}</h1>
 
                 <p className="text-gray-300 mb-6 text-center max-w-3xl mx-auto">
-                    Hier vind je alle keuzemodules die je kunt volgen binnen je opleiding. Bekijk
-                    het aanbod, ontdek wat bij jou past en kies de module die aansluit op jouw
-                    interesses en ambities.
+                    {t.modules.description}
                 </p>
 
                 {/* Search Bar */}
@@ -279,7 +326,7 @@ export default function Keuzemodules() {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Zoeken..."
+                            placeholder={t.modules.searchPlaceholder}
                             className="w-full bg-gray-200 rounded-lg pl-10 pr-4 py-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-400"
                         />
                         <svg
@@ -314,7 +361,7 @@ export default function Keuzemodules() {
                                 : 'hover:bg-violet-500 text-black'
                         }`}
                     >
-                        Filters
+                        {t.modules.filters}
                     </button>
                     <button
                         onClick={() => {
@@ -328,7 +375,7 @@ export default function Keuzemodules() {
                                 : 'hover:bg-violet-500 text-black'
                         }`}
                     >
-                        Ai Keuze
+                        {t.modules.aiChoice}
                     </button>
                 </div>
 
@@ -341,7 +388,7 @@ export default function Keuzemodules() {
                                     onClick={clearFilters}
                                     className="text-sm text-gray-300 hover:text-violet-400 underline transition-colors"
                                 >
-                                    Filters wissen
+                                    {t.modules.clearFilters}
                                 </button>
                             )}
                         </div>
@@ -350,7 +397,7 @@ export default function Keuzemodules() {
                                 {/* Moeilijkheidsgraad Filter */}
                                 <div>
                                     <h3 className="text-xl font-bold text-white mb-4">
-                                        Moeilijkheidsgraad
+                                        {t.modules.difficulty}
                                     </h3>
                                     <div className="flex flex-wrap gap-4">
                                         {availableDifficulties.map((difficulty) => (
@@ -374,7 +421,7 @@ export default function Keuzemodules() {
 
                                 {/* Locatie Filter */}
                                 <div>
-                                    <h3 className="text-xl font-bold text-white mb-4">Locatie</h3>
+                                    <h3 className="text-xl font-bold text-white mb-4">{t.modules.location}</h3>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                         {availableLocations.map((location) => (
                                             <label
@@ -398,7 +445,7 @@ export default function Keuzemodules() {
                                 {/* Studiepunten Filter */}
                                 <div>
                                     <h3 className="text-xl font-bold text-white mb-4">
-                                        Studiepunten
+                                        {t.modules.studyCredits}
                                     </h3>
                                     <div className="flex flex-wrap gap-4">
                                         {availableStudyCredits.map((credits) => (
@@ -423,7 +470,7 @@ export default function Keuzemodules() {
                                 {/* Thema Filter */}
                                 {availableThemes.length > 0 && (
                                     <div>
-                                        <h3 className="text-xl font-bold text-white mb-4">Thema</h3>
+                                        <h3 className="text-xl font-bold text-white mb-4">{t.modules.theme}</h3>
                                         <div className="flex flex-wrap gap-4">
                                             {availableThemes.map((theme) => (
                                                 <label
@@ -448,7 +495,7 @@ export default function Keuzemodules() {
 
                             {hasActiveFilters && (
                                 <div className="mt-6 text-sm text-gray-300">
-                                    {filteredModules.length} module(s) gevonden
+                                    {filteredModules.length} {t.modules.modulesFound}
                                 </div>
                             )}
                         </div>
@@ -458,21 +505,21 @@ export default function Keuzemodules() {
                 {/* Error Message */}
                 {error && (
                     <div className="bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded mb-4">
-                        <p className="font-bold">Error:</p>
+                        <p className="font-bold">{t.modules.error}</p>
                         <p>{error}</p>
                         <button
                             onClick={loadModules}
                             style={{ backgroundColor: '#c4b5fd' }}
                             className="mt-2 text-black px-4 py-2 rounded-lg font-medium hover:bg-violet-400 transition-colors"
                         >
-                            Opnieuw proberen
+                            {t.modules.tryAgain}
                         </button>
                     </div>
                 )}
 
                 {/* Module Cards */}
                 {isLoading ? (
-                    <div className="text-center py-12 text-gray-600">Laden...</div>
+                    <div className="text-center py-12 text-gray-600">{t.modules.loading}</div>
                 ) : error ? (
                     <div className="text-center py-12">
                         <p className="text-red-600 mb-4">{error}</p>
@@ -481,13 +528,13 @@ export default function Keuzemodules() {
                             style={{ backgroundColor: '#c4b5fd' }}
                             className="text-black px-6 py-2.5 rounded-lg font-medium hover:bg-violet-400 transition-colors"
                         >
-                            Opnieuw proberen
+                            {t.modules.tryAgain}
                         </button>
                     </div>
                 ) : modules.length === 0 ? (
                     <div className="text-center py-12 text-gray-600">
-                        <p>Geen modules gevonden</p>
-                        <p className="text-sm mt-2">Check de console voor meer details</p>
+                        <p>{t.modules.noModulesFound}</p>
+                        <p className="text-sm mt-2">{t.modules.checkConsole}</p>
                     </div>
                 ) : (
                     <>
@@ -505,7 +552,7 @@ export default function Keuzemodules() {
                                                 {module.studycredit} ETC
                                             </span>
                                             <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-medium">
-                                                {module.location || 'Onbekend'}
+                                                {module.location || t.modules.unknown}
                                             </span>
                                         </div>
 
@@ -531,7 +578,7 @@ export default function Keuzemodules() {
                                                 style={{ backgroundColor: '#c4b5fd' }}
                                                 className="text-black px-6 py-2.5 rounded-lg font-medium hover:bg-violet-400 transition-colors"
                                             >
-                                                Meer weten
+                                                {t.modules.learnMore}
                                             </button>
                                             <button
                                                 onClick={() => toggleFavorite(module.id)}
@@ -581,7 +628,7 @@ export default function Keuzemodules() {
                                             : 'text-black hover:bg-violet-400'
                                     }`}
                                 >
-                                    Vorige
+                                    {t.modules.previous}
                                 </button>
 
                                 <div className="flex gap-2">
@@ -639,13 +686,13 @@ export default function Keuzemodules() {
                                             : 'text-black hover:bg-violet-400'
                                     }`}
                                 >
-                                    Volgende
+                                    {t.modules.next}
                                 </button>
                             </div>
                         )}
 
                         <div className="text-center text-gray-300 text-sm mt-4">
-                            Pagina {currentPage} van {totalPages} ({modules.length} modules totaal)
+                            {t.modules.pageOf.replace('{current}', String(currentPage)).replace('{total}', String(totalPages)).replace('{count}', String(modules.length))}
                         </div>
                     </>
                 )}

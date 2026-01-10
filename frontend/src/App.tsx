@@ -1,14 +1,14 @@
 import AppRoutes from './AppRoutes.tsx';
 import { AuthProvider } from './features/auth/AuthProvider.tsx';
-import { ProfileProvider } from './features/profile/hooks/useProfile.tsx';
+import { LanguageProvider } from './shared/contexts/LanguageContext.tsx';
 
 function App() {
     return (
-        <AuthProvider>
-            <ProfileProvider>
+        <LanguageProvider>
+            <AuthProvider>
                 <AppRoutes />
-            </ProfileProvider>
-        </AuthProvider>
+            </AuthProvider>
+        </LanguageProvider>
     );
 }
 

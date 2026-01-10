@@ -11,7 +11,7 @@ export class ModuleController {
     @Get('search')
     async search(@Query('q') query: string) {
         if (!query) {
-        return await this.moduleService.findAll();
+            return await this.moduleService.findAll();
         }
         return await this.moduleService.search(query);
     }
@@ -31,4 +31,3 @@ export class ModuleController {
         return await this.moduleService.findById(id);
     }
 }
-

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.tsx';
+import { useLanguage } from '../../../shared/contexts/useLanguage';
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -15,6 +16,11 @@ export default function Register() {
 
     const { register, isLoading, error } = useAuth();
     const navigate = useNavigate();
+    const { language, setLanguage, t } = useLanguage();
+
+    const toggleLanguage = () => {
+        setLanguage(language === 'nl' ? 'en' : 'nl');
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -27,15 +33,15 @@ export default function Register() {
     };
 
     const validateForm = (): string | null => {
-        if (!formData.firstName.trim()) return 'Voornaam is verplicht';
-        if (!formData.lastName.trim()) return 'Achternaam is verplicht';
-        if (!formData.email.trim()) return 'Email is verplicht';
-        if (!formData.password) return 'Wachtwoord is verplicht';
+        if (!formData.firstName.trim()) return t.auth.validation.firstNameRequired;
+        if (!formData.lastName.trim()) return t.auth.validation.lastNameRequired;
+        if (!formData.email.trim()) return t.auth.validation.emailRequired;
+        if (!formData.password) return t.auth.validation.passwordRequired;
         if (formData.password !== formData.confirmPassword) {
-            return 'Wachtwoorden komen niet overeen';
+            return t.auth.validation.passwordsNoMatch;
         }
         if (formData.password.length < 6) {
-            return 'Wachtwoord moet minimaal 6 tekens bevatten';
+            return t.auth.validation.passwordMinLength;
         }
 
         // Check password complexity
@@ -45,7 +51,7 @@ export default function Register() {
         const hasSpecialChar = /[!@#$%^&*]/.test(formData.password);
 
         if (!hasLowerCase || !hasUpperCase || !hasDigit || !hasSpecialChar) {
-            return 'Wachtwoord moet minimaal 1 hoofdletter, 1 kleine letter, 1 cijfer en 1 speciaal teken (!@#$%^&*) bevatten';
+            return t.auth.validation.passwordComplexity;
         }
 
         return null;
@@ -75,8 +81,17 @@ export default function Register() {
 
     return (
         <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-6 py-4">
+            {/* Language Switcher */}
+            <button
+                onClick={toggleLanguage}
+                className="fixed top-4 right-4 bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+            >
+                <span className="text-lg">{language === 'nl' ? '🇳🇱' : '🇬🇧'}</span>
+                <span className="text-sm font-medium">{language === 'nl' ? 'NL' : 'EN'}</span>
+            </button>
+
             <div className="w-full max-w-sm">
-                <h1 className="text-white text-4xl font-normal text-center mb-8">Register</h1>
+                <h1 className="text-white text-4xl font-normal text-center mb-8">{t.auth.register.title}</h1>
 
                 <form onSubmit={handleSubmit} className="bg-neutral-800 rounded-3xl p-6 space-y-4">
                     {(showError && error) || validationError ? (
@@ -87,7 +102,7 @@ export default function Register() {
 
                     <div>
                         <label htmlFor="firstName" className="block text-white text-sm mb-2">
-                            Voornaam
+                            {t.auth.register.firstName}
                         </label>
                         <input
                             type="text"
@@ -102,7 +117,7 @@ export default function Register() {
 
                     <div>
                         <label htmlFor="lastName" className="block text-white text-sm mb-2">
-                            Achternaam
+                            {t.auth.register.lastName}
                         </label>
                         <input
                             type="text"
@@ -117,7 +132,7 @@ export default function Register() {
 
                     <div>
                         <label htmlFor="email" className="block text-white text-sm mb-2">
-                            Email
+                            {t.auth.register.email}
                         </label>
                         <input
                             type="email"
@@ -132,7 +147,7 @@ export default function Register() {
 
                     <div>
                         <label htmlFor="password" className="block text-white text-sm mb-2">
-                            Wachtwoord
+                            {t.auth.register.password}
                         </label>
                         <input
                             type="password"
@@ -147,7 +162,7 @@ export default function Register() {
 
                     <div>
                         <label htmlFor="confirmPassword" className="block text-white text-sm mb-2">
-                            Herhaal wachtwoord
+                            {t.auth.register.confirmPassword}
                         </label>
                         <input
                             type="password"
@@ -166,17 +181,17 @@ export default function Register() {
                         style={{ backgroundColor: '#c4b5fd' }}
                         className="w-full hover:bg-violet-400 text-black font-medium rounded-lg px-4 py-3 mt-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isLoading ? 'Registreren...' : 'Register'}
+                        {isLoading ? t.auth.register.loading : t.auth.register.submit}
                     </button>
                 </form>
 
                 <div className="text-center mt-6">
                     <Link to="/login" className="text-white text-sm hover:underline">
-                        Al een account? Inloggen
+                        {t.auth.register.hasAccount}
                     </Link>
                     <p className="text-white text-sm mt-2">
-                        Problemen met Registereren? <br />
-                        Neem <span className="font-bold">contact</span> op!
+                        {t.auth.register.problems} <br />
+                        <span className="font-bold">{t.auth.register.contact}</span>
                     </p>
                 </div>
             </div>
