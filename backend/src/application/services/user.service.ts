@@ -4,15 +4,22 @@ import {
     ConflictException,
     Inject,
     BadRequestException,
+    NotFoundException,
 } from '@nestjs/common';
 import { User } from '../../domain/entities/user.entity';
 import type { IUserRepository } from '../../domain/repositories/user.repository.interface';
 import { UpdateUserDto } from 'src/interfaces/presenters/user.dto';
 import { response } from 'express';
+import { ModuleService } from './module.service';
+import { Module } from '../../domain/entities/module.entity';
+import { UserFavorite } from '../../domain/entities/user.entity';
 
 @Injectable()
 export class UserService {
-    constructor(@Inject('IUserRepository') private readonly userRepository: IUserRepository) {}
+    constructor(
+        @Inject('IUserRepository') private readonly userRepository: IUserRepository,
+        private readonly moduleService: ModuleService,
+    ) {}
     async updateProfile(currentUser: User, profileData: UpdateUserDto): Promise<void> {
         if (!currentUser) {
             console.log(currentUser, 'this is current user');
@@ -154,6 +161,49 @@ export class UserService {
             interests: userProfile.interests,
         };
         return responseUser;
+    }
+
+    async getFavorites(userId: string): Promise<Module[]> {
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        const modulePromises = user.favorites.map((favorite) =>
+            this.moduleService.findById(favorite.moduleId),
+        );
+        const modules = await Promise.all(modulePromises);
+        return modules.filter((module): module is Module => module !== null);
+    }
+
+    async addFavorite(userId: string, moduleId: string): Promise<void> {
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        // Check if favorite already exists
+        const existingFavorite = user.favorites.find((fav) => fav.moduleId === moduleId);
+        if (existingFavorite) {
+            return; // Already a favorite, no need to add again
+        }
+
+        // Get module to get module name
+        const module = await this.moduleService.findById(moduleId);
+        if (!module) {
+            throw new NotFoundException('Module not found');
+        }
+
+        const favorite = new UserFavorite(moduleId, new Date(), module.name);
+
+        await this.userRepository.addFavorite(userId, favorite);
+    }
+
+    async removeFavorite(userId: string, moduleId: string): Promise<void> {
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        await this.userRepository.removeFavorite(userId, moduleId);
     }
 
 }

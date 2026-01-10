@@ -125,7 +125,9 @@ export default function Dashboard({
                     {/* Error state */}
                     {!isLoading && error && (
                         <div className="text-center text-red-400 py-8">
-                            <p>{t.dashboard.error} {error}</p>
+                            <p>
+                                {t.dashboard.error} {error}
+                            </p>
                         </div>
                     )}
 

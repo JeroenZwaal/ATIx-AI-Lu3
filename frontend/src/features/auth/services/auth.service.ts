@@ -82,7 +82,7 @@ class AuthService {
         }
     }
     async getFavorites(): Promise<Module[]> {
-        const response = await fetch(`${environment.apiUrl}/auth/favorites`, {
+        const response = await fetch(`${environment.apiUrl}/user/favorites`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ class AuthService {
     }
 
     async addFavorite(moduleId: string): Promise<void> {
-        const response = await fetch(`${environment.apiUrl}/auth/favorites/${moduleId}`, {
+        const response = await fetch(`${environment.apiUrl}/user/favorites/${moduleId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ class AuthService {
     }
 
     async removeFavorite(moduleId: string): Promise<void> {
-        const response = await fetch(`${environment.apiUrl}/auth/favorites/${moduleId}`, {
+        const response = await fetch(`${environment.apiUrl}/user/favorites/${moduleId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

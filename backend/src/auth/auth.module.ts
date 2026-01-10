@@ -7,9 +7,6 @@ import { AuthController } from '../interfaces/controllers/auth.controller';
 import { JwtStrategy } from '../infrastructure/auth/jwt.strategy';
 import { UserRepository } from '../infrastructure/repositories/user.repository';
 import { USERSCHEMA } from '../infrastructure/schemas/user.schema';
-import { ModuleService } from '../application/services/module.service';
-import { ModuleRepository } from '../infrastructure/repositories/module.repository';
-import { MODULESCHEMA, ModuleModel } from '../infrastructure/schemas/module.schema';
 
 @Module({
     imports: [
@@ -20,21 +17,15 @@ import { MODULESCHEMA, ModuleModel } from '../infrastructure/schemas/module.sche
         }),
         MongooseModule.forFeature([
             { name: 'User', schema: USERSCHEMA },
-            { name: ModuleModel.name, schema: MODULESCHEMA },
         ]),
     ],
     controllers: [AuthController],
     providers: [
         AuthService,
         JwtStrategy,
-        ModuleService,
         {
             provide: 'IUserRepository',
             useClass: UserRepository,
-        },
-        {
-            provide: 'IModuleRepository',
-            useClass: ModuleRepository,
         },
     ],
     exports: [
