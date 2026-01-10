@@ -74,7 +74,9 @@ export default function Login() {
             </button>
 
             <div className="w-full max-w-sm">
-                <h1 className="text-white text-4xl font-normal text-center mb-8">{t.auth.login.title}</h1>
+                <h1 className="text-white text-4xl font-normal text-center mb-8">
+                    {t.auth.login.title}
+                </h1>
 
                 <form onSubmit={handleSubmit} className="bg-neutral-800 rounded-3xl p-6 space-y-4">
                     {showError && error && (
