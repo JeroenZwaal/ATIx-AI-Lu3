@@ -625,7 +625,7 @@ export default function Keuzemodules() {
                             {currentModules.map((module) => (
                                 <div
                                     key={module.id}
-                                    className="bg-gray-800 rounded-lg p-6 relative"
+                                    className="bg-gray-800 rounded-lg p-6 relative p"
                                 >
                                     {/* Compare Checkbox - Fixed position */}
                                     <div className="absolute top-6 right-6 z-10">
