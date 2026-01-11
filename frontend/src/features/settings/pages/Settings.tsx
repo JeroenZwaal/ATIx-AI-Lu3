@@ -6,7 +6,7 @@ export default function Settings() {
     const { theme, setTheme } = useTheme();
 
     return (
-        <div className="min-h-screen w-full overflow-x-hidden theme-page">
+        <div className="w-full overflow-x-hidden theme-page">
             <div className="max-w-6xl mx-auto px-4 py-8">
                 <h1 className="text-4xl font-bold theme-text-primary mb-4 text-center">{t.settings.title}</h1>
 
