@@ -109,9 +109,45 @@ export default function ModuleDetail() {
                     </div>
 
                     {/* Title */}
-                    <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                    <p className="text-lg md:text-2xl lg:text-3xl font-bold text-white mb-6 leading-tight">
                         {module.name}
-                    </h1>
+                    </p>
+
+                    {/* Practical Info */}
+                    {(module.start_date || module.available_spots !== undefined) && (
+                        <div className="bg-gray-700 rounded-lg p-4 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {module.start_date && (
+                                <div>
+                                    <p className="text-gray-400 text-sm mb-1">
+                                        {t.moduleDetail.startDate}
+                                    </p>
+                                    <p className="text-white font-medium">
+                                        {new Date(module.start_date).toLocaleDateString('nl-NL', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                        })}
+                                    </p>
+                                </div>
+                            )}
+                            {module.available_spots !== undefined && (
+                                <div>
+                                    <p className="text-gray-400 text-sm mb-1">
+                                        {t.moduleDetail.availableSpots}
+                                    </p>
+                                    <p className="text-white font-medium">
+                                        {module.available_spots > 0 ? (
+                                            <span className="text-green-400">
+                                                {module.available_spots} plekken
+                                            </span>
+                                        ) : (
+                                            <span className="text-red-400">Vol</span>
+                                        )}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Description */}
                     <div className="text-gray-300 mb-8 space-y-4">
@@ -122,6 +158,47 @@ export default function ModuleDetail() {
                             <p className="whitespace-pre-wrap">{module.description}</p>
                         )}
                     </div>
+
+                    {/* Content */}
+                    {module.content && (
+                        <div className="mb-8">
+                            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
+                                {t.moduleDetail.content}
+                            </h2>
+                            <div className="text-gray-300 whitespace-pre-wrap bg-gray-700 rounded-lg p-4">
+                                {module.content}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Learning Outcomes */}
+                    {module.learningoutcomes && (
+                        <div className="mb-8">
+                            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">
+                                {t.moduleDetail.learningOutcomes}
+                            </h2>
+                            <div className="text-gray-300 whitespace-pre-wrap bg-gray-700 rounded-lg p-4">
+                                {module.learningoutcomes}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Module Tags */}
+                    {module.tags && module.tags.length > 0 && (
+                        <div className="mb-8">
+                            <h2 className="text-xl md:text-2xl font-bold text-white mb-4">Tags</h2>
+                            <div className="flex flex-wrap gap-2">
+                                {module.tags.map((tag, index) => (
+                                    <span
+                                        key={index}
+                                        className="bg-gray-700 text-gray-200 px-3 py-1 rounded-full text-sm"
+                                    >
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Action Buttons */}
                     <div className="flex justify-center">
