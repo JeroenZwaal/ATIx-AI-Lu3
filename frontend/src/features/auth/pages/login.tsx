@@ -63,22 +63,22 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-neutral-950 flex items-center justify-center px-6 py-4">
+        <div className="min-h-screen theme-page flex items-center justify-center px-6 py-4">
             {/* Language Switcher */}
             <button
                 onClick={toggleLanguage}
-                className="fixed top-4 right-4 bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                className="fixed top-4 right-4 theme-card hover:opacity-80 theme-text-primary px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
             >
                 <span className="text-lg">{language === 'nl' ? '🇳🇱' : '🇬🇧'}</span>
                 <span className="text-sm font-medium">{language === 'nl' ? 'NL' : 'EN'}</span>
             </button>
 
             <div className="w-full max-w-sm">
-                <h1 className="text-white text-4xl font-normal text-center mb-8">
+                <h1 className="theme-text-primary text-4xl font-normal text-center mb-8">
                     {t.auth.login.title}
                 </h1>
 
-                <form onSubmit={handleSubmit} className="bg-neutral-800 rounded-3xl p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="theme-card rounded-3xl p-6 space-y-4">
                     {showError && error && (
                         <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 mb-4">
                             <p className="text-red-300 text-sm">{error}</p>
@@ -86,7 +86,7 @@ export default function Login() {
                     )}
 
                     <div>
-                        <label htmlFor="email" className="block text-white text-sm mb-2">
+                        <label htmlFor="email" className="block theme-text-primary text-sm mb-2">
                             {t.auth.login.email}
                         </label>
                         <input
@@ -96,12 +96,12 @@ export default function Login() {
                             value={formData.email}
                             onChange={handleInputChange}
                             required
-                            className="w-full bg-neutral-600 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neutral-500"
+                            className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-white text-sm mb-2">
+                        <label htmlFor="password" className="block theme-text-primary text-sm mb-2">
                             {t.auth.login.password}
                         </label>
                         <input
@@ -111,25 +111,25 @@ export default function Login() {
                             value={formData.password}
                             onChange={handleInputChange}
                             required
-                            className="w-full bg-neutral-600 text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-neutral-500"
+                            className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
                         />
                     </div>
 
                     <button
                         type="submit"
                         disabled={isLoading}
-                        style={{ backgroundColor: '#c4b5fd' }}
-                        className="w-full hover:bg-violet-400 text-black font-medium rounded-lg px-4 py-3 mt-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ backgroundColor: 'var(--accent)' }}
+                        className="w-full hover:opacity-80 text-black font-medium rounded-lg px-4 py-3 mt-4 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? t.auth.login.loading : t.auth.login.submit}
                     </button>
                 </form>
 
                 <div className="text-center mt-6">
-                    <Link to="/register" className="text-white text-sm hover:underline">
+                    <Link to="/register" className="theme-text-primary text-sm hover:underline">
                         {t.auth.login.noAccount}
                     </Link>
-                    <p className="text-white text-sm mt-2">
+                    <p className="theme-text-primary text-sm mt-2">
                         {t.auth.login.problems} <br />
                         <span className="font-bold">{t.auth.login.contact}</span>
                     </p>
