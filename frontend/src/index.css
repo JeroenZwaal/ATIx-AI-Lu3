@@ -46,16 +46,16 @@ html.dark {
 :root.light,
 html.light {
   color-scheme: light;
-  --bg-page: #f3f4f6;
+  --bg-page: #f1f5f9;
   --bg-card: #ffffff;
-  --bg-card-alt: #f9fafb;
-  --bg-input: #ffffff;
-  --bg-button: #d1d5db;
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-muted: #6b7280;
+  --bg-card-alt: #e2e8f0;
+  --bg-input: #f8fafc;
+  --bg-button: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
   --text-accent: #7c3aed;
-  --border: #d1d5db;
+  --border: #cbd5e1;
   --accent: #8b5cf6;
   --accent-hover: #7c3aed;
 }
