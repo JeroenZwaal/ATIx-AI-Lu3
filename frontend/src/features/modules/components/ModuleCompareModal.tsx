@@ -27,7 +27,7 @@ export default function ModuleCompareModal({ modules, onClose }: ModuleCompareMo
         // Check studiepunten
         const credits = modules.map((m) => m.studycredit);
         if (credits.every((c) => c === credits[0])) {
-            similarities.push(`${t.modules.compare.fields.studycredit}: ${credits[0]} ETC`);
+            similarities.push(`${t.modules.compare.fields.studycredit}: ${credits[0]} ECTS`);
         }
 
         // Check niveau

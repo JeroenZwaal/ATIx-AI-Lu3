@@ -542,7 +542,7 @@ export default function Keuzemodules() {
                                                     }
                                                     className="w-5 h-5 text-violet-500 bg-neutral-800 border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
                                                 />
-                                                <span className="text-white">{credits} ETC</span>
+                                                <span className="text-white">{credits} ECTS</span>
                                             </label>
                                         ))}
                                     </div>
@@ -677,7 +677,7 @@ export default function Keuzemodules() {
                                                 {getLevelTag(module.level)}
                                             </span>
                                             <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">
-                                                {module.studycredit} ETC
+                                                {module.studycredit} ECTS
                                             </span>
                                             <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-medium">
                                                 {module.location || t.modules.unknown}
