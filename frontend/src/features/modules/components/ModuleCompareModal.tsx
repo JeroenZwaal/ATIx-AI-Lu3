@@ -24,34 +24,38 @@ export default function ModuleCompareModal({ modules, onClose }: ModuleCompareMo
 
         if (modules.length < 2) return similarities;
 
-        // Check studiepunten
-        const credits = modules.map((m) => m.studycredit);
-        if (credits.every((c) => c === credits[0])) {
+        // Check studiepunten - met null checks
+        const credits = modules.map((m) => m.studycredit).filter((c) => c != null);
+        if (credits.length === modules.length && credits.every((c) => c === credits[0])) {
             similarities.push(`${t.modules.compare.fields.studycredit}: ${credits[0]} ECTS`);
         }
 
-        // Check niveau
-        const levels = modules.map((m) => m.level?.toUpperCase() || '');
-        if (levels.every((l) => l === levels[0]) && levels[0]) {
+        // Check niveau - met null/lege string checks
+        const levels = modules
+            .map((m) => m.level?.toUpperCase()?.trim() || '')
+            .filter((l) => l !== '');
+        if (levels.length === modules.length && levels.every((l) => l === levels[0])) {
             similarities.push(`${t.modules.compare.fields.level}: ${levels[0]}`);
         }
 
-        // Check locatie
-        const locations = modules.map((m) => m.location);
-        if (locations.every((l) => l === locations[0]) && locations[0]) {
+        // Check locatie - met null/lege string checks
+        const locations = modules.map((m) => m.location?.trim() || '').filter((l) => l !== '');
+        if (locations.length === modules.length && locations.every((l) => l === locations[0])) {
             similarities.push(`${t.modules.compare.fields.location}: ${locations[0]}`);
         }
 
-        // Check gemeenschappelijke tags
-        if (modules.every((m) => m.tags && m.tags.length > 0)) {
-            const tagSets = modules.map((m) => new Set(m.tags));
-            const commonTags = tagSets[0];
-            tagSets.forEach((tagSet) => {
-                commonTags.forEach((tag) => {
-                    if (!tagSet.has(tag)) {
-                        commonTags.delete(tag);
-                    }
-                });
+        // Check gemeenschappelijke tags - alleen modules met tags
+        const modulesWithTags = modules.filter(
+            (m) => m.tags && Array.isArray(m.tags) && m.tags.length > 0,
+        );
+        if (modulesWithTags.length >= 2) {
+            const tagSets = modulesWithTags.map((m) => new Set(m.tags));
+            const commonTags = new Set<string>();
+            // Vind intersectie van alle tag sets
+            tagSets[0].forEach((tag) => {
+                if (tagSets.every((tagSet) => tagSet.has(tag))) {
+                    commonTags.add(tag);
+                }
             });
             if (commonTags.size > 0) {
                 similarities.push(
@@ -83,14 +87,35 @@ export default function ModuleCompareModal({ modules, onClose }: ModuleCompareMo
                 </div>
             );
         }
+
+        // Handle null/undefined
+        if (value == null) return '-';
+
+        // Handle arrays
         if (Array.isArray(value)) {
-            return value.join(', ') || '-';
+            return value.length > 0 ? value.join(', ') : '-';
         }
-        return String(value || '-');
+
+        // Handle numbers
+        if (typeof value === 'number') {
+            return String(value);
+        }
+
+        // Handle strings
+        if (typeof value === 'string') {
+            return value.trim() || '-';
+        }
+
+        return String(value);
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div
+            className="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 overflow-y-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="compare-modal-title"
+        >
             <div className="bg-neutral-900 rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-800">
                 {/* Header - sticky */}
                 <div className="sticky top-0 bg-gradient-to-r from-violet-900 to-purple-900 border-b border-violet-700 p-4 md:p-6 z-10 rounded-t-xl">
