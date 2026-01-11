@@ -1,0 +1,28 @@
+export const themeVariables = {
+    dark: {
+        '--bg-page': '#0a0a0a',
+        '--bg-card': '#1f2937',
+        '--bg-card-alt': '#171717',
+        '--bg-button': '#404040',
+        '--text-primary': '#ffffff',
+        '--text-secondary': '#d1d5db',
+        '--text-muted': '#9ca3af',
+        '--text-accent': '#a78bfa',
+        '--border': '#374151',
+        '--accent': '#c4b5fd',
+        '--accent-hover': '#a78bfa',
+    },
+    light: {
+        '--bg-page': '#f3f4f6',
+        '--bg-card': '#ffffff',
+        '--bg-card-alt': '#f9fafb',
+        '--bg-button': '#d1d5db',
+        '--text-primary': '#111827',
+        '--text-secondary': '#4b5563',
+        '--text-muted': '#6b7280',
+        '--text-accent': '#7c3aed',
+        '--border': '#d1d5db',
+        '--accent': '#8b5cf6',
+        '--accent-hover': '#7c3aed',
+    },
+};
