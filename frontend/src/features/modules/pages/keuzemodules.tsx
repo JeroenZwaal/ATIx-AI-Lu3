@@ -4,6 +4,7 @@ import { moduleService } from '../services/module.service';
 import authService from '../../auth/services/auth.service';
 import type { Module } from '../../../shared/types/index';
 import { useLanguage } from '../../../shared/contexts/useLanguage';
+import ModuleCompareModal from '../components/ModuleCompareModal';
 
 const MODULES_PER_PAGE = 10;
 
@@ -26,6 +27,8 @@ export default function Keuzemodules() {
     const [showFilters, setShowFilters] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [selectedForCompare, setSelectedForCompare] = useState<Set<string>>(new Set());
+    const [showCompareModal, setShowCompareModal] = useState(false);
     const [filters, setFilters] = useState<FilterState>({
         studyCredits: new Set<number>(),
         themes: new Set<string>(),
@@ -299,6 +302,29 @@ export default function Keuzemodules() {
         return level || 'P3';
     };
 
+    const toggleCompareSelection = (moduleId: string) => {
+        setSelectedForCompare((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(moduleId)) {
+                newSet.delete(moduleId);
+            } else {
+                if (newSet.size >= 4) {
+                    return prev;
+                }
+                newSet.add(moduleId);
+            }
+            return newSet;
+        });
+    };
+
+    const handleCompare = () => {
+        if (selectedForCompare.size >= 2) {
+            setShowCompareModal(true);
+        }
+    };
+
+    const selectedModules = allModules.filter((m) => selectedForCompare.has(m.id));
+
     const totalPages = Math.ceil(modules.length / MODULES_PER_PAGE);
     const startIndex = (currentPage - 1) * MODULES_PER_PAGE;
     const endIndex = startIndex + MODULES_PER_PAGE;
@@ -312,8 +338,12 @@ export default function Keuzemodules() {
     return (
         <div className="min-h-screen bg-neutral-950 w-full overflow-x-hidden">
             {/* Main Content */}
-            <div className="max-w-6xl mx-auto px-4 py-8">
-                <h1 className="text-4xl font-bold text-white mb-4 text-center">{t.modules.title}</h1>
+            <div
+                className={`max-w-6xl mx-auto px-4 py-8 ${selectedForCompare.size > 0 ? 'pb-32 md:pb-8' : ''}`}
+            >
+                <h1 className="text-4xl font-bold text-white mb-4 text-center">
+                    {t.modules.title}
+                </h1>
 
                 <p className="text-gray-300 mb-6 text-center max-w-3xl mx-auto">
                     {t.modules.description}
@@ -379,6 +409,55 @@ export default function Keuzemodules() {
                     </button>
                 </div>
 
+                {/* Compare Bar - Fixed bottom on mobile */}
+                {selectedForCompare.size > 0 && (
+                    <div className="fixed md:static bottom-0 left-0 right-0 bg-neutral-900 md:bg-violet-900 md:bg-opacity-30 border-t md:border border-violet-700 md:rounded-lg p-4 mb-0 md:mb-8 z-40 shadow-lg md:shadow-none">
+                        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="flex items-center gap-3 w-full md:w-auto">
+                                <div className="text-white font-medium">
+                                    {t.modules.compare.selected.replace(
+                                        '{count}',
+                                        String(selectedForCompare.size),
+                                    )}
+                                </div>
+                                {selectedForCompare.size < 2 && (
+                                    <div className="text-sm text-gray-300 hidden md:block">
+                                        ({t.modules.compare.selectMin})
+                                    </div>
+                                )}
+                                {selectedForCompare.size >= 4 && (
+                                    <div className="text-sm text-yellow-400 hidden md:block">
+                                        ({t.modules.compare.selectMax})
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex gap-3 w-full md:w-auto">
+                                <button
+                                    onClick={() => setSelectedForCompare(new Set())}
+                                    className="flex-1 md:flex-initial bg-gray-700 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-600 transition-colors"
+                                >
+                                    {t.modules.compare.remove}
+                                </button>
+                                <button
+                                    onClick={handleCompare}
+                                    disabled={selectedForCompare.size < 2}
+                                    style={{
+                                        backgroundColor:
+                                            selectedForCompare.size >= 2 ? '#c4b5fd' : '#6b7280',
+                                    }}
+                                    className={`flex-1 md:flex-initial px-6 py-2 rounded-lg font-medium transition-colors ${
+                                        selectedForCompare.size >= 2
+                                            ? 'text-black hover:bg-violet-400 cursor-pointer'
+                                            : 'text-gray-400 cursor-not-allowed'
+                                    }`}
+                                >
+                                    {t.modules.compare.button}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Filter Panel */}
                 {!showAiKeuze && showFilters && (
                     <div className="mb-8">
@@ -421,7 +500,9 @@ export default function Keuzemodules() {
 
                                 {/* Locatie Filter */}
                                 <div>
-                                    <h3 className="text-xl font-bold text-white mb-4">{t.modules.location}</h3>
+                                    <h3 className="text-xl font-bold text-white mb-4">
+                                        {t.modules.location}
+                                    </h3>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                         {availableLocations.map((location) => (
                                             <label
@@ -461,7 +542,7 @@ export default function Keuzemodules() {
                                                     }
                                                     className="w-5 h-5 text-violet-500 bg-neutral-800 border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
                                                 />
-                                                <span className="text-white">{credits} ETC</span>
+                                                <span className="text-white">{credits} ECTS</span>
                                             </label>
                                         ))}
                                     </div>
@@ -470,7 +551,9 @@ export default function Keuzemodules() {
                                 {/* Thema Filter */}
                                 {availableThemes.length > 0 && (
                                     <div>
-                                        <h3 className="text-xl font-bold text-white mb-4">{t.modules.theme}</h3>
+                                        <h3 className="text-xl font-bold text-white mb-4">
+                                            {t.modules.theme}
+                                        </h3>
                                         <div className="flex flex-wrap gap-4">
                                             {availableThemes.map((theme) => (
                                                 <label
@@ -540,16 +623,61 @@ export default function Keuzemodules() {
                     <>
                         <div className="space-y-6 mb-8">
                             {currentModules.map((module) => (
-                                <div key={module.id} className="bg-gray-800 rounded-lg p-6">
+                                <div
+                                    key={module.id}
+                                    className="bg-gray-800 rounded-lg p-6 relative p"
+                                >
+                                    {/* Compare Checkbox - Fixed position */}
+                                    <div className="absolute top-6 right-6 z-10">
+                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                            <div className="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedForCompare.has(module.id)}
+                                                    onChange={() =>
+                                                        toggleCompareSelection(module.id)
+                                                    }
+                                                    disabled={
+                                                        !selectedForCompare.has(module.id) &&
+                                                        selectedForCompare.size >= 4
+                                                    }
+                                                    className="peer sr-only"
+                                                />
+                                                <div className="w-6 h-6 border-2 border-violet-400 rounded-md bg-gray-900 peer-checked:bg-violet-600 peer-checked:border-violet-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center">
+                                                    <svg
+                                                        className={`w-4 h-4 text-white transition-all duration-200 ${
+                                                            selectedForCompare.has(module.id)
+                                                                ? 'opacity-100 scale-100'
+                                                                : 'opacity-0 scale-50'
+                                                        }`}
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={3}
+                                                            d="M5 13l4 4L19 7"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <span className="text-sm text-gray-300 hidden xl:inline whitespace-nowrap bg-gray-900 px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                                {t.modules.compare.button}
+                                            </span>
+                                        </label>
+                                    </div>
+
                                     {/* Module Content */}
-                                    <div className="flex-1">
+                                    <div className="flex-1 pr-12 md:pr-16">
                                         {/* Tags */}
-                                        <div className="flex gap-2 mb-3">
+                                        <div className="flex gap-2 mb-3 flex-wrap">
                                             <span className="bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">
                                                 {getLevelTag(module.level)}
                                             </span>
                                             <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">
-                                                {module.studycredit} ETC
+                                                {module.studycredit} ECTS
                                             </span>
                                             <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-medium">
                                                 {module.location || t.modules.unknown}
@@ -692,11 +820,22 @@ export default function Keuzemodules() {
                         )}
 
                         <div className="text-center text-gray-300 text-sm mt-4">
-                            {t.modules.pageOf.replace('{current}', String(currentPage)).replace('{total}', String(totalPages)).replace('{count}', String(modules.length))}
+                            {t.modules.pageOf
+                                .replace('{current}', String(currentPage))
+                                .replace('{total}', String(totalPages))
+                                .replace('{count}', String(modules.length))}
                         </div>
                     </>
                 )}
             </div>
+
+            {/* Compare Modal */}
+            {showCompareModal && (
+                <ModuleCompareModal
+                    modules={selectedModules}
+                    onClose={() => setShowCompareModal(false)}
+                />
+            )}
         </div>
     );
 }
