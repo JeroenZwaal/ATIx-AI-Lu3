@@ -2,9 +2,14 @@ export const nl = {
     nav: {
         dashboard: 'Dashboard',
         modules: 'Keuzemodules',
-        aiModules: 'AI Keuzemodules',
+        aiModules: 'AI Aanbe\u00ADvelingen',
         settings: 'Instellingen',
         logout: 'Uitloggen',
+    },
+    recommendations: {
+        subtitle:
+            'Aanbevolen modules op basis van jouw profiel: opleiding, interesses, skills, favorieten en voorkeuren (locatie, niveau en studiepunten).',
+        empty: 'Geen aanbevelingen gevonden. Vul eerst je profiel in.',
     },
     dashboard: {
         title: 'Dashboard',

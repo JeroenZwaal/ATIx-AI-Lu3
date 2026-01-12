@@ -210,7 +210,6 @@ export class UserRepository implements IUserRepository {
                 userDoc.refreshToken,
             );
 
-            console.log('Successfully created User entity');
             return user;
         } catch (error) {
             console.error('Error in mapToEntity:', error);

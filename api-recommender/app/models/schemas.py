@@ -17,11 +17,12 @@ class RecommendItem(BaseModel):
     shortdescription: str
     similarity: float = Field(..., description="Ruwe cosine similarity score")
     location: str
-    studycredit: int
+    study_credit: int
     level: str
     module_tags: str
     match_terms: List[str] = Field(..., description="Matching termen tussen profiel en module")
     reason: str = Field(..., description="Nederlandse uitleg waarom module past")
+    reason_en: str = Field(..., description="English explanation why module fits")
 
 class RecommendResponse(BaseModel):
     recommendations: List[RecommendItem]

@@ -9,6 +9,7 @@ import SkillsAndIntrests from './features/profile/pages/skillsAndIntrests';
 import ModuleDetailPage from './features/modules/pages/moduledetail';
 import SettingsPage from './features/settings/pages/Settings';
 import Layout from './shared/components/Layout';
+import Recomendation from './features/recomendation/pages/recomendation';
 
 function LogoutRedirect() {
     localStorage.removeItem('token');
@@ -37,6 +38,7 @@ export default function AppRoutes() {
                     <Route path="/keuzemodules" element={<KeuzemodulesPage />} />
                     <Route path="/keuzemodules/:id" element={<ModuleDetailPage />} />
                     <Route path="/settings" element={<SettingsPage />} />
+                    <Route path="/recomendation" element={<Recomendation />} />
                 </Route>
 
                 <Route path="/logout" element={<LogoutRedirect />} />

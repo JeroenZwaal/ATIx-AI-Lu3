@@ -16,6 +16,10 @@ export class ModuleService {
         return await this.moduleRepository.findById(id);
     }
 
+    async findByExternalId(externalId: number): Promise<Module | null> {
+      return await this.moduleRepository.findByExternalId(externalId);
+    }
+
   async search(query: string): Promise<Module[]> {
     return await this.moduleRepository.search(query);
   }
