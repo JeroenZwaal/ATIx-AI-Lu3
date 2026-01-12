@@ -131,7 +131,7 @@ export default function Header() {
     const navLinks = [
         { label: t.nav.dashboard, path: '/dashboard' },
         { label: t.nav.modules, path: '/keuzemodules' },
-        { label: t.nav.aiModules, path: '/aikeuzemodules' },
+        { label: t.nav.aiModules, path: '/recomendation' },
         { label: t.nav.settings, path: '/settings' },
     ];
 

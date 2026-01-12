@@ -2,9 +2,14 @@ export const en = {
     nav: {
         dashboard: 'Dashboard',
         modules: 'Elective Modules',
-        aiModules: 'AI Elective Modules',
+        aiModules: 'AI Recom\u00ADmendations',
         settings: 'Settings',
         logout: 'Log out',
+    },
+    recommendations: {
+        subtitle:
+            'Recommended modules based on your profile: program, interests, skills, favorites, and preferences (location, level, and study credits).',
+        empty: 'No recommendations found. Please complete your profile first.',
     },
     dashboard: {
         title: 'Dashboard',

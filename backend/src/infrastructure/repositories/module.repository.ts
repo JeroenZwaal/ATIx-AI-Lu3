@@ -65,8 +65,16 @@ export class ModuleRepository implements IModuleRepository {
     }
 
     async findByExternalId(externalId: number): Promise<Module | null> {
+        const safeExternalId = Number.isFinite(externalId) ? Math.trunc(externalId) : NaN;
+        if (!Number.isFinite(safeExternalId)) {
+            return null;
+        }
+
         const doc = (await this.moduleModel
-            .findOne({ externalId })
+            // external id is stored in Mongo as field `id`
+            .findOne()
+            .where('id')
+            .equals(safeExternalId)
             .exec()) as unknown as ModuleDocument | null;
         return doc ? this.mapToEntity(doc) : null;
     }

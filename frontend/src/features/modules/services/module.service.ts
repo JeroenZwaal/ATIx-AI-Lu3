@@ -52,6 +52,23 @@ class ModuleService {
         return response.json();
     }
 
+    async getModuleByExternalId(externalId: number): Promise<Module | null> {
+        const response = await fetch(`${environment.apiUrl}/modules/external/${externalId}`, {
+            method: 'GET',
+            headers: this.getAuthHeaders(),
+        });
+
+        if (!response.ok) {
+            const error = await response
+                .json()
+                .catch(() => ({ message: `HTTP ${response.status}: ${response.statusText}` }));
+            throw new Error(error.message || 'Failed to fetch module');
+        }
+
+        const data = await response.json();
+        return data ?? null;
+    }
+
     async searchModules(query: string): Promise<Module[]> {
         const response = await fetch(
             `${environment.apiUrl}/modules/search?q=${encodeURIComponent(query)}`,

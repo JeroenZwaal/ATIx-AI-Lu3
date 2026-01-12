@@ -13,6 +13,11 @@ Thumbs.db
 # Logs
 *.log
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
 pentest_report.md
 pentest_results.txt
 pentest_script.js

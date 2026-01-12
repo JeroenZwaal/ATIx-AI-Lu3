@@ -43,7 +43,7 @@ class RecommendationService:
             "stage", "stageschool", "kennismakingsstage",
             "kennis", "vaardigheid", "vaardigheden", "ervaring", "ervaringen",
             "lessen", "onderwerpen", "theorie", "praktijk", "praktische", "inhoudelijke",
-            "mee", "doe", "vinden", "vind", "kies", "openstaan"
+            "mee", "doe", "vinden", "vind", "kies", "openstaan",
             "belangrijk", "positief", "mogelijkheden", "mogelijkheid",
             "impact", "betekenis", "betekent", "betekenen",
             "you", "your", "are", "will", "what", "then", "like", "choose",
@@ -101,6 +101,19 @@ class RecommendationService:
         laatste = quoted[-1]
         return f"{hoofd} en {laatste}"
 
+    def _format_term_list_en(self, terms: List[str]) -> str:
+        """Format list of terms in English."""
+        if not terms:
+            return ""
+        if len(terms) == 1:
+            return f"'{terms[0]}'"
+        if len(terms) == 2:
+            return f"'{terms[0]}' and '{terms[1]}'"
+        quoted = [f"'{t}'" for t in terms]
+        head = ", ".join(quoted[:-1])
+        last = quoted[-1]
+        return f"{head} and {last}"
+
     def build_reason(self, match_terms: List[str], module_name: Optional[str] = None, score: Optional[float] = None) -> str:
         """Generate Dutch explanation why module fits."""
         terms_str = self._format_term_list(match_terms)
@@ -142,6 +155,46 @@ class RecommendationService:
             kwalificatie=kwalificatie,
             terms=terms_str,
             module=module_name if module_name else ""
+        )
+
+    def build_reason_en(self, match_terms: List[str], module_name: Optional[str] = None, score: Optional[float] = None) -> str:
+        """Generate English explanation why module fits."""
+        terms_str = self._format_term_list_en(match_terms)
+
+        if score is None:
+            qualifier = "well"
+        elif score >= 0.8:
+            qualifier = "very well"
+        elif score >= 0.6:
+            qualifier = "well"
+        else:
+            qualifier = "fairly well"
+
+        if not match_terms:
+            templates = [
+                "This module matches your interests {qualifier} based on textual similarity.",
+                "Based on the similarity between your profile and the module description, this module seems to fit {qualifier}.",
+                "This module content appears to align {qualifier} with what you find interesting.",
+            ]
+        else:
+            if module_name:
+                templates = [
+                    "Your interest in {terms} is clearly reflected in '{module}', so this module fits {qualifier}.",
+                    "Because {terms} are central in '{module}', this module matches your interests {qualifier}.",
+                    "In '{module}', you will cover {terms}, which aligns with your interests.",
+                ]
+            else:
+                templates = [
+                    "This module matches your interests {qualifier} in {terms}.",
+                    "Because {terms} are covered in this module, it seems to fit you {qualifier}.",
+                    "Your interest in {terms} appears in this module's content, so it fits you well.",
+                ]
+
+        template = random.choice(templates)
+        return template.format(
+            qualifier=qualifier,
+            terms=terms_str,
+            module=module_name if module_name else "",
         )
 
     def extract_match_terms(self, student_vec, module_vec, max_terms: int = 8) -> List[str]:
@@ -318,6 +371,11 @@ class RecommendationService:
                 module_name=top.at[idx, "name"],
                 score=top.at[idx, "similarity"]
             )
+            reason_en = self.build_reason_en(
+                terms,
+                module_name=top.at[idx, "name"],
+                score=top.at[idx, "similarity"]
+            )
             
             recommendation = {
                 "id": int(top.at[idx, "id"]),
@@ -325,11 +383,12 @@ class RecommendationService:
                 "shortdescription": str(top.at[idx, "shortdescription"]),
                 "similarity": float(top.at[idx, "hybrid_score"]),  # Show hybrid score instead of normalized
                 "location": str(top.at[idx, "location"]),
-                "studycredit": int(top.at[idx, "studycredit"]),
+                "study_credit": int(top.at[idx, "studycredit"]),
                 "level": str(top.at[idx, "level"]),
                 "module_tags": str(top.at[idx, "module_tags"]) if pd.notna(top.at[idx, "module_tags"]) else "",
                 "match_terms": terms,
-                "reason": reason
+                "reason": reason,
+                "reason_en": reason_en
             }
             recommendations.append(recommendation)
 

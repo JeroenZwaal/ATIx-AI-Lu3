@@ -1,73 +1,107 @@
-# React + TypeScript + Vite
+# Frontend - React Applicatie
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React frontend applicatie voor het module aanbevelingssysteem.
 
-Currently, two official plugins are available:
+## Vereisten
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Node.js v18 of hoger
+- npm of yarn
 
-## React Compiler
+## Installatie
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Starten
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Development mode
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+De applicatie draait standaard op `http://localhost:5173`
+
+### Production build
+
+```bash
+npm run build
+```
+
+### Preview production build
+
+```bash
+npm run preview
+```
+
+## Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build voor productie
+- `npm run preview` - Preview productie build
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code met Prettier
+
+## Technologie Stack
+
+- **React 19** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool en dev server
+- **React Router** - Routing
+- **jsPDF** - PDF generatie
+
+## Projectstructuur
+
+```
+src/
+├── features/          # Feature modules
+│   ├── auth/         # Authenticatie
+│   ├── dashboard/    # Dashboard
+│   ├── modules/      # Module overzicht
+│   ├── profile/      # Gebruikersprofiel
+│   └── settings/     # Instellingen
+├── shared/           # Gedeelde componenten
+│   ├── components/   # Herbruikbare componenten
+│   ├── contexts/       # React contexts
+│   ├── locales/     # Internationalisatie
+│   ├── types/       # TypeScript types
+│   └── utils/       # Utility functies
+└── App.tsx          # Hoofdcomponent
+```
+
+## Features
+
+- Gebruikersauthenticatie (login/registratie)
+- Dashboard met favoriete modules
+- Module overzicht met zoeken en filteren
+- AI-gebaseerde module aanbevelingen
+- Gebruikersprofiel beheer
+- Instellingen pagina
+- Meertalige ondersteuning (Nederlands/Engels)
+
+## Environment Variabelen
+
+Maak een `.env` bestand voor environment variabelen:
+
+```
+VITE_API_URL=http://localhost:3000
+VITE_RECOMMENDER_API_URL=http://localhost:8000
+```
+
+## API Integratie
+
+De frontend communiceert met:
+- Backend API op `http://localhost:3000` (standaard)
+- Recommender API op `http://localhost:8000` (standaard)
+
+## Styling
+
+Styling wordt gedaan via CSS bestanden:
+- `src/index.css` - Globale styles
+- `src/App.css` - App specifieke styles
+- Component specifieke CSS bestanden
+
+## Build Output
+
+Na `npm run build` wordt de productie build gegenereerd in de `dist` directory.
