@@ -443,7 +443,9 @@ export default function Keuzemodules() {
                                     disabled={selectedForCompare.size < 2}
                                     style={{
                                         backgroundColor:
-                                            selectedForCompare.size >= 2 ? 'var(--accent)' : 'var(--bg-button)',
+                                            selectedForCompare.size >= 2
+                                                ? 'var(--accent)'
+                                                : 'var(--bg-button)',
                                     }}
                                     className={`flex-1 md:flex-initial px-6 py-2 rounded-lg font-medium transition-colors ${
                                         selectedForCompare.size >= 2
@@ -492,7 +494,9 @@ export default function Keuzemodules() {
                                                     }
                                                     className="w-5 h-5 text-violet-500 theme-card-alt border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
                                                 />
-                                                <span className="theme-text-primary">{difficulty}</span>
+                                                <span className="theme-text-primary">
+                                                    {difficulty}
+                                                </span>
                                             </label>
                                         ))}
                                     </div>
@@ -517,7 +521,9 @@ export default function Keuzemodules() {
                                                     }
                                                     className="w-5 h-5 text-violet-500 theme-card-alt border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
                                                 />
-                                                <span className="theme-text-primary">{location}</span>
+                                                <span className="theme-text-primary">
+                                                    {location}
+                                                </span>
                                             </label>
                                         ))}
                                     </div>
@@ -542,7 +548,9 @@ export default function Keuzemodules() {
                                                     }
                                                     className="w-5 h-5 text-violet-500 theme-card-alt border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
                                                 />
-                                                <span className="theme-text-primary">{credits} ECTS</span>
+                                                <span className="theme-text-primary">
+                                                    {credits} ECTS
+                                                </span>
                                             </label>
                                         ))}
                                     </div>
@@ -568,7 +576,9 @@ export default function Keuzemodules() {
                                                         }
                                                         className="w-5 h-5 text-violet-500 theme-card-alt border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
                                                     />
-                                                    <span className="theme-text-primary">{theme}</span>
+                                                    <span className="theme-text-primary">
+                                                        {theme}
+                                                    </span>
                                                 </label>
                                             ))}
                                         </div>
@@ -748,7 +758,10 @@ export default function Keuzemodules() {
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 1}
                                     style={{
-                                        backgroundColor: currentPage === 1 ? 'var(--bg-button)' : 'var(--accent)',
+                                        backgroundColor:
+                                            currentPage === 1
+                                                ? 'var(--bg-button)'
+                                                : 'var(--accent)',
                                     }}
                                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                                         currentPage === 1
@@ -791,7 +804,10 @@ export default function Keuzemodules() {
                                                 page === currentPage + 2
                                             ) {
                                                 return (
-                                                    <span key={page} className="px-2 theme-text-muted">
+                                                    <span
+                                                        key={page}
+                                                        className="px-2 theme-text-muted"
+                                                    >
                                                         ...
                                                     </span>
                                                 );
@@ -806,7 +822,9 @@ export default function Keuzemodules() {
                                     disabled={currentPage === totalPages}
                                     style={{
                                         backgroundColor:
-                                            currentPage === totalPages ? 'var(--bg-button)' : 'var(--accent)',
+                                            currentPage === totalPages
+                                                ? 'var(--bg-button)'
+                                                : 'var(--accent)',
                                     }}
                                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                                         currentPage === totalPages
