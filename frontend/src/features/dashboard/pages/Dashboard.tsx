@@ -201,7 +201,9 @@ export default function Dashboard({
     return (
         <div className="min-h-screen theme-page w-full overflow-x-hidden">
             <div className="max-w-6xl mx-auto px-10 py-8 ">
-                <h1 className="text-4xl font-bold theme-text-primary mb-8 text-center">{t.dashboard.title}</h1>
+                <h1 className="text-4xl font-bold theme-text-primary mb-8 text-center">
+                    {t.dashboard.title}
+                </h1>
 
                 <div className="theme-card rounded-lg p-6 mb-15">
                     <h2 className="text-2xl font-bold theme-text-primary mb-2 text-center">
@@ -212,35 +214,43 @@ export default function Dashboard({
                         <p className="theme-text-muted text-center">Profiel laden...</p>
                     ) : (
                         <>
-                        <h3 className="text-xl theme-text-primary">Opleiding</h3>
-                        <p className="mb-2 theme-text-secondary">{userProfile.studyProgram}</p>
+                            <h3 className="text-xl theme-text-primary">Opleiding</h3>
+                            <p className="mb-2 theme-text-secondary">{userProfile.studyProgram}</p>
 
-                        <h3 className="text-xl theme-text-primary">Leerjaar</h3>
-                        <p className="mb-2 theme-text-secondary">{userProfile.yearOfStudy}</p>
+                            <h3 className="text-xl theme-text-primary">Leerjaar</h3>
+                            <p className="mb-2 theme-text-secondary">{userProfile.yearOfStudy}</p>
 
-                        <h3 className="text-xl theme-text-primary">Studielocatie</h3>
-                        <p className="mb-2 theme-text-secondary">{userProfile.studyLocation || '—'}</p>
+                            <h3 className="text-xl theme-text-primary">Studielocatie</h3>
+                            <p className="mb-2 theme-text-secondary">
+                                {userProfile.studyLocation || '—'}
+                            </p>
 
-                        <h3 className="text-xl theme-text-primary">Studiepunten</h3>
-                        <p className="mb-2 theme-text-secondary">{userProfile.studyCredits}</p>
+                            <h3 className="text-xl theme-text-primary">Studiepunten</h3>
+                            <p className="mb-2 theme-text-secondary">{userProfile.studyCredits}</p>
 
-                        <h3 className="text-xl theme-text-primary">Vaardigheden</h3>
-                        <div className="mb-2">
-                            {userProfile.skills?.map(s => (
-                            <span key={s} className="inline-block bg-pink-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2">
-                                {s}
-                            </span>
-                            ))}
-                        </div>
+                            <h3 className="text-xl theme-text-primary">Vaardigheden</h3>
+                            <div className="mb-2">
+                                {userProfile.skills?.map((s) => (
+                                    <span
+                                        key={s}
+                                        className="inline-block bg-pink-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2"
+                                    >
+                                        {s}
+                                    </span>
+                                ))}
+                            </div>
 
-                        <h3 className="text-xl theme-text-primary">Intresses</h3>
-                        <div className="mb-4">
-                            {userProfile.interests?.map(i => (
-                            <span key={i} className="inline-block bg-blue-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2">
-                                {i}
-                            </span>
-                            ))}
-                        </div>
+                            <h3 className="text-xl theme-text-primary">Interesses</h3>
+                            <div className="mb-4">
+                                {userProfile.interests?.map((i) => (
+                                    <span
+                                        key={i}
+                                        className="inline-block bg-blue-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2"
+                                    >
+                                        {i}
+                                    </span>
+                                ))}
+                            </div>
 
                             <button
                                 onClick={() => navigate('/profile/createProfile')}
