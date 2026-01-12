@@ -12,6 +12,9 @@ import { ModuleRepository } from './infrastructure/repositories/module.repositor
 import { MODULESCHEMA, ModuleModel } from './infrastructure/schemas/module.schema';
 import { UserController } from './interfaces/controllers/user.controller';
 import { UserService } from './application/services/user.service';
+import { RecommendationService } from './application/services/recommendation.service';
+import { RecommendationController } from './interfaces/controllers/recommendation.controller';
+import { RecommendationRepository } from './infrastructure/repositories/recommendation.repository';
 
 @Module({
     imports: [
@@ -26,7 +29,7 @@ import { UserService } from './application/services/user.service';
         { name: ModuleModel.name, schema: MODULESCHEMA },
         ]),
     ],
-    controllers: [AppController, ModuleController, UserController],
+    controllers: [AppController, ModuleController, UserController, RecommendationController],
     providers: [
         AppService,
         ModuleService,
@@ -35,6 +38,11 @@ import { UserService } from './application/services/user.service';
         useClass: ModuleRepository,
         },
         UserService,
+        {
+        provide: 'IRecommendationRepository',
+        useClass: RecommendationRepository,
+        },
+        RecommendationService,
     ],
 })
 export class AppModule {}

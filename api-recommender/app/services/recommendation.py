@@ -43,7 +43,7 @@ class RecommendationService:
             "stage", "stageschool", "kennismakingsstage",
             "kennis", "vaardigheid", "vaardigheden", "ervaring", "ervaringen",
             "lessen", "onderwerpen", "theorie", "praktijk", "praktische", "inhoudelijke",
-            "mee", "doe", "vinden", "vind", "kies", "openstaan"
+            "mee", "doe", "vinden", "vind", "kies", "openstaan",
             "belangrijk", "positief", "mogelijkheden", "mogelijkheid",
             "impact", "betekenis", "betekent", "betekenen",
             "you", "your", "are", "will", "what", "then", "like", "choose",
