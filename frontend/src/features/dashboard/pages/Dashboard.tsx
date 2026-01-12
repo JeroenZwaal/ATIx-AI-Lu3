@@ -201,53 +201,59 @@ export default function Dashboard({
     return (
         <div className="min-h-screen bg-neutral-950 w-full overflow-x-hidden">
             <div className="max-w-6xl mx-auto px-10 py-8 ">
-                <h1 className="text-4xl font-bold text-white mb-8 text-center">{t.dashboard.title}</h1>
+                <h1 className="text-4xl font-bold text-white mb-8 text-center">
+                    {t.dashboard.title}
+                </h1>
 
                 <div className="bg-gray-800 rounded-lg p-6 mb-15">
-                    <h2 className="text-2xl font-bold text-white mb-2 text-center">
-                        Mijn Profiel
-                    </h2>
+                    <h2 className="text-2xl font-bold text-white mb-2 text-center">Mijn Profiel</h2>
 
                     {!userProfile ? (
                         <p className="text-gray-400 text-center">Profiel laden...</p>
                     ) : (
                         <>
-                        <h3 className="text-xl text-white">Opleiding</h3>
-                        <p className="mb-2">{userProfile.studyProgram}</p>
+                            <h3 className="text-xl text-white">Opleiding</h3>
+                            <p className="mb-2">{userProfile.studyProgram}</p>
 
-                        <h3 className="text-xl text-white">Leerjaar</h3>
-                        <p className="mb-2">{userProfile.yearOfStudy}</p>
+                            <h3 className="text-xl text-white">Leerjaar</h3>
+                            <p className="mb-2">{userProfile.yearOfStudy}</p>
 
-                        <h3 className="text-xl text-white">Studielocatie</h3>
-                        <p className="mb-2">{userProfile.studyLocation || '—'}</p>
+                            <h3 className="text-xl text-white">Studielocatie</h3>
+                            <p className="mb-2">{userProfile.studyLocation || '—'}</p>
 
-                        <h3 className="text-xl text-white">Studiepunten</h3>
-                        <p className="mb-2">{userProfile.studyCredits}</p>
+                            <h3 className="text-xl text-white">Studiepunten</h3>
+                            <p className="mb-2">{userProfile.studyCredits}</p>
 
-                        <h3 className="text-xl text-white">Vaardigheden</h3>
-                        <div className="mb-2">
-                            {userProfile.skills?.map(s => (
-                            <span key={s} className="inline-block bg-pink-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2">
-                                {s}
-                            </span>
-                            ))}
-                        </div>
+                            <h3 className="text-xl text-white">Vaardigheden</h3>
+                            <div className="mb-2">
+                                {userProfile.skills?.map((s) => (
+                                    <span
+                                        key={s}
+                                        className="inline-block bg-pink-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2"
+                                    >
+                                        {s}
+                                    </span>
+                                ))}
+                            </div>
 
-                        <h3 className="text-xl text-white">Intresses</h3>
-                        <div className="mb-4">
-                            {userProfile.interests?.map(i => (
-                            <span key={i} className="inline-block bg-blue-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2">
-                                {i}
-                            </span>
-                            ))}
-                        </div>
+                            <h3 className="text-xl text-white">Intresses</h3>
+                            <div className="mb-4">
+                                {userProfile.interests?.map((i) => (
+                                    <span
+                                        key={i}
+                                        className="inline-block bg-blue-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2"
+                                    >
+                                        {i}
+                                    </span>
+                                ))}
+                            </div>
 
-                        <button
-                            onClick={() => navigate('/profile/createProfile')}
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-                        >
-                            Aanpassen
-                        </button>
+                            <button
+                                onClick={() => navigate('/profile/createProfile')}
+                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                            >
+                                Aanpassen
+                            </button>
                         </>
                     )}
                 </div>

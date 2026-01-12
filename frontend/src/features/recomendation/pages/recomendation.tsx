@@ -1,0 +1,285 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../../shared/contexts/useLanguage';
+import type { RecommendationItem } from '../types/recommendation.types';
+import recommendationService from '../services/recommendation.service';
+import { moduleService } from '../../modules/services/module.service';
+import authService from '../../auth/services/auth.service';
+
+export default function Recomendation() {
+    const navigate = useNavigate();
+    const { t, language } = useLanguage();
+
+    const [items, setItems] = useState<RecommendationItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [favorites, setFavorites] = useState<Set<string>>(new Set());
+    const [moduleIdByExternalId, setModuleIdByExternalId] = useState<Record<number, string>>({});
+    const [pendingFavorites, setPendingFavorites] = useState<Set<number>>(new Set());
+
+    useEffect(() => {
+        void loadRecommendations();
+        void loadFavorites();
+    }, []);
+
+    useEffect(() => {
+        void prefetchMongoIds(items);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [items, moduleIdByExternalId]);
+
+    const loadFavorites = async () => {
+        try {
+            const favoriteModules = await authService.getFavorites();
+            const favoriteIds = new Set(favoriteModules.map((module) => module.id));
+            setFavorites(favoriteIds);
+        } catch {
+            // silently ignore; page can still render recommendations
+        }
+    };
+
+    const loadRecommendations = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            const data = await recommendationService.getRecommendations({ k: 5 });
+            setItems(data.recommendations || []);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to load recommendations');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const sortedItems = useMemo(() => {
+        // Keep UI stable even if backend returns more than requested.
+        return [...items].sort((a, b) => (b.similarity ?? 0) - (a.similarity ?? 0)).slice(0, 5);
+    }, [items]);
+
+    const getCredits = (rec: RecommendationItem) => {
+        return rec.study_credit ?? rec.studycredit ?? null;
+    };
+
+    const getReason = (rec: RecommendationItem) => {
+        if (language === 'en') return rec.reason_en || rec.reason;
+        return rec.reason;
+    };
+
+    const openDetails = async (rec: RecommendationItem) => {
+        // The recommender returns an external id; resolve to Mongo id for the detail page.
+        try {
+            const mongoId = await resolveMongoId(rec);
+            if (mongoId) {
+                navigate(`/keuzemodules/${mongoId}`);
+                return;
+            }
+        } catch {
+            // ignore and try fallback
+        }
+
+        try {
+            const results = await moduleService.searchModules(rec.name);
+            if (results.length > 0) {
+                navigate(`/keuzemodules/${results[0].id}`);
+            }
+        } catch {
+            // ignore
+        }
+    };
+
+    const resolveMongoId = async (rec: RecommendationItem): Promise<string | null> => {
+        const cached = moduleIdByExternalId[rec.id];
+        if (cached) return cached;
+
+        // Try direct externalId lookup
+        try {
+            const module = await moduleService.getModuleByExternalId(rec.id);
+            if (module?.id) {
+                setModuleIdByExternalId((prev) => ({ ...prev, [rec.id]: module.id }));
+                return module.id;
+            }
+        } catch {
+            // ignore
+        }
+
+        // Fallback: search by name
+        try {
+            const results = await moduleService.searchModules(rec.name);
+            if (results.length > 0) {
+                setModuleIdByExternalId((prev) => ({ ...prev, [rec.id]: results[0].id }));
+                return results[0].id;
+            }
+        } catch {
+            // ignore
+        }
+
+        return null;
+    };
+
+    const prefetchMongoIds = async (recs: RecommendationItem[]) => {
+        const missing = recs.filter((rec) => !moduleIdByExternalId[rec.id]);
+        if (missing.length === 0) return;
+
+        const results = await Promise.all(
+            missing.map(async (rec) => {
+                try {
+                    const module = await moduleService.getModuleByExternalId(rec.id);
+                    return { externalId: rec.id, mongoId: module?.id ?? null };
+                } catch {
+                    return { externalId: rec.id, mongoId: null };
+                }
+            }),
+        );
+
+        setModuleIdByExternalId((prev) => {
+            const next = { ...prev };
+            for (const r of results) {
+                if (r.mongoId) {
+                    next[r.externalId] = r.mongoId;
+                }
+            }
+            return next;
+        });
+    };
+
+    const toggleFavorite = async (rec: RecommendationItem) => {
+        setPendingFavorites((prev) => new Set(prev).add(rec.id));
+        try {
+            const mongoId = await resolveMongoId(rec);
+            if (!mongoId) {
+                setError('Kan module niet vinden om te favoriten.');
+                return;
+            }
+
+            const isCurrentlyFavorite = favorites.has(mongoId);
+            await authService.toggleFavorite(mongoId, isCurrentlyFavorite);
+
+            setFavorites((prev) => {
+                const next = new Set(prev);
+                if (isCurrentlyFavorite) next.delete(mongoId);
+                else next.add(mongoId);
+                return next;
+            });
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Favoriet aanpassen mislukt');
+        } finally {
+            setPendingFavorites((prev) => {
+                const next = new Set(prev);
+                next.delete(rec.id);
+                return next;
+            });
+        }
+    };
+
+    return (
+        <div className="max-w-6xl mx-auto p-6">
+            <div className="mb-6">
+                <h1 className="text-2xl font-bold text-white mb-2">{t.nav.aiModules}</h1>
+                <p className="text-gray-300">{t.recommendations.subtitle}</p>
+            </div>
+
+            {isLoading ? (
+                <div className="text-center py-12 text-gray-600">{t.modules.loading}</div>
+            ) : error ? (
+                <div className="text-center py-12">
+                    <p className="text-red-600 mb-4">{error}</p>
+                    <button
+                        onClick={loadRecommendations}
+                        style={{ backgroundColor: '#c4b5fd' }}
+                        className="text-black px-6 py-2.5 rounded-lg font-medium hover:bg-violet-400 transition-colors"
+                    >
+                        {t.modules.tryAgain}
+                    </button>
+                </div>
+            ) : sortedItems.length === 0 ? (
+                <div className="text-center py-12 text-gray-600">
+                    <p>{t.recommendations.empty}</p>
+                </div>
+            ) : (
+                <div className="space-y-6">
+                    {sortedItems.map((rec) => (
+                        <div key={rec.id} className="bg-gray-800 rounded-lg p-6">
+                            <div className="flex gap-2 mb-3 flex-wrap">
+                                <span className="bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">
+                                    {rec.level || t.modules.unknown}
+                                </span>
+                                <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">
+                                    {getCredits(rec) ?? t.modules.unknown} ECTS
+                                </span>
+                                <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-medium">
+                                    {rec.location || t.modules.unknown}
+                                </span>
+                                <span className="bg-violet-600 text-white px-3 py-1 rounded text-sm font-medium">
+                                    {Math.round((rec.similarity ?? 0) * 100)}%
+                                </span>
+                            </div>
+
+                            <h2 className="text-lg font-semibold text-white mb-2">{rec.name}</h2>
+                            <p className="text-gray-300 mb-4">{rec.shortdescription}</p>
+
+                            {rec.match_terms?.length ? (
+                                <div className="flex gap-2 flex-wrap mb-4">
+                                    {rec.match_terms.slice(0, 8).map((term) => (
+                                        <span
+                                            key={term}
+                                            className="bg-gray-900 text-gray-200 px-2 py-1 rounded text-xs"
+                                        >
+                                            {term}
+                                        </span>
+                                    ))}
+                                </div>
+                            ) : null}
+
+                            {getReason(rec) ? (
+                                <p className="text-gray-300 mb-4">{getReason(rec)}</p>
+                            ) : null}
+
+                            <div className="flex items-center gap-4 justify-end">
+                                <button
+                                    onClick={() => void toggleFavorite(rec)}
+                                    disabled={pendingFavorites.has(rec.id)}
+                                    className="p-2 hover:opacity-70 transition-opacity disabled:opacity-40"
+                                    aria-label="Toggle favorite"
+                                    title="Favoriet"
+                                >
+                                    {(() => {
+                                        const mongoId = moduleIdByExternalId[rec.id];
+                                        const isFav = mongoId ? favorites.has(mongoId) : false;
+                                        return isFav ? (
+                                            <svg
+                                                className="w-6 h-6 text-white fill-current"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                            </svg>
+                                        ) : (
+                                            <svg
+                                                className="w-6 h-6 text-white"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                                />
+                                            </svg>
+                                        );
+                                    })()}
+                                </button>
+                                <button
+                                    onClick={() => void openDetails(rec)}
+                                    style={{ backgroundColor: '#c4b5fd' }}
+                                    className="text-black px-6 py-2.5 rounded-lg font-medium hover:bg-violet-400 transition-colors"
+                                >
+                                    {t.modules.learnMore}
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
