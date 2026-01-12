@@ -9,6 +9,7 @@ export class RecommendationItemDto {
   module_tags: string;
   match_terms: string[];
   reason: string;
+  reason_en?: string;
 }
 
 export class RecommendationsResponseDto {
