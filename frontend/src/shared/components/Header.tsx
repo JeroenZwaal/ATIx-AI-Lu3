@@ -67,9 +67,15 @@ function NavLink({
             to={link.path}
             onClick={onClick}
             className={`
-            ${isActive 
-                ? (theme === 'dark' ? '!text-black bg-white hover:bg-gray-100' : '!text-white bg-gray-800 hover:bg-gray-700')
-                : (theme === 'dark' ? '!text-white bg-[#2a2a2a] hover:bg-[#3a3a3a]' : '!text-gray-700 bg-gray-200 hover:bg-gray-300')}
+            ${
+                isActive
+                    ? theme === 'dark'
+                        ? '!text-black bg-white hover:bg-gray-100'
+                        : '!text-white bg-gray-800 hover:bg-gray-700'
+                    : theme === 'dark'
+                      ? '!text-white bg-[#2a2a2a] hover:bg-[#3a3a3a]'
+                      : '!text-gray-700 bg-gray-200 hover:bg-gray-300'
+            }
             transition-all duration-200 px-6 py-2.5 rounded-full font-medium text-sm
         `}
         >
@@ -93,9 +99,15 @@ function MobileNavLink({
             to={link.path}
             onClick={onClick}
             className={`
-            ${isActive 
-                ? (theme === 'dark' ? '!text-black bg-white hover:bg-gray-100' : '!text-white bg-gray-800 hover:bg-gray-700')
-                : (theme === 'dark' ? '!text-white bg-[#3a3a3a] hover:bg-[#4a4a4a]' : '!text-gray-700 bg-gray-200 hover:bg-gray-300')}
+            ${
+                isActive
+                    ? theme === 'dark'
+                        ? '!text-black bg-white hover:bg-gray-100'
+                        : '!text-white bg-gray-800 hover:bg-gray-700'
+                    : theme === 'dark'
+                      ? '!text-white bg-[#3a3a3a] hover:bg-[#4a4a4a]'
+                      : '!text-gray-700 bg-gray-200 hover:bg-gray-300'
+            }
             transition-all duration-200 px-4 py-3 rounded-lg font-medium text-center
         `}
         >
@@ -157,7 +169,9 @@ export default function Header() {
                         <Logo />
                     </div>
 
-                    <nav className={`flex items-center gap-2 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-200'} rounded-full p-1.5 shadow-lg`}>
+                    <nav
+                        className={`flex items-center gap-2 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-200'} rounded-full p-1.5 shadow-lg`}
+                    >
                         {navLinks.map((link) => (
                             <NavLink
                                 key={link.path}
@@ -194,7 +208,9 @@ export default function Header() {
                     </div>
 
                     {mobileMenuOpen && (
-                        <div className={`absolute left-4 right-4 top-full mt-2 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} rounded-2xl shadow-lg z-40 overflow-hidden`}>
+                        <div
+                            className={`absolute left-4 right-4 top-full mt-2 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} rounded-2xl shadow-lg z-40 overflow-hidden`}
+                        >
                             <nav className="flex flex-col px-5 py-8 space-y-3">
                                 {navLinks.map((link) => (
                                     <MobileNavLink
@@ -207,7 +223,9 @@ export default function Header() {
                                         onClick={closeMobileMenu}
                                     />
                                 ))}
-                                <div className={`pt-5 border-t ${theme === 'dark' ? 'border-gray-600' : 'border-gray-300'} space-y-3`}>
+                                <div
+                                    className={`pt-5 border-t ${theme === 'dark' ? 'border-gray-600' : 'border-gray-300'} space-y-3`}
+                                >
                                     {user && (
                                         <div className="text-center">
                                             <div className="theme-text-primary font-medium">

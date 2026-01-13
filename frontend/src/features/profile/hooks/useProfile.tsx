@@ -1,9 +1,13 @@
 import { useState, useEffect, createContext, useContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import type { ProfileContextType, CreateProfileDto, UpdateProfileResponse, ProfileApi } from '../types/profile.types';
+import type {
+    ProfileContextType,
+    CreateProfileDto,
+    UpdateProfileResponse,
+    ProfileApi,
+} from '../types/profile.types';
 import { profileService } from '../services/profile.service';
 import { useNavigate } from 'react-router-dom';
-
 
 // Create profile context
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -32,7 +36,9 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    async function createProfile(createProfileData: CreateProfileDto): Promise<UpdateProfileResponse> {
+    async function createProfile(
+        createProfileData: CreateProfileDto,
+    ): Promise<UpdateProfileResponse> {
         setIsLoading(true);
         setError(null);
         try {
@@ -59,11 +65,13 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         fetchUserProfile().catch(() => {});
     }, []);
 
-    const value = useMemo<ProfileContextType>(() => ({ createProfile, draft, setDraft, userProfile, fetchUserProfile, isLoading, error }), [createProfile, draft, userProfile, isLoading, error]);
+    const value = useMemo<ProfileContextType>(
+        () => ({ createProfile, draft, setDraft, userProfile, fetchUserProfile, isLoading, error }),
+        [createProfile, draft, userProfile, isLoading, error],
+    );
 
     return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
 }
-
 
 // Custom hook to use profile context
 export function useProfile(): ProfileContextType {
@@ -83,7 +91,11 @@ export function useProfile(): ProfileContextType {
         // still providing a helpful error message for debugging.
         return {
             createProfile: async () => {
-                return Promise.reject(new Error('ProfileProvider missing: ensure the app is wrapped with <ProfileProvider>'));
+                return Promise.reject(
+                    new Error(
+                        'ProfileProvider missing: ensure the app is wrapped with <ProfileProvider>',
+                    ),
+                );
             },
             draft: null,
             setDraft: () => {
