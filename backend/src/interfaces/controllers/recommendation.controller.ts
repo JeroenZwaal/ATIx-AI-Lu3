@@ -19,7 +19,25 @@ export class RecommendationController {
     @Query('level') level?: string
   ): Promise<RecommendationsResponseDto> {
     // Convert user favorites to string array
-    const favorites = user.favorites?.map(fav => fav.moduleName) || [];
+    const favorites = (user.favorites ?? []).map((fav) => fav.moduleName).filter(Boolean);
+
+    const hasProfileData =
+      (user.studyProgram?.trim()?.length ?? 0) > 0 ||
+      (typeof user.yearOfStudy === 'number' && user.yearOfStudy > 0) ||
+      (user.studyLocation?.trim()?.length ?? 0) > 0 ||
+      (typeof user.studyCredits === 'number' && user.studyCredits > 0) ||
+      (user.skills?.length ?? 0) > 0 ||
+      (user.interests?.length ?? 0) > 0 ||
+      favorites.length > 0;
+
+    // If the user has not filled in any profile fields, don't generate generic recommendations.
+    // The frontend will show a CTA to complete the profile.
+    if (!hasProfileData) {
+      return {
+        recommendations: [],
+        total_found: 0,
+      };
+    }
 
     // Build request from user profile with optional query overrides
     const request = {

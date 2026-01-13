@@ -10,6 +10,10 @@ export const nl = {
         subtitle:
             'Aanbevolen modules op basis van jouw profiel: opleiding, interesses, skills, favorieten en voorkeuren (locatie, niveau en studiepunten).',
         empty: 'Geen aanbevelingen gevonden. Vul eerst je profiel in.',
+        noProfileTitle: 'Vul eerst je profiel in',
+        noProfileBody:
+            'Om een AI-aanbeveling te krijgen hebben we je opleiding, interesses, skills, favorieten en voorkeuren nodig. Vul je profiel in en kom daarna terug.',
+        fillProfileCta: 'Profiel invullen',
     },
     dashboard: {
         title: 'Dashboard',

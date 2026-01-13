@@ -197,7 +197,19 @@ export default function Recomendation() {
                 </div>
             ) : sortedItems.length === 0 ? (
                 <div className="text-center py-12 text-gray-600">
-                    <p>{t.recommendations.empty}</p>
+                    <p className="text-white text-lg font-semibold mb-2">
+                        {t.recommendations.noProfileTitle}
+                    </p>
+                    <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+                        {t.recommendations.noProfileBody}
+                    </p>
+                    <button
+                        onClick={() => navigate('/profile/createProfile')}
+                        style={{ backgroundColor: '#c4b5fd' }}
+                        className="text-black px-6 py-2.5 rounded-lg font-medium hover:bg-violet-400 transition-colors"
+                    >
+                        {t.recommendations.fillProfileCta}
+                    </button>
                 </div>
             ) : (
                 <div className="space-y-6">
