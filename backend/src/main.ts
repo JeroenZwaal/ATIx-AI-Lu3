@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
-import { SecurityInterceptor } from './infrastructure/security/security.interceptor';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -26,9 +25,6 @@ async function bootstrap() {
             transform: true,
         }),
     );
-
-    // Security headers interceptor
-    app.useGlobalInterceptors(new SecurityInterceptor());
 
     const port = process.env.PORT || 3000;
     await app.listen(port);

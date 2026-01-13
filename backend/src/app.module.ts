@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -15,6 +15,7 @@ import { UserService } from './application/services/user.service';
 import { RecommendationService } from './application/services/recommendation.service';
 import { RecommendationController } from './interfaces/controllers/recommendation.controller';
 import { RecommendationRepository } from './infrastructure/repositories/recommendation.repository';
+import { SecurityMiddleware } from './infrastructure/security/security.middleware';
 
 @Module({
     imports: [
@@ -43,4 +44,8 @@ import { RecommendationRepository } from './infrastructure/repositories/recommen
         RecommendationService,
     ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(SecurityMiddleware).forRoutes('*');
+    }
+}
