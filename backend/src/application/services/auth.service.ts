@@ -1,25 +1,19 @@
-import {
-    Injectable,
-    UnauthorizedException,
-    ConflictException,
-    Inject,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, Inject } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../../domain/entities/user.entity';
 import type { IUserRepository } from '../../domain/repositories/user.repository.interface';
-import { LoginDto, RegisterDto } from '../../interfaces/presenters/auth.dto';
+import { LoginDto, RegisterDto, AuthResponseDto } from '../../interfaces/presenters/auth.dto';
+import { JwtPayload } from '../../infrastructure/auth/jwt.strategy';
 
 @Injectable()
 export class AuthService {
     private readonly jwtSecret = process.env.JWT_SECRET || 'defaultsecret';
     private readonly jwtExpiresIn = '24h';
 
-    constructor(
-        @Inject('IUserRepository') private readonly userRepository: IUserRepository,
-    ) {}
+    constructor(@Inject('IUserRepository') private readonly userRepository: IUserRepository) {}
 
-    async register(registerDto: RegisterDto): Promise<{ access_token: string; user: any }> {
+    async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
         // Normalize email to lowercase
         const normalizedEmail = registerDto.email.toLowerCase();
 
@@ -54,13 +48,13 @@ export class AuthService {
         const savedUser = await this.userRepository.create(newUser);
 
         // Generate JWT token
-        const payload = { email: savedUser.email, sub: savedUser._id };
-        const access_token = jwt.sign(payload, this.jwtSecret, {
+        const payload: JwtPayload = { email: savedUser.email, sub: savedUser._id };
+        const accessToken = jwt.sign(payload, this.jwtSecret, {
             expiresIn: this.jwtExpiresIn,
         });
 
         return {
-            access_token,
+            access_token: accessToken,
             user: {
                 firstName: savedUser.firstName,
                 lastName: savedUser.lastName,
@@ -69,7 +63,7 @@ export class AuthService {
         };
     }
 
-    async login(loginDto: LoginDto): Promise<{ access_token: string; user: any }> {
+    async login(loginDto: LoginDto): Promise<AuthResponseDto> {
         // Normalize email to lowercase
         const normalizedEmail = loginDto.email.toLowerCase();
         // Find user by email
@@ -85,13 +79,13 @@ export class AuthService {
         }
 
         // Generate JWT token
-        const payload = { email: user.email, sub: user._id };
-        const access_token = jwt.sign(payload, this.jwtSecret, {
+        const payload: JwtPayload = { email: user.email, sub: user._id };
+        const accessToken = jwt.sign(payload, this.jwtSecret, {
             expiresIn: this.jwtExpiresIn,
         });
 
         return {
-            access_token,
+            access_token: accessToken,
             user: {
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -100,10 +94,12 @@ export class AuthService {
         };
     }
 
-    async validateUser(email: string, password: string): Promise<any> {
+    async validateUser(
+        email: string,
+        password: string,
+    ): Promise<Omit<User, 'passwordHash'> | null> {
         const user = await this.userRepository.findByEmail(email);
         if (user && (await bcrypt.compare(password, user.passwordHash))) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { passwordHash: userPasswordHash, ...result } = user;
             return result;
         }
@@ -114,9 +110,9 @@ export class AuthService {
         return await this.userRepository.findById(userId);
     }
 
-    verifyToken(token: string): any {
+    verifyToken(token: string): JwtPayload {
         try {
-            return jwt.verify(token, this.jwtSecret);
+            return jwt.verify(token, this.jwtSecret) as JwtPayload;
         } catch {
             throw new UnauthorizedException('Invalid token');
         }

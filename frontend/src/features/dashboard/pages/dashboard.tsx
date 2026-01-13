@@ -55,7 +55,7 @@ export default function Dashboard({
         if (!userProfile) {
             fetchUserProfile();
         }
-    }, [userProfile]);
+    }, [userProfile, fetchUserProfile]);
 
     // Handlers blijven hetzelfde
     const handleModuleClick = (moduleId: string) => {

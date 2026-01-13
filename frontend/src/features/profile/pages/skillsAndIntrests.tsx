@@ -82,7 +82,7 @@ export default function SkillsAndIntrests(): JSX.Element {
         if (interests.length === 0 && userProfile?.interests?.length) {
             setInterests(userProfile.interests);
         }
-    }, [userProfile, fetchUserProfile]);
+    }, [userProfile, fetchUserProfile, interests.length, skills.length]);
 
     // If the provider reports an error (server-side), show it
     React.useEffect(() => {
@@ -128,9 +128,13 @@ export default function SkillsAndIntrests(): JSX.Element {
 
             await createProfile(createProfileData);
             navigate('/dashboard'); // Redirect after successful creation
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Error creating profile:', err);
-            setLocalError(err?.message ?? 'Er is iets misgegaan bij het aanmaken van het profiel.');
+            setLocalError(
+                err instanceof Error
+                    ? err.message
+                    : 'Er is iets misgegaan bij het aanmaken van het profiel.',
+            );
             setShowError(true);
         }
     };

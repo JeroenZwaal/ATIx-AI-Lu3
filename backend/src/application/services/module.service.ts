@@ -17,14 +17,14 @@ export class ModuleService {
     }
 
     async findByExternalId(externalId: number): Promise<Module | null> {
-      return await this.moduleRepository.findByExternalId(externalId);
+        return await this.moduleRepository.findByExternalId(externalId);
     }
 
-  async search(query: string): Promise<Module[]> {
-    return await this.moduleRepository.search(query);
-  }
+    async search(query: string): Promise<Module[]> {
+        return await this.moduleRepository.search(query);
+    }
 
-  async getAllTags(): Promise<string[]> {
-    return await this.moduleRepository.getAllTags();
-  }
+    async getAllTags(): Promise<string[]> {
+        return await this.moduleRepository.getAllTags();
+    }
 }

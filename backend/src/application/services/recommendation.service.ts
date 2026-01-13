@@ -5,7 +5,8 @@ import { RecommendRequest, RecommendResponse } from '../../domain/entities/recom
 @Injectable()
 export class RecommendationService {
     constructor(
-        @Inject('IRecommendationRepository') private readonly recommendationRepository: IRecommendationRepository,
+        @Inject('IRecommendationRepository')
+        private readonly recommendationRepository: IRecommendationRepository,
     ) {}
 
     async getRecommendations(request: RecommendRequest): Promise<RecommendResponse> {

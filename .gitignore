@@ -21,3 +21,5 @@ __pycache__/
 pentest_report.md
 pentest_results.txt
 pentest_script.js
+
+frontend/dist/

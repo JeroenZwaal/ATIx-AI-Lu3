@@ -33,7 +33,7 @@ export class ProfileService {
             try {
                 const error = await response.json();
                 errorText = error.message || errorText;
-            } catch (_) {
+            } catch {
                 // ignore JSON parse errors
             }
             throw new Error(errorText);
@@ -53,7 +53,7 @@ export class ProfileService {
             try {
                 const error = await response.json();
                 errorText = error.message || errorText;
-            } catch (_) {
+            } catch {
                 // ignore JSON parse errors
             }
             throw new Error(errorText);
@@ -73,7 +73,7 @@ export class ProfileService {
             try {
                 const error = await response.json();
                 errorText = error.message || errorText;
-            } catch (_) {
+            } catch {
                 // ignore JSON parse errors
             }
             throw new Error(errorText);

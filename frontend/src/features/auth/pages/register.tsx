@@ -91,7 +91,9 @@ export default function Register() {
             </button>
 
             <div className="w-full max-w-sm">
-                <h1 className="theme-text-primary text-4xl font-normal text-center mb-8">{t.auth.register.title}</h1>
+                <h1 className="theme-text-primary text-4xl font-normal text-center mb-8">
+                    {t.auth.register.title}
+                </h1>
 
                 <form onSubmit={handleSubmit} className="theme-card rounded-3xl p-6 space-y-4">
                     {(showError && error) || validationError ? (
@@ -101,7 +103,10 @@ export default function Register() {
                     ) : null}
 
                     <div>
-                        <label htmlFor="firstName" className="block theme-text-primary text-sm mb-2">
+                        <label
+                            htmlFor="firstName"
+                            className="block theme-text-primary text-sm mb-2"
+                        >
                             {t.auth.register.firstName}
                         </label>
                         <input
@@ -161,7 +166,10 @@ export default function Register() {
                     </div>
 
                     <div>
-                        <label htmlFor="confirmPassword" className="block theme-text-primary text-sm mb-2">
+                        <label
+                            htmlFor="confirmPassword"
+                            className="block theme-text-primary text-sm mb-2"
+                        >
                             {t.auth.register.confirmPassword}
                         </label>
                         <input

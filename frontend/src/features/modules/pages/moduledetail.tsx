@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { moduleService } from '../services/module.service';
 import type { Module } from '../../../shared/types/index';
@@ -12,11 +12,7 @@ export default function ModuleDetail() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        loadModule();
-    }, [id]);
-
-    const loadModule = async () => {
+    const loadModule = useCallback(async () => {
         if (!id) {
             setError(t.moduleDetail.noModuleId);
             setIsLoading(false);
@@ -34,7 +30,11 @@ export default function ModuleDetail() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [id, t]);
+
+    useEffect(() => {
+        void loadModule();
+    }, [loadModule]);
 
     const getLevelTag = (level: string): string => {
         return level || 'P3';

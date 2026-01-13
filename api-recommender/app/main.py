@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import Response
 import logging
 
 from app.core.config import settings
@@ -10,6 +12,54 @@ from app.services.recommendation import recommendation_service
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Middleware voor security headers op alle responses."""
+
+    async def dispatch(self, request: Request, call_next) -> Response:
+        response = await call_next(request)
+        path = request.url.path
+
+        # Basis security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = (
+            "geolocation=(), microphone=(), camera=(), payment=()"
+        )
+
+        # HSTS - forceer HTTPS
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains; preload"
+        )
+
+        # Cross-Origin headers - bescherming tegen Spectre
+        response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+        response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+
+        # CSP - strenger voor API, losser voor Swagger docs
+        if path.startswith("/docs") or path.startswith("/redoc"):
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; "
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; "
+                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+                "img-src 'self' data: https:; "
+                "font-src 'self' data: https://cdn.jsdelivr.net; "
+                "connect-src 'self';"
+            )
+        else:
+            response.headers["Content-Security-Policy"] = (
+                "default-src 'self'; script-src 'self'; style-src 'self'; "
+                "img-src 'self' data:; font-src 'self'; connect-src 'self';"
+            )
+
+        # Cache-Control - geen caching voor API responses
+        if not path.startswith("/docs") and not path.startswith("/redoc"):
+            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+
+        return response
+
 def create_app() -> FastAPI:
     """Create and configure FastAPI application."""
     app = FastAPI(
@@ -19,6 +69,9 @@ def create_app() -> FastAPI:
         docs_url="/docs",
         redoc_url="/redoc"
     )
+
+    # Security headers middleware (eerst toevoegen = laatst uitgevoerd)
+    app.add_middleware(SecurityHeadersMiddleware)
 
     # CORS middleware
     app.add_middleware(

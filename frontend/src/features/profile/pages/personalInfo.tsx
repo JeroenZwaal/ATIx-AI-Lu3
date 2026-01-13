@@ -15,32 +15,49 @@ export default function PersonalInfo() {
     const { setDraft, userProfile, error } = useProfile();
     const [showError, setShowError] = useState(false);
     const [localError, setLocalError] = useState<string | null>(null);
-    
+
     // Track if we've done the initial prefill
     const prefillDoneRef = useRef(false);
 
     // Only prefill once when userProfile becomes available
     useEffect(() => {
         if (!userProfile || prefillDoneRef.current) return;
-        
+
         prefillDoneRef.current = true;
-        
-        setOpleiding(userProfile.studyProgram ?? '');
-        setLeerjaar(String(userProfile.yearOfStudy ?? ''));
-        setStudiepunten(String(userProfile.studyCredits ?? ''));
-        setStudielocatie(userProfile.studyLocation ?? '');
+
+        // Avoid calling setState synchronously within an effect (eslint rule)
+        let cancelled = false;
+        queueMicrotask(() => {
+            if (cancelled) return;
+            setOpleiding(userProfile.studyProgram ?? '');
+            setLeerjaar(String(userProfile.yearOfStudy ?? ''));
+            setStudiepunten(String(userProfile.studyCredits ?? ''));
+            setStudielocatie(userProfile.studyLocation ?? '');
+        });
+
+        return () => {
+            cancelled = true;
+        };
     }, [userProfile]);
 
     // If the provider reports an error (server-side), show it
     useEffect(() => {
         if (error) {
-            setLocalError(null);
-            setShowError(true);
+            let cancelled = false;
+            queueMicrotask(() => {
+                if (cancelled) return;
+                setLocalError(null);
+                setShowError(true);
+            });
+
+            return () => {
+                cancelled = true;
+            };
         }
     }, [error]);
 
     function handleNext() {
-        if(!opleiding || !leerjaar || !studiepunten) {
+        if (!opleiding || !leerjaar || !studiepunten) {
             setLocalError('Vul alle velden in.');
             setShowError(true);
             return;
@@ -59,134 +76,162 @@ export default function PersonalInfo() {
         console.log('handleNext - location after navigate', window.location.pathname);
     }
 
-    
     return (
-    <div className="min-h-screen theme-page flex items-center justify-center px-6 py-4">
-        <div className="w-full max-w-sm">
-            <h1 className="theme-text-primary text-4xl font-normal text-center mb-8">Profiel aanmaken</h1>
-            
-            <div className="theme-card rounded-3xl p-6 space-y-4">
-            
-            <h2 className="theme-text-primary text-2xl font-normal text-center mb-4">Persoonlijke gegevens</h2>
-            <div className="relative flex items-center w-full max-w-md">
-                {/* Connecting line */}
-                <div className="absolute left-0 right-0 top-1/2 h-[2px] -translate-y-1/2 theme-button-secondary" />
-                {/* Step 1 */}
-                <p className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-black">1</p>
-                {/* Step 2 */}
-                <p className="relative z-10 ml-auto flex h-8 w-8 items-center justify-center rounded-full theme-button-secondary text-sm font-medium theme-text-primary">2</p>
-            </div>
-            <div>
-                <p className="theme-text-secondary"> Vul hieronder je persoonlijke gegevens in om je profiel aan te maken die de Ai recommender zal gebruiken om modules voor jou te vinden.</p>
-            </div>
-            {showError && (localError || error) && (
+        <div className="min-h-screen theme-page flex items-center justify-center px-6 py-4">
+            <div className="w-full max-w-sm">
+                <h1 className="theme-text-primary text-4xl font-normal text-center mb-8">
+                    Profiel aanmaken
+                </h1>
+
+                <div className="theme-card rounded-3xl p-6 space-y-4">
+                    <h2 className="theme-text-primary text-2xl font-normal text-center mb-4">
+                        Persoonlijke gegevens
+                    </h2>
+                    <div className="relative flex items-center w-full max-w-md">
+                        {/* Connecting line */}
+                        <div className="absolute left-0 right-0 top-1/2 h-[2px] -translate-y-1/2 theme-button-secondary" />
+                        {/* Step 1 */}
+                        <p className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-black">
+                            1
+                        </p>
+                        {/* Step 2 */}
+                        <p className="relative z-10 ml-auto flex h-8 w-8 items-center justify-center rounded-full theme-button-secondary text-sm font-medium theme-text-primary">
+                            2
+                        </p>
+                    </div>
+                    <div>
+                        <p className="theme-text-secondary">
+                            {' '}
+                            Vul hieronder je persoonlijke gegevens in om je profiel aan te maken die
+                            de Ai recommender zal gebruiken om modules voor jou te vinden.
+                        </p>
+                    </div>
+                    {showError && (localError || error) && (
                         <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 mb-4">
                             <p className="text-red-300 text-sm">{localError ?? error}</p>
                         </div>
                     )}
-            <div>
-                <label htmlFor="opleiding" className="block theme-text-primary text-sm mb-2">
-                Opleiding
-                </label>
-                <input
-                type="text"
-                id="opleiding"
-                value={opleiding}
-                onChange={(e) => { setOpleiding(e.target.value); setShowError(false); setLocalError(null); }}
-                className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
-                />
-            </div>
+                    <div>
+                        <label
+                            htmlFor="opleiding"
+                            className="block theme-text-primary text-sm mb-2"
+                        >
+                            Opleiding
+                        </label>
+                        <input
+                            type="text"
+                            id="opleiding"
+                            value={opleiding}
+                            onChange={(e) => {
+                                setOpleiding(e.target.value);
+                                setShowError(false);
+                                setLocalError(null);
+                            }}
+                            className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        />
+                    </div>
 
-            <div>
-                <label htmlFor="leerjaar" className="block theme-text-primary text-sm mb-2">
-                Leerjaar
-                </label>
-                <input
-                type="number"
-                id="leerjaar"
-                value={leerjaar}
-                onChange={(e) => { setLeerjaar(e.target.value); setShowError(false); setLocalError(null); }}
-                className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
-                />
-            </div>
-            {showStudielocatieInfo && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-                <div className="theme-card-alt rounded-2xl p-6 w-full max-w-sm theme-text-primary relative">
+                    <div>
+                        <label htmlFor="leerjaar" className="block theme-text-primary text-sm mb-2">
+                            Leerjaar
+                        </label>
+                        <input
+                            type="number"
+                            id="leerjaar"
+                            value={leerjaar}
+                            onChange={(e) => {
+                                setLeerjaar(e.target.value);
+                                setShowError(false);
+                                setLocalError(null);
+                            }}
+                            className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        />
+                    </div>
+                    {showStudielocatieInfo && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+                            <div className="theme-card-alt rounded-2xl p-6 w-full max-w-sm theme-text-primary relative">
+                                <h3 className="text-lg font-medium mb-2">Studielocatie</h3>
 
-                <h3 className="text-lg font-medium mb-2">Studielocatie</h3>
+                                <p className="text-sm theme-text-secondary leading-relaxed">
+                                    Vul hier een locatie in waar je zou willen studeren. Dit veld is
+                                    NIET verplicht om in te vullen!
+                                </p>
 
-                <p className="text-sm theme-text-secondary leading-relaxed">
-                    Vul hier een locatie in waar je zou willen studeren.
-                    Dit veld is NIET verplicht om in te vullen!
-                </p>
+                                <button
+                                    onClick={() => setShowStudielocatieInfo(false)}
+                                    style={{ backgroundColor: 'var(--accent)' }}
+                                    className="mt-6 w-full rounded-lg hover:opacity-80 text-black font-medium py-2 transition"
+                                >
+                                    Sluiten
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <label
+                            htmlFor="studielocatie"
+                            className="flex items-center gap-2 theme-text-primary text-sm mb-2"
+                        >
+                            Studielocatie
+                            {/* Info icon */}
+                            <button
+                                type="button"
+                                onClick={() => setShowStudielocatieInfo(true)}
+                                className="flex h-5 w-5 items-center justify-center rounded-full theme-button-secondary text-xs font-bold theme-text-primary hover:opacity-80 transition"
+                                aria-label="Studielocatie informatie"
+                            >
+                                i
+                            </button>
+                        </label>
 
-                <button
-                    onClick={() => setShowStudielocatieInfo(false)}
-                    style={{ backgroundColor: 'var(--accent)' }}
-                    className="mt-6 w-full rounded-lg hover:opacity-80 text-black font-medium py-2 transition"
-                >
-                    Sluiten
-                </button>
+                        <input
+                            type="text"
+                            id="studielocatie"
+                            value={studielocatie}
+                            onChange={(e) => {
+                                setStudielocatie(e.target.value);
+                                setShowError(false);
+                                setLocalError(null);
+                            }}
+                            className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            htmlFor="studiepunten"
+                            className="block theme-text-primary text-sm mb-2"
+                        >
+                            Studiepunten
+                        </label>
+                        <select
+                            id="studiepunten"
+                            value={studiepunten}
+                            onChange={(e) => {
+                                setStudiepunten(e.target.value);
+                                setShowError(false);
+                                setLocalError(null);
+                            }}
+                            className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                        >
+                            <option value="0">Selecteer studiepunten</option>
+                            <option value="15">15</option>
+                            <option value="30">30</option>
+                        </select>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={handleNext}
+                        style={{ backgroundColor: 'var(--accent)' }}
+                        className="w-full hover:opacity-80 text-black font-medium rounded-lg px-4 py-3 mt-4 transition-colors"
+                    >
+                        Volgende
+                    </button>
                 </div>
             </div>
-            )}
-            <div>
-                <label htmlFor="studielocatie" className="flex items-center gap-2 theme-text-primary text-sm mb-2">
-                    Studielocatie
 
-                    {/* Info icon */}
-                    <button
-                    type="button"
-                    onClick={() => setShowStudielocatieInfo(true)}
-                    className="flex h-5 w-5 items-center justify-center rounded-full theme-button-secondary text-xs font-bold theme-text-primary hover:opacity-80 transition"
-                    aria-label="Studielocatie informatie"
-                    >
-                    i
-                    </button>
-                </label>
-
-                <input
-                    type="text"
-                    id="studielocatie"
-                    value={studielocatie}
-                    onChange={(e) => { setStudielocatie(e.target.value); setShowError(false); setLocalError(null); }}
-                    className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
-                />
-            </div>
-
-            <div>
-                <label htmlFor="studiepunten" className="block theme-text-primary text-sm mb-2">
-                Studiepunten
-                </label>
-                <select
-                    id="studiepunten"
-                    value={studiepunten}
-                    onChange={(e) => { setStudiepunten(e.target.value); setShowError(false); setLocalError(null); }}
-                    className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
-                >
-                    <option value="0">Selecteer studiepunten</option>
-                    <option value="15">15</option>
-                    <option value="30">30</option>
-                </select>
-            </div>
-
-
-            <button 
-                type="button"
-                onClick={handleNext}
-                style={{ backgroundColor: 'var(--accent)' }}
-                className="w-full hover:opacity-80 text-black font-medium rounded-lg px-4 py-3 mt-4 transition-colors"
-            >
-                Volgende
-            </button>
-            </div>
+            <div className="fixed bottom-4 left-4 text-red-600 text-xl font-bold">Avans</div>
         </div>
-
-        <div className="fixed bottom-4 left-4 text-red-600 text-xl font-bold">
-            Avans
-        </div>
-        
-    </div>
     );
-};
-
+}

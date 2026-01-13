@@ -47,4 +47,4 @@ export interface ProfileContextType {
     /** Loading and error state for profile operations */
     isLoading: boolean;
     error: string | null;
-} 
+}
