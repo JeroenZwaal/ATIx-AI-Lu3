@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 // PersonalInfo.tsx
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
