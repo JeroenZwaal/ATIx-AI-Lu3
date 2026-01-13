@@ -12,6 +12,14 @@ export class SecurityMiddleware implements NestMiddleware {
         // X-Frame-Options header (anti-clickjacking)
         res.setHeader('X-Frame-Options', 'DENY');
 
+        // Strict-Transport-Security (HSTS) - forceer HTTPS
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+
+        // Cross-Origin headers - bescherming tegen Spectre attacks
+        res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+        res.setHeader('Cross-Origin-Resource-Policy', 'same-origin');
+        res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+
         // Content-Security-Policy header
         // Voor Swagger docs zijn wat meer permissies nodig
         if (path.startsWith('/docs') || path.startsWith('/api-docs')) {
