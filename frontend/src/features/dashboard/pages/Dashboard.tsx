@@ -201,9 +201,44 @@ export default function Dashboard({
     return (
         <div className="min-h-screen theme-page w-full overflow-x-hidden">
             <div className="max-w-6xl mx-auto px-10 py-8 ">
-                <h1 className="text-4xl font-bold theme-text-primary mb-8 text-center">
+                <h1 className="text-4xl font-bold theme-text-primary mb-4 text-center">
                     {t.dashboard.title}
                 </h1>
+
+                <div className="flex justify-center mb-8">
+                    <button
+                        onClick={() => navigate('/keuzemodules')}
+                        className="group relative px-8 py-3 bg-slate-600 hover:bg-slate-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-2"
+                    >
+                        <svg
+                            className="w-5 h-5 transition-transform group-hover:scale-110"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                            />
+                        </svg>
+                        <span>Bekijk Keuzemodules</span>
+                        <svg
+                            className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                            />
+                        </svg>
+                    </button>
+                </div>
 
                 <div className="theme-card rounded-lg p-4 sm:p-6 mb-8">
                     <h2 className="text-xl sm:text-2xl font-bold theme-text-primary mb-4 text-center">
