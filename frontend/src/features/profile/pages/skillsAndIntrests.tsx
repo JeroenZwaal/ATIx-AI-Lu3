@@ -162,22 +162,9 @@ export default function SkillsAndIntrests(): JSX.Element {
                 <h1 className="theme-text-primary text-4xl text-center mb-8">Profiel aanmaken</h1>
 
                 <div className="theme-card rounded-3xl p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setShowError(false);
-                                setLocalError(null);
-                                navigate('/profile/createProfile');
-                            }}
-                            className="text-sm theme-button-secondary theme-text-primary rounded px-3 py-1 mr-2 transition"
-                        >
-                            Terug
-                        </button>
-                        <h2 className="theme-text-primary text-2xl text-center flex-1">
-                            Vaardigheden & Intresses
-                        </h2>
-                    </div>
+                    <h2 className="theme-text-primary text-2xl text-center">
+                        Vaardigheden & Intresses
+                    </h2>
                     {showError && (localError || error) && (
                         <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 mb-4">
                             <p className="text-red-300 text-sm">{localError ?? error}</p>
@@ -383,6 +370,18 @@ export default function SkillsAndIntrests(): JSX.Element {
                         className="w-full hover:opacity-80 text-black font-medium rounded-lg px-4 py-3 mt-4 transition-colors"
                     >
                         Opslaan
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setShowError(false);
+                            setLocalError(null);
+                            navigate('/profile/createProfile');
+                        }}
+                        className="w-full theme-button-secondary theme-text-primary font-medium rounded-lg px-4 py-3 hover:opacity-80 transition-colors"
+                    >
+                        Terug
                     </button>
                 </div>
             </div>
