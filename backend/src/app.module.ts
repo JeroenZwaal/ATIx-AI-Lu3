@@ -19,28 +19,26 @@ import { RecommendationRepository } from './infrastructure/repositories/recommen
 @Module({
     imports: [
         ConfigModule.forRoot({
-        isGlobal: true,
-        envFilePath: '.env',
+            isGlobal: true,
+            envFilePath: '.env',
         }),
         DatabaseModule,
         RepositoryModule,
         AuthModule,
-        MongooseModule.forFeature([
-        { name: ModuleModel.name, schema: MODULESCHEMA },
-        ]),
+        MongooseModule.forFeature([{ name: ModuleModel.name, schema: MODULESCHEMA }]),
     ],
     controllers: [AppController, ModuleController, UserController, RecommendationController],
     providers: [
         AppService,
         ModuleService,
         {
-        provide: 'IModuleRepository',
-        useClass: ModuleRepository,
+            provide: 'IModuleRepository',
+            useClass: ModuleRepository,
         },
         UserService,
         {
-        provide: 'IRecommendationRepository',
-        useClass: RecommendationRepository,
+            provide: 'IRecommendationRepository',
+            useClass: RecommendationRepository,
         },
         RecommendationService,
     ],
