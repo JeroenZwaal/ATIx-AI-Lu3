@@ -10,6 +10,10 @@ export const en = {
         subtitle:
             'Recommended modules based on your profile: program, interests, skills, favorites, and preferences (location, level, and study credits).',
         empty: 'No recommendations found. Please complete your profile first.',
+        noProfileTitle: 'Complete your profile first',
+        noProfileBody:
+            'To generate AI recommendations, we need your program, interests, skills, favorites, and preferences. Fill in your profile and come back here afterwards.',
+        fillProfileCta: 'Fill in profile',
     },
     dashboard: {
         title: 'Dashboard',
