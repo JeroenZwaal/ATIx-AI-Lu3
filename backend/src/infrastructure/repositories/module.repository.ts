@@ -11,25 +11,30 @@ export class ModuleRepository implements IModuleRepository {
         @InjectModel(ModuleModel.name)
         private readonly moduleModel: Model<ModuleDocument>,
     ) {}
-    
 
     private mapToEntity(doc: ModuleDocument): Module {
         const rawDoc = doc.toObject ? doc.toObject({ flattenMaps: true }) : doc;
         const raw = rawDoc as Record<string, unknown>;
-        
+
         // Parse moduleTags - try multiple sources
         let tagsArray: string[] = [];
-        const tagsValue = raw.module_tags || (doc as any).module_tags || doc.moduleTags;
+        const tagsValue =
+            raw.module_tags ||
+            (doc as ModuleDocument & { module_tags?: unknown }).module_tags ||
+            doc.moduleTags;
         if (tagsValue) {
             try {
                 // Replace single quotes with double quotes to make it valid JSON
                 const jsonString = (tagsValue as string).replace(/'/g, '"');
-                tagsArray = JSON.parse(jsonString);
+                const parsed = JSON.parse(jsonString) as unknown;
+                if (Array.isArray(parsed)) {
+                    tagsArray = parsed as string[];
+                }
             } catch (e) {
                 console.warn('Failed to parse module_tags:', e);
             }
         }
-        
+
         return new Module(
             doc._id.toString(),
             doc.id,
@@ -102,16 +107,20 @@ export class ModuleRepository implements IModuleRepository {
         docs.forEach((doc) => {
             const rawDoc = doc.toObject ? doc.toObject({ flattenMaps: true }) : doc;
             const raw = rawDoc as Record<string, unknown>;
-            
+
             // Try to get module_tags from raw object or moduleTags property
-            const tagsValue = raw.module_tags || (doc as any).module_tags || doc.moduleTags;
-            
+            const tagsValue =
+                raw.module_tags ||
+                (doc as ModuleDocument & { module_tags?: unknown }).module_tags ||
+                doc.moduleTags;
+
             if (tagsValue) {
                 try {
                     // Replace single quotes with double quotes to make it valid JSON
                     const jsonString = (tagsValue as string).replace(/'/g, '"');
-                    const tagsArray = JSON.parse(jsonString);
-                    if (Array.isArray(tagsArray)) {
+                    const parsed = JSON.parse(jsonString) as unknown;
+                    if (Array.isArray(parsed)) {
+                        const tagsArray = parsed as string[];
                         tagsArray.forEach((tag: string) => {
                             const trimmedTag = tag.trim().toLowerCase();
                             if (trimmedTag) {

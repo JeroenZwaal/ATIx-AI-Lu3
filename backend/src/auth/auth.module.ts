@@ -15,9 +15,7 @@ import { USERSCHEMA } from '../infrastructure/schemas/user.schema';
             secret: process.env.JWT_SECRET || 'your-secret-key',
             signOptions: { expiresIn: '24h' },
         }),
-        MongooseModule.forFeature([
-            { name: 'User', schema: USERSCHEMA },
-        ]),
+        MongooseModule.forFeature([{ name: 'User', schema: USERSCHEMA }]),
     ],
     controllers: [AuthController],
     providers: [

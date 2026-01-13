@@ -153,10 +153,10 @@ export class UserService {
             throw new UnauthorizedException('User not found');
         }
         const responseUser: UpdateUserDto = {
-            studyProgram: userProfile.studyProgram? userProfile.studyProgram : '',
-            studyLocation: userProfile.studyLocation? userProfile.studyLocation : '',
-            studyCredits: userProfile.studyCredits? userProfile.studyCredits : 0,
-            yearOfStudy: userProfile.yearOfStudy? userProfile.yearOfStudy : 0,
+            studyProgram: userProfile.studyProgram ? userProfile.studyProgram : '',
+            studyLocation: userProfile.studyLocation ? userProfile.studyLocation : '',
+            studyCredits: userProfile.studyCredits ? userProfile.studyCredits : 0,
+            yearOfStudy: userProfile.yearOfStudy ? userProfile.yearOfStudy : 0,
             skills: userProfile.skills,
             interests: userProfile.interests,
         };
@@ -205,5 +205,4 @@ export class UserService {
         }
         await this.userRepository.removeFavorite(userId, moduleId);
     }
-
 }
