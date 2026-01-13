@@ -4,13 +4,28 @@ updates:
     directory: "/backend"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 3
+    groups:
+      backend-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 3
+    groups:
+      frontend-dependencies:
+        patterns:
+          - "*"
 
   - package-ecosystem: "pip"
     directory: "/api-recommender"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 3
+    groups:
+      api-recommender-dependencies:
+        patterns:
+          - "*"
