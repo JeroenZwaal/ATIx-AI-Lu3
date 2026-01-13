@@ -205,60 +205,94 @@ export default function Dashboard({
                     {t.dashboard.title}
                 </h1>
 
-                <div className="theme-card rounded-lg p-6 mb-15">
-                    <h2 className="text-2xl font-bold theme-text-primary mb-2 text-center">
-                        Mijn Profiel
+                <div className="theme-card rounded-lg p-4 sm:p-6 mb-8">
+                    <h2 className="text-xl sm:text-2xl font-bold theme-text-primary mb-4 text-center">
+                        {t.dashboard.profile.title}
                     </h2>
 
                     {!userProfile ? (
-                        <p className="theme-text-muted text-center">Profiel laden...</p>
+                        <p className="theme-text-muted text-center">
+                            {t.dashboard.profile.loading}
+                        </p>
                     ) : (
-                        <>
-                            <h3 className="text-xl theme-text-primary">Opleiding</h3>
-                            <p className="mb-2 theme-text-secondary">{userProfile.studyProgram}</p>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <h3 className="text-sm font-semibold theme-text-primary mb-1">
+                                        {t.dashboard.profile.studyProgram}
+                                    </h3>
+                                    <p className="theme-text-secondary">
+                                        {userProfile.studyProgram}
+                                    </p>
+                                </div>
 
-                            <h3 className="text-xl theme-text-primary">Leerjaar</h3>
-                            <p className="mb-2 theme-text-secondary">{userProfile.yearOfStudy}</p>
+                                <div>
+                                    <h3 className="text-sm font-semibold theme-text-primary mb-1">
+                                        {t.dashboard.profile.yearOfStudy}
+                                    </h3>
+                                    <p className="theme-text-secondary">
+                                        {userProfile.yearOfStudy}
+                                    </p>
+                                </div>
 
-                            <h3 className="text-xl theme-text-primary">Studielocatie</h3>
-                            <p className="mb-2 theme-text-secondary">
-                                {userProfile.studyLocation || '—'}
-                            </p>
+                                <div>
+                                    <h3 className="text-sm font-semibold theme-text-primary mb-1">
+                                        {t.dashboard.profile.studyLocation}
+                                    </h3>
+                                    <p className="theme-text-secondary">
+                                        {userProfile.studyLocation || '—'}
+                                    </p>
+                                </div>
 
-                            <h3 className="text-xl theme-text-primary">Studiepunten</h3>
-                            <p className="mb-2 theme-text-secondary">{userProfile.studyCredits}</p>
-
-                            <h3 className="text-xl theme-text-primary">Vaardigheden</h3>
-                            <div className="mb-2">
-                                {userProfile.skills?.map((s) => (
-                                    <span
-                                        key={s}
-                                        className="inline-block bg-pink-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2"
-                                    >
-                                        {s}
-                                    </span>
-                                ))}
+                                <div>
+                                    <h3 className="text-sm font-semibold theme-text-primary mb-1">
+                                        {t.dashboard.profile.studyCredits}
+                                    </h3>
+                                    <p className="theme-text-secondary">
+                                        {userProfile.studyCredits}
+                                    </p>
+                                </div>
                             </div>
 
-                            <h3 className="text-xl theme-text-primary">Interesses</h3>
-                            <div className="mb-4">
-                                {userProfile.interests?.map((i) => (
-                                    <span
-                                        key={i}
-                                        className="inline-block bg-blue-300 text-black px-3 py-1 rounded-full text-sm font-medium mr-2 mb-2"
-                                    >
-                                        {i}
-                                    </span>
-                                ))}
+                            <div>
+                                <h3 className="text-sm font-semibold theme-text-primary mb-2">
+                                    {t.dashboard.profile.skills}
+                                </h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {userProfile.skills?.map((s) => (
+                                        <span
+                                            key={s}
+                                            className="inline-block bg-pink-300 text-black px-3 py-1 rounded-full text-sm font-medium"
+                                        >
+                                            {s}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className="text-sm font-semibold theme-text-primary mb-2">
+                                    {t.dashboard.profile.interests}
+                                </h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {userProfile.interests?.map((i) => (
+                                        <span
+                                            key={i}
+                                            className="inline-block bg-blue-300 text-black px-3 py-1 rounded-full text-sm font-medium"
+                                        >
+                                            {i}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
 
                             <button
                                 onClick={() => navigate('/profile/createProfile')}
-                                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                                className="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
                             >
-                                Aanpassen
+                                {t.dashboard.profile.editProfile}
                             </button>
-                        </>
+                        </div>
                     )}
                 </div>
                 <div className="theme-card rounded-lg p-6">
