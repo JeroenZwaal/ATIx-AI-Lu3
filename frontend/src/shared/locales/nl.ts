@@ -24,6 +24,17 @@ export const nl = {
         unknown: 'Onbekend',
         noDescription: 'Geen beschrijving beschikbaar',
         learnMore: 'Meer weten',
+        profile: {
+            title: 'Mijn Profiel',
+            loading: 'Profiel laden...',
+            studyProgram: 'Opleiding',
+            yearOfStudy: 'Leerjaar',
+            studyLocation: 'Studielocatie',
+            studyCredits: 'Studiepunten',
+            skills: 'Vaardigheden',
+            interests: 'Interesses',
+            editProfile: 'Aanpassen',
+        },
     },
     modules: {
         title: 'Keuzemodules',

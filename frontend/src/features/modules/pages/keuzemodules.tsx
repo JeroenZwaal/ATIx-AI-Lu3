@@ -7,6 +7,7 @@ import { useLanguage } from '../../../shared/contexts/useLanguage';
 import ModuleCompareModal from '../components/ModuleCompareModal';
 
 const MODULES_PER_PAGE = 10;
+const MAX_DESCRIPTION_LENGTH = 180;
 
 interface FilterState {
     studyCredits: Set<number>;
@@ -14,6 +15,13 @@ interface FilterState {
     difficulties: Set<string>;
     locations: Set<string>;
 }
+
+// Helper function to truncate long descriptions
+const truncateDescription = (text: string | undefined, maxLength: number): string => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength).trim() + '...';
+};
 
 export default function Keuzemodules() {
     const navigate = useNavigate();
@@ -686,9 +694,11 @@ export default function Keuzemodules() {
 
                                         {/* Description */}
                                         <p className="theme-text-secondary mb-4">
-                                            {module.shortdescription ||
-                                                module.description ||
-                                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat'}
+                                            {truncateDescription(
+                                                module.shortdescription || module.description,
+                                                MAX_DESCRIPTION_LENGTH,
+                                            ) ||
+                                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...'}
                                         </p>
 
                                         {/* Action Buttons */}

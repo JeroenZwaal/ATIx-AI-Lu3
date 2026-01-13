@@ -24,6 +24,17 @@ export const en = {
         unknown: 'Unknown',
         noDescription: 'No description available',
         learnMore: 'Learn more',
+        profile: {
+            title: 'My Profile',
+            loading: 'Loading profile...',
+            studyProgram: 'Study Program',
+            yearOfStudy: 'Year of Study',
+            studyLocation: 'Study Location',
+            studyCredits: 'Study Credits',
+            skills: 'Skills',
+            interests: 'Interests',
+            editProfile: 'Edit',
+        },
     },
     modules: {
         title: 'Elective Modules',
