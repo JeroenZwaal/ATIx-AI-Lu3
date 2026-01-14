@@ -21,7 +21,7 @@ concurrency:
 
 env:
   AZURE_WEBAPP_NAME: 'avanskeuzekompasbackend'
-  AZURE_WEBAPP_PACKAGE_PATH: './backend/'
+  AZURE_WEBAPP_PACKAGE_PATH: './backend'
   NODE_VERSION: '24.x'
 
 jobs:
@@ -37,11 +37,13 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'backend/package-lock.json'
 
-      - name: Install
+      - name: Install dependencies
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-        run: npm ci
+        run: |
+          echo "Installing dependencies..."
+          npm install
 
-      - name: Lint (no-fix)
+      - name: Lint
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
         run: npx eslint "{src,apps,libs,test}/**/*.ts"
 
@@ -51,7 +53,13 @@ jobs:
 
       - name: Build
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-        run: npm run build
+        run: |
+          echo "Cleaning previous builds..."
+          rm -rf dist node_modules/.cache
+          echo "Building application..."
+          npm run build
+          echo "Build output:"
+          ls -la dist/
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
@@ -87,4 +95,3 @@ jobs:
           package: .
           startup-command: "npm run start"
 
-        
