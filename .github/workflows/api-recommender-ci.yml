@@ -1,14 +1,7 @@
-name: API Recommender CI
+name: (Deprecated) API Recommender CI
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'api-recommender/**'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'api-recommender/**'
+  workflow_dispatch:
 
 concurrency:
   group: api-recommender-ci-${{ github.ref }}
