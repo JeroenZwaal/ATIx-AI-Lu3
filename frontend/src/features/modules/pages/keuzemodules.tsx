@@ -105,20 +105,6 @@ export default function Keuzemodules() {
         return Array.from(credits).sort((a, b) => a - b);
     }, [allModules]);
 
-    const availableThemes = useMemo(() => {
-        const themes = new Set<string>();
-        allModules.forEach((module) => {
-            if (module.tags && Array.isArray(module.tags)) {
-                module.tags.forEach((tag) => {
-                    if (tag && tag !== 'NL' && tag !== 'EN') {
-                        themes.add(tag);
-                    }
-                });
-            }
-        });
-        return Array.from(themes).sort();
-    }, [allModules]);
-
     const availableDifficulties = useMemo(() => {
         const difficulties = new Set<string>();
         allModules.forEach((module) => {
@@ -493,7 +479,6 @@ export default function Keuzemodules() {
                                         ))}
                                     </div>
                                 </div>
-
                                 {/* Locatie Filter */}
                                 <div>
                                     <h3 className="text-xl font-bold theme-text-primary mb-4">
@@ -520,7 +505,6 @@ export default function Keuzemodules() {
                                         ))}
                                     </div>
                                 </div>
-
                                 {/* Studiepunten Filter */}
                                 <div>
                                     <h3 className="text-xl font-bold theme-text-primary mb-4">
@@ -547,35 +531,6 @@ export default function Keuzemodules() {
                                         ))}
                                     </div>
                                 </div>
-
-                                {/* Thema Filter */}
-                                {availableThemes.length > 0 && (
-                                    <div>
-                                        <h3 className="text-xl font-bold theme-text-primary mb-4">
-                                            {t.modules.theme}
-                                        </h3>
-                                        <div className="flex flex-wrap gap-4">
-                                            {availableThemes.map((theme) => (
-                                                <label
-                                                    key={theme}
-                                                    className="flex items-center gap-2 cursor-pointer"
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={filters.themes.has(theme)}
-                                                        onChange={() =>
-                                                            toggleFilter('themes', theme)
-                                                        }
-                                                        className="w-5 h-5 text-violet-500 theme-card-alt border-gray-600 rounded focus:ring-violet-500 focus:ring-2"
-                                                    />
-                                                    <span className="theme-text-primary">
-                                                        {theme}
-                                                    </span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
                             {hasActiveFilters && (
