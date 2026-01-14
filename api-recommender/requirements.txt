@@ -1,7 +1,8 @@
 fastapi
+gunicorn
 uvicorn[standard]
 scikit-learn
-pandas
 numpy
+pandas
 nltk
 pydantic

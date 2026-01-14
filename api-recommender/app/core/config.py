@@ -8,6 +8,10 @@ class Settings:
     
     # Dataset configuration
     CSV_PATH = os.getenv("CSV_PATH", "data/Uitgebreide_VKM_dataset_cleaned2.csv")
+
+    # Optional cache to speed up cold starts (recommended on Azure App Service)
+    # Example: /home/site/recommender_cache.joblib
+    RECOMMENDER_CACHE_PATH = os.getenv("RECOMMENDER_CACHE_PATH", "")
     
     # ML configuration
     TFIDF_NGRAM_RANGE = (1, 2)

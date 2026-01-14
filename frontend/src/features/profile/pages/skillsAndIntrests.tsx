@@ -3,6 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import type { PersonalInfo, CreateProfileDto } from '../types/profile.types';
 import { useProfile, useGetAllTags } from '../hooks/useProfile';
 
+const normalizeTag = (tag: string): string => tag.trim().toLowerCase();
+const hasTag = (tags: string[], candidate: string): boolean =>
+    tags.some((t) => normalizeTag(t) === normalizeTag(candidate));
+
 export default function SkillsAndIntrests(): JSX.Element {
     const [skills, setSkills] = useState<string[]>([]);
     const [interests, setInterests] = useState<string[]>([]);
@@ -27,7 +31,7 @@ export default function SkillsAndIntrests(): JSX.Element {
     const addSkillTag = (value: string): void => {
         if (!value.trim()) return;
         if (skills.length >= MAX_TAGS) return;
-        if (!skills.includes(value.trim())) {
+        if (!hasTag(skills, value)) {
             setSkills([...skills, value.trim()]);
             setSkillSearchInput('');
             setIsSkillDropdownOpen(false);
@@ -40,7 +44,7 @@ export default function SkillsAndIntrests(): JSX.Element {
     const addInterestTag = (value: string): void => {
         if (!value.trim()) return;
         if (interests.length >= MAX_TAGS) return;
-        if (!interests.includes(value.trim())) {
+        if (!hasTag(interests, value)) {
             setInterests([...interests, value.trim()]);
             setInterestSearchInput('');
             setIsInterestDropdownOpen(false);
@@ -203,6 +207,12 @@ export default function SkillsAndIntrests(): JSX.Element {
                                         setShowError(false);
                                         setLocalError(null);
                                     }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            addSkillTag(skillSearchInput);
+                                        }
+                                    }}
                                     onFocus={() => setIsSkillDropdownOpen(true)}
                                     onBlur={() =>
                                         setTimeout(() => setIsSkillDropdownOpen(false), 200)
@@ -222,23 +232,46 @@ export default function SkillsAndIntrests(): JSX.Element {
                                             Laden...
                                         </div>
                                     ) : (
-                                        availableTags
-                                            .filter(
-                                                (tag) =>
-                                                    tag
-                                                        .toLowerCase()
-                                                        .includes(skillSearchInput.toLowerCase()) &&
-                                                    !skills.includes(tag),
-                                            )
-                                            .map((tag) => (
-                                                <div
-                                                    key={tag}
-                                                    onClick={() => addSkillTag(tag)}
-                                                    className="p-3 theme-text-secondary hover:theme-card-alt cursor-pointer transition-colors"
-                                                >
-                                                    {tag}
-                                                </div>
-                                            ))
+                                        <>
+                                            {skillSearchInput.trim() &&
+                                                !hasTag(skills, skillSearchInput) &&
+                                                !availableTags.some(
+                                                    (t) =>
+                                                        normalizeTag(t) ===
+                                                        normalizeTag(skillSearchInput),
+                                                ) && (
+                                                    <div
+                                                        onClick={() =>
+                                                            addSkillTag(skillSearchInput)
+                                                        }
+                                                        className="p-3 theme-text-secondary hover:theme-card-alt cursor-pointer transition-colors"
+                                                    >
+                                                        Voeg toe:{' '}
+                                                        <span className="theme-text-primary">
+                                                            {skillSearchInput.trim()}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                            {availableTags
+                                                .filter(
+                                                    (tag) =>
+                                                        tag
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                skillSearchInput.toLowerCase(),
+                                                            ) && !hasTag(skills, tag),
+                                                )
+                                                .map((tag) => (
+                                                    <div
+                                                        key={tag}
+                                                        onClick={() => addSkillTag(tag)}
+                                                        className="p-3 theme-text-secondary hover:theme-card-alt cursor-pointer transition-colors"
+                                                    >
+                                                        {tag}
+                                                    </div>
+                                                ))}
+                                        </>
                                     )}
                                     {!tagsLoading &&
                                         availableTags.filter(
@@ -246,7 +279,7 @@ export default function SkillsAndIntrests(): JSX.Element {
                                                 tag
                                                     .toLowerCase()
                                                     .includes(skillSearchInput.toLowerCase()) &&
-                                                !skills.includes(tag),
+                                                !hasTag(skills, tag),
                                         ).length === 0 && (
                                             <div className="p-3 theme-text-muted text-center text-sm">
                                                 Geen vaardigheden gevonden
@@ -293,6 +326,12 @@ export default function SkillsAndIntrests(): JSX.Element {
                                         setShowError(false);
                                         setLocalError(null);
                                     }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            addInterestTag(interestSearchInput);
+                                        }
+                                    }}
                                     onFocus={() => setIsInterestDropdownOpen(true)}
                                     onBlur={() =>
                                         setTimeout(() => setIsInterestDropdownOpen(false), 200)
@@ -312,24 +351,46 @@ export default function SkillsAndIntrests(): JSX.Element {
                                             Laden...
                                         </div>
                                     ) : (
-                                        availableTags
-                                            .filter(
-                                                (tag) =>
-                                                    tag
-                                                        .toLowerCase()
-                                                        .includes(
-                                                            interestSearchInput.toLowerCase(),
-                                                        ) && !interests.includes(tag),
-                                            )
-                                            .map((tag) => (
-                                                <div
-                                                    key={tag}
-                                                    onClick={() => addInterestTag(tag)}
-                                                    className="p-3 theme-text-secondary hover:theme-card-alt cursor-pointer transition-colors"
-                                                >
-                                                    {tag}
-                                                </div>
-                                            ))
+                                        <>
+                                            {interestSearchInput.trim() &&
+                                                !hasTag(interests, interestSearchInput) &&
+                                                !availableTags.some(
+                                                    (t) =>
+                                                        normalizeTag(t) ===
+                                                        normalizeTag(interestSearchInput),
+                                                ) && (
+                                                    <div
+                                                        onClick={() =>
+                                                            addInterestTag(interestSearchInput)
+                                                        }
+                                                        className="p-3 theme-text-secondary hover:theme-card-alt cursor-pointer transition-colors"
+                                                    >
+                                                        Voeg toe:{' '}
+                                                        <span className="theme-text-primary">
+                                                            {interestSearchInput.trim()}
+                                                        </span>
+                                                    </div>
+                                                )}
+
+                                            {availableTags
+                                                .filter(
+                                                    (tag) =>
+                                                        tag
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                interestSearchInput.toLowerCase(),
+                                                            ) && !hasTag(interests, tag),
+                                                )
+                                                .map((tag) => (
+                                                    <div
+                                                        key={tag}
+                                                        onClick={() => addInterestTag(tag)}
+                                                        className="p-3 theme-text-secondary hover:theme-card-alt cursor-pointer transition-colors"
+                                                    >
+                                                        {tag}
+                                                    </div>
+                                                ))}
+                                        </>
                                     )}
                                     {!tagsLoading &&
                                         availableTags.filter(
@@ -337,7 +398,7 @@ export default function SkillsAndIntrests(): JSX.Element {
                                                 tag
                                                     .toLowerCase()
                                                     .includes(interestSearchInput.toLowerCase()) &&
-                                                !interests.includes(tag),
+                                                !hasTag(interests, tag),
                                         ).length === 0 && (
                                             <div className="p-3 theme-text-muted text-center text-sm">
                                                 Geen tags gevonden

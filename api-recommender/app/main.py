@@ -92,7 +92,10 @@ def create_app() -> FastAPI:
         """Initialize services on startup."""
         try:
             logger.info("Starting recommendation service initialization...")
-            recommendation_service.load_dataset(settings.CSV_PATH)
+            recommendation_service.load_dataset(
+                settings.CSV_PATH,
+                cache_path=settings.RECOMMENDER_CACHE_PATH or None,
+            )
             logger.info(f"Dataset loaded: {recommendation_service.get_stats()['modules_count']} modules")
             logger.info(f"Features initialized: {recommendation_service.get_stats()['features_count']} features")
             logger.info("Recommendation API ready!")

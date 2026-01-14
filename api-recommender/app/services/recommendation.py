@@ -1,8 +1,10 @@
 import re
 import string
+import os
 import numpy as np
 import pandas as pd
 import random
+import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from typing import List, Optional, Dict, Any
@@ -223,8 +225,23 @@ class RecommendationService:
         
         return final_terms[:max_terms]
 
-    def load_dataset(self, csv_path: str):
-        """Load and preprocess dataset."""
+    def load_dataset(self, csv_path: str, cache_path: Optional[str] = None, force_rebuild: bool = False):
+        """Load and preprocess dataset.
+
+        If cache_path is provided, attempts to load precomputed artifacts to speed up cold starts.
+        """
+        if cache_path and not force_rebuild and os.path.exists(cache_path):
+            try:
+                cached = joblib.load(cache_path)
+                self.df = cached["df"]
+                self.vectorizer = cached["vectorizer"]
+                self.X = cached["X"]
+                self.feature_names = cached["feature_names"]
+                logger.info(f"Loaded recommender cache from {cache_path}")
+                return
+            except Exception as e:
+                logger.warning(f"Failed to load cache from {cache_path}, rebuilding. Error: {e}")
+
         self.df = pd.read_csv(csv_path)
         
         # Text preprocessing
@@ -251,6 +268,25 @@ class RecommendationService:
         
         self.X = self.vectorizer.fit_transform(self.df["clean_text"])
         self.feature_names = self.vectorizer.get_feature_names_out()
+
+        if cache_path:
+            try:
+                cache_dir = os.path.dirname(cache_path)
+                if cache_dir:
+                    os.makedirs(cache_dir, exist_ok=True)
+                joblib.dump(
+                    {
+                        "df": self.df,
+                        "vectorizer": self.vectorizer,
+                        "X": self.X,
+                        "feature_names": self.feature_names,
+                    },
+                    cache_path,
+                    compress=3,
+                )
+                logger.info(f"Wrote recommender cache to {cache_path}")
+            except Exception as e:
+                logger.warning(f"Failed to write cache to {cache_path}: {e}")
 
     def get_recommendations(
         self,

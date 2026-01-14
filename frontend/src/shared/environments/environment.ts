@@ -1,4 +1,4 @@
 export const environment = {
-    production: false,
-    apiUrl: 'http://localhost:3000/api',
-};
+    production: import.meta.env.PROD,
+    apiUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:3000/api',
+} as const;
