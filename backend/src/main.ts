@@ -9,9 +9,9 @@ async function bootstrap() {
         origin: [
             'http://localhost:4200',
             'http://localhost:3000',
-            'https://lemon-wave-049cd0203.4.azurestaticapps.net', // Azure Static Web App URL
-            process.env.FRONTEND_URL || 'http://localhost:5173',
-        ],
+            'http://localhost:5173',
+            process.env.FRONTEND_URL,
+        ].filter(Boolean), // Removes undefined/null values
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
         allowedHeaders: ['Content-Type', 'Authorization'],
         credentials: true,
