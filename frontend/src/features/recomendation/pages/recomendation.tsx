@@ -245,10 +245,7 @@ export default function Recomendation() {
             ) : error ? (
                 <div className="text-center py-12">
                     <p className="text-red-600 mb-4">{error}</p>
-                    <button
-                        onClick={loadRecommendations}
-                        className="btn-primary"
-                    >
+                    <button onClick={loadRecommendations} className="btn-primary">
                         {t.modules.tryAgain}
                     </button>
                 </div>
@@ -344,11 +341,15 @@ export default function Recomendation() {
                                                     }
                                                     className="peer sr-only"
                                                 />
-                                                <div 
+                                                <div
                                                     className="w-6 h-6 border-2 rounded-md peer-disabled:opacity-50 peer-disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
                                                     style={{
-                                                        backgroundColor: mongoId && selectedForCompare.has(mongoId) ? 'var(--checkbox-bg)' : 'var(--bg-card-alt)',
-                                                        borderColor: 'var(--checkbox-border)'
+                                                        backgroundColor:
+                                                            mongoId &&
+                                                            selectedForCompare.has(mongoId)
+                                                                ? 'var(--checkbox-bg)'
+                                                                : 'var(--bg-card-alt)',
+                                                        borderColor: 'var(--checkbox-border)',
                                                     }}
                                                 >
                                                     <svg

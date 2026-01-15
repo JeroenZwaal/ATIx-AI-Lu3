@@ -151,7 +151,12 @@ export default function ModuleCompareModal({ modules, onClose }: ModuleCompareMo
                     {similarities.length > 0 && (
                         <div className="bg-[var(--btn-primary-bg)]/10 border-2 border-[var(--btn-primary-bg)]/30 rounded-xl p-5 shadow-lg">
                             <h3 className="text-xl font-bold theme-text-primary mb-4 flex items-center gap-2">
-                                <svg className="w-6 h-6" style={{ color: 'var(--btn-primary-bg)' }} fill="currentColor" viewBox="0 0 20 20">
+                                <svg
+                                    className="w-6 h-6"
+                                    style={{ color: 'var(--btn-primary-bg)' }}
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                >
                                     <path
                                         fillRule="evenodd"
                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -209,7 +214,13 @@ export default function ModuleCompareModal({ modules, onClose }: ModuleCompareMo
                                     className="theme-card-alt rounded-xl p-5 theme-border shadow-lg hover:border-[var(--btn-primary-bg)] transition-colors"
                                 >
                                     <h4 className="text-lg font-bold theme-text-primary mb-4 pb-3 theme-border border-b flex items-center gap-2">
-                                        <span className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold" style={{ backgroundColor: 'var(--btn-primary-bg)', color: 'var(--btn-primary-text)' }}>
+                                        <span
+                                            className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                                            style={{
+                                                backgroundColor: 'var(--btn-primary-bg)',
+                                                color: 'var(--btn-primary-text)',
+                                            }}
+                                        >
                                             {modules.indexOf(module) + 1}
                                         </span>
                                         {module.name}
@@ -248,7 +259,14 @@ export default function ModuleCompareModal({ modules, onClose }: ModuleCompareMo
                                                 }`}
                                             >
                                                 <div className="flex items-center gap-2 max-w-xs">
-                                                    <span className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0" style={{ backgroundColor: 'var(--btn-primary-bg)', color: 'var(--btn-primary-text)' }}>
+                                                    <span
+                                                        className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                                                        style={{
+                                                            backgroundColor:
+                                                                'var(--btn-primary-bg)',
+                                                            color: 'var(--btn-primary-text)',
+                                                        }}
+                                                    >
                                                         {index + 1}
                                                     </span>
                                                     <span>{module.name}</span>
@@ -288,10 +306,7 @@ export default function ModuleCompareModal({ modules, onClose }: ModuleCompareMo
 
                 {/* Footer - sticky */}
                 <div className="sticky bottom-0 theme-card-alt border-t theme-border p-4 md:p-6 rounded-b-xl">
-                    <button
-                        onClick={onClose}
-                        className="btn-accent w-full md:w-auto px-8 py-3"
-                    >
+                    <button onClick={onClose} className="btn-accent w-full md:w-auto px-8 py-3">
                         {t.modules.compare.close}
                     </button>
                 </div>

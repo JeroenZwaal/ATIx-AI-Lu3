@@ -568,10 +568,7 @@ export default function Keuzemodules() {
                 ) : error ? (
                     <div className="text-center py-12">
                         <p className="text-red-600 mb-4">{error}</p>
-                        <button
-                            onClick={loadModules}
-                            className="btn-accent"
-                        >
+                        <button onClick={loadModules} className="btn-accent">
                             {t.modules.tryAgain}
                         </button>
                     </div>
@@ -604,11 +601,15 @@ export default function Keuzemodules() {
                                                     }
                                                     className="peer sr-only"
                                                 />
-                                                <div 
+                                                <div
                                                     className="w-6 h-6 border-2 rounded-md peer-disabled:opacity-50 peer-disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
                                                     style={{
-                                                        backgroundColor: selectedForCompare.has(module.id) ? 'var(--checkbox-bg)' : 'var(--bg-card-alt)',
-                                                        borderColor: 'var(--checkbox-border)'
+                                                        backgroundColor: selectedForCompare.has(
+                                                            module.id,
+                                                        )
+                                                            ? 'var(--checkbox-bg)'
+                                                            : 'var(--bg-card-alt)',
+                                                        borderColor: 'var(--checkbox-border)',
                                                     }}
                                                 >
                                                     <svg
