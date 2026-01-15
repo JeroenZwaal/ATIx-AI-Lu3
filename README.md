@@ -44,7 +44,7 @@ npm install
 
 ### Backend
 
-Maak een `.env` bestand in de `backend` directory met de volgende variabelen:
+Maak een `.env` bestand in de `backend` directory met de volgende variabelen (gebruik `backend/.env.example` als template). Commit nooit `.env` bestanden naar git.
 
 ```
 MONGODB_URI=mongodb://localhost:27017/ati
@@ -89,6 +89,8 @@ Gedetailleerde documentatie is beschikbaar in de `Documentatie` directory:
 - Security Requirements
 - Testplan
 - UX-ontwerp
+
+CI/CD security setup (SAST/SCA/SBOM gates) staat beschreven in `.github/SECURITY_CICD.md`.
 
 ## Testen
 

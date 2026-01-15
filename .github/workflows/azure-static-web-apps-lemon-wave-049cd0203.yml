@@ -15,6 +15,16 @@ on:
       - 'frontend/**'
 
   workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "GitHub Environment to deploy to (dev/acc/prd)"
+        required: true
+        default: prd
+        type: choice
+        options:
+          - dev
+          - acc
+          - prd
 
 jobs:
   build_job:
@@ -50,6 +60,7 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     name: Build and Deploy Job
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target_environment || 'prd' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -79,7 +90,7 @@ jobs:
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
-          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_LEMON_WAVE_049CD0203 }}
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
