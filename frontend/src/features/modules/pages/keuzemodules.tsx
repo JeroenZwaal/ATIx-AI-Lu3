@@ -661,7 +661,7 @@ export default function Keuzemodules() {
                                             <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">
                                                 {module.studycredit} ECTS
                                             </span>
-                                            <span className="bg-[#e38094] text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium">
                                                 {module.location || t.modules.unknown}
                                             </span>
                                         </div>
