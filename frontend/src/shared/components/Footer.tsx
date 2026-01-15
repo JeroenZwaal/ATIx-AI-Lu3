@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
+import AvansLogo from './AvansLogo';
 
-const LOGO = () => <span className="text-2xl font-bold text-red-600">Avans</span>;
+const LOGO = () => <AvansLogo />;
 
 export default function Footer() {
     return (

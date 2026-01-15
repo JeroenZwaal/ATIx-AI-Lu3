@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
+import AvansLogo from '../../../shared/components/AvansLogo';
 
 // import { CreateProfileDto } from '../types/profile.types';
 
@@ -218,7 +219,9 @@ export default function PersonalInfo() {
                 </div>
             </div>
 
-            <div className="fixed bottom-4 left-4 text-red-600 text-xl font-bold">Avans</div>
+            <div className="fixed bottom-4 left-4">
+                <AvansLogo />
+            </div>
         </div>
     );
 }

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth.tsx';
 import { useLanguage } from '../../../shared/contexts/useLanguage';
+import AvansLogo from '../../../shared/components/AvansLogo';
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -204,7 +205,9 @@ export default function Register() {
                 </div>
             </div>
 
-            <div className="fixed bottom-4 left-4 text-red-600 text-xl font-bold">Avans</div>
+            <div className="fixed bottom-4 left-4">
+                <AvansLogo />
+            </div>
         </div>
     );
 }

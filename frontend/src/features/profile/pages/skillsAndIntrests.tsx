@@ -2,6 +2,7 @@ import React, { useState, useRef, type Dispatch, type SetStateAction, type JSX }
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { PersonalInfo, CreateProfileDto } from '../types/profile.types';
 import { useProfile, useGetAllTags } from '../hooks/useProfile';
+import AvansLogo from '../../../shared/components/AvansLogo';
 
 const normalizeTag = (tag: string): string => tag.trim().toLowerCase();
 const hasTag = (tags: string[], candidate: string): boolean =>
@@ -431,7 +432,9 @@ export default function SkillsAndIntrests(): JSX.Element {
                 </div>
             </div>
 
-            <div className="fixed bottom-4 left-4 text-red-600 font-bold">Avans</div>
+            <div className="fixed bottom-4 left-4">
+                <AvansLogo />
+            </div>
         </div>
     );
 }

@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/hooks/useAuth';
 import { useLanguage } from '../contexts/useLanguage';
 import { useTheme } from '../contexts/useTheme';
+import AvansLogo from './AvansLogo';
 
 interface User {
     firstName: string;
@@ -13,9 +14,9 @@ function Logo() {
     return (
         <Link
             to="/dashboard"
-            className="text-2xl font-bold !text-red-600 hover:!text-red-500 transition-colors"
+            className="hover:opacity-80 transition-opacity"
         >
-            Avans
+            <AvansLogo />
         </Link>
     );
 }
