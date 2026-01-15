@@ -6,6 +6,7 @@ import recommendationService from '../services/recommendation.service';
 import { moduleService } from '../../modules/services/module.service';
 import authService from '../../auth/services/auth.service';
 import type { Module } from '../../../shared/types/index';
+import ModuleCompareModal from '../../modules/components/ModuleCompareModal';
 
 export default function Recomendation() {
     const navigate = useNavigate();
