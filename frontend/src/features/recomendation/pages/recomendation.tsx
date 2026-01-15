@@ -27,7 +27,9 @@ export default function Recomendation() {
             const favoriteModules = await authService.getFavorites();
             const favoriteIds = new Set(favoriteModules.map((module) => module.id));
             setFavorites(favoriteIds);
-        } catch {}
+        } catch {
+            // Ignore
+        }
     };
 
     const loadAllModules = useCallback(async () => {
@@ -49,7 +51,9 @@ export default function Recomendation() {
                 }),
             );
             setAllModules(modules.filter((m): m is Module => m !== null));
-        } catch {}
+        } catch {
+            // Ignore
+        }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [items]);
