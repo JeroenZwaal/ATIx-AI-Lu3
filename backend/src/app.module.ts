@@ -16,6 +16,7 @@ import { RecommendationService } from './application/services/recommendation.ser
 import { RecommendationController } from './interfaces/controllers/recommendation.controller';
 import { RecommendationRepository } from './infrastructure/repositories/recommendation.repository';
 import { SecurityMiddleware } from './infrastructure/security/security.middleware';
+import { RateLimiterMiddleware } from './infrastructure/security/ratelimiter';
 
 @Module({
     imports: [
@@ -46,6 +47,6 @@ import { SecurityMiddleware } from './infrastructure/security/security.middlewar
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        consumer.apply(SecurityMiddleware).forRoutes('*');
+        consumer.apply(SecurityMiddleware, RateLimiterMiddleware).forRoutes('*');
     }
 }
