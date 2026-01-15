@@ -12,7 +12,7 @@ import { USERSCHEMA } from '../infrastructure/schemas/user.schema';
     imports: [
         PassportModule,
         JwtModule.register({
-            secret: process.env.JWT_SECRET || 'your-secret-key',
+            secret: process.env.JWT_SECRET,
             signOptions: { expiresIn: '24h' },
         }),
         MongooseModule.forFeature([{ name: 'User', schema: USERSCHEMA }]),
