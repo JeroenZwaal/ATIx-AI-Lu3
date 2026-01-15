@@ -723,7 +723,7 @@ export default function Keuzemodules() {
 
                         {/* Pagination */}
                         {totalPages > 1 && (
-                            <div className="flex flex-wrap items-center justify-center gap-2 mt-8 px-2">
+                            <div className="flex items-center justify-center gap-4 mt-8">
                                 <button
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 1}
@@ -733,59 +733,30 @@ export default function Keuzemodules() {
                                                 ? 'var(--bg-button)'
                                                 : 'var(--accent)',
                                     }}
-                                    className={`px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base rounded-lg font-medium transition-colors ${
+                                    className={`px-3 py-2 rounded-lg font-medium transition-colors ${
                                         currentPage === 1
                                             ? 'theme-text-muted cursor-not-allowed'
                                             : 'text-black hover:opacity-80'
                                     }`}
                                 >
-                                    {t.modules.previous}
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M15 19l-7-7 7-7"
+                                        />
+                                    </svg>
                                 </button>
 
-                                <div className="flex flex-wrap justify-center gap-2 max-w-full">
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                                        (page) => {
-                                            if (
-                                                page === 1 ||
-                                                page === totalPages ||
-                                                (page >= currentPage - 1 && page <= currentPage + 1)
-                                            ) {
-                                                return (
-                                                    <button
-                                                        key={page}
-                                                        onClick={() => handlePageChange(page)}
-                                                        style={{
-                                                            backgroundColor:
-                                                                currentPage === page
-                                                                    ? 'var(--accent)'
-                                                                    : 'var(--accent-hover)',
-                                                        }}
-                                                        className={`px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base rounded-lg font-medium transition-colors ${
-                                                            currentPage === page
-                                                                ? 'text-black hover:opacity-80'
-                                                                : 'text-black hover:opacity-80'
-                                                        }`}
-                                                    >
-                                                        {page}
-                                                    </button>
-                                                );
-                                            } else if (
-                                                page === currentPage - 2 ||
-                                                page === currentPage + 2
-                                            ) {
-                                                return (
-                                                    <span
-                                                        key={page}
-                                                        className="px-2 theme-text-muted"
-                                                    >
-                                                        ...
-                                                    </span>
-                                                );
-                                            }
-                                            return null;
-                                        },
-                                    )}
-                                </div>
+                                <span className="theme-text-primary font-medium">
+                                    {currentPage} / {totalPages}
+                                </span>
 
                                 <button
                                     onClick={() => handlePageChange(currentPage + 1)}
@@ -796,22 +767,31 @@ export default function Keuzemodules() {
                                                 ? 'var(--bg-button)'
                                                 : 'var(--accent)',
                                     }}
-                                    className={`px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base rounded-lg font-medium transition-colors ${
+                                    className={`px-3 py-2 rounded-lg font-medium transition-colors ${
                                         currentPage === totalPages
                                             ? 'theme-text-muted cursor-not-allowed'
                                             : 'text-black hover:opacity-80'
                                     }`}
                                 >
-                                    {t.modules.next}
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 5l7 7-7 7"
+                                        />
+                                    </svg>
                                 </button>
                             </div>
                         )}
 
                         <div className="text-center theme-text-secondary text-sm mt-4">
-                            {t.modules.pageOf
-                                .replace('{current}', String(currentPage))
-                                .replace('{total}', String(totalPages))
-                                .replace('{count}', String(modules.length))}
+                            {modules.length} {t.modules.modulesFound}
                         </div>
                     </>
                 )}
