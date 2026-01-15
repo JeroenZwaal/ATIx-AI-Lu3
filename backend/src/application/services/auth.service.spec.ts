@@ -1,18 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/unbound-method */
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
+import { IUserRepository } from '../../domain/repositories/user.repository.interface';
+import { ITokenBlacklistRepository } from '../../domain/repositories/token-blacklist.repository.interface';
 
 // Mock bcrypt
 jest.mock('bcryptjs');
 
 describe('AuthService', () => {
     let service: AuthService;
-    let userRepository: any;
-    let tokenBlacklistRepository: any;
+    let userRepository: IUserRepository;
+    let tokenBlacklistRepository: ITokenBlacklistRepository;
 
     const mockUser = {
         _id: '507f1f77bcf86cd799439011',
@@ -23,18 +24,26 @@ describe('AuthService', () => {
         skills: [],
         interests: [],
         favorites: [],
+        twoFactorEnabled: false,
         createdAt: new Date(),
         updatedAt: new Date(),
     };
 
-    const mockUserRepository = {
+    const mockUserRepository: jest.Mocked<IUserRepository> = {
         findByEmail: jest.fn(),
         create: jest.fn(),
         findById: jest.fn(),
         update: jest.fn(),
+        delete: jest.fn(),
+        addFavorite: jest.fn(),
+        removeFavorite: jest.fn(),
+        updateRefreshToken: jest.fn(),
+        enable2FA: jest.fn(),
+        disable2FA: jest.fn(),
+        getFavorites: jest.fn(),
     };
 
-    const mockTokenBlacklistRepository = {
+    const mockTokenBlacklistRepository: jest.Mocked<ITokenBlacklistRepository> = {
         addToken: jest.fn(),
         isTokenBlacklisted: jest.fn(),
         removeExpiredTokens: jest.fn(),
@@ -163,7 +172,7 @@ describe('AuthService', () => {
             await service.invalidateToken(token);
 
             expect(mockTokenBlacklistRepository.addToken).toHaveBeenCalled();
-            const callArgs = mockTokenBlacklistRepository.addToken.mock.calls[0];
+            const callArgs = mockTokenBlacklistRepository.addToken.mock.calls[0] as [string, Date];
             expect(callArgs[0]).toBe(token);
             expect(callArgs[1]).toBeInstanceOf(Date);
         });

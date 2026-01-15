@@ -3,6 +3,11 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
+import { AuthResponseDto } from '../src/interfaces/presenters/auth.dto';
+
+interface ErrorResponse {
+    message: string;
+}
 
 describe('Token Invalidation (e2e)', () => {
     let app: INestApplication<App>;
@@ -38,7 +43,7 @@ describe('Token Invalidation (e2e)', () => {
 
         expect(response.body).toHaveProperty('access_token');
         expect(response.body).toHaveProperty('user');
-        authToken = response.body.access_token;
+        authToken = (response.body as AuthResponseDto).access_token;
     });
 
     it('should allow access to protected endpoint with valid token', async () => {
@@ -61,7 +66,7 @@ describe('Token Invalidation (e2e)', () => {
             })
             .expect(201);
 
-        const newToken = loginResponse.body.access_token;
+        const newToken = (loginResponse.body as AuthResponseDto).access_token;
 
         // Verifieer dat het nieuwe token werkt
         await request(app.getHttpServer())
@@ -82,7 +87,7 @@ describe('Token Invalidation (e2e)', () => {
             .expect(401);
 
         expect(response.body).toHaveProperty('message');
-        expect(response.body.message).toContain('Token has been invalidated');
+        expect((response.body as ErrorResponse).message).toContain('Token has been invalidated');
     });
 
     it('should reject invalidated token for any protected endpoint', async () => {
@@ -95,7 +100,7 @@ describe('Token Invalidation (e2e)', () => {
             })
             .expect(201);
 
-        const token = loginResponse.body.access_token;
+        const token = (loginResponse.body as AuthResponseDto).access_token;
         expect(token).toBeDefined();
 
         // Verifieer dat het token werkt voordat we logout doen
@@ -123,7 +128,7 @@ describe('Token Invalidation (e2e)', () => {
             .set('Authorization', `Bearer ${token}`)
             .expect(401);
 
-        expect(logoutResponse.body.message).toContain('Token has been invalidated');
+        expect((logoutResponse.body as ErrorResponse).message).toContain('Token has been invalidated');
 
         // Probeer het token te gebruiken voor getProfile endpoint (moet ook falen)
         const profileResponse = await request(app.getHttpServer())
@@ -131,6 +136,6 @@ describe('Token Invalidation (e2e)', () => {
             .set('Authorization', `Bearer ${token}`)
             .expect(401);
 
-        expect(profileResponse.body.message).toContain('Token has been invalidated');
+        expect((profileResponse.body as ErrorResponse).message).toContain('Token has been invalidated');
     });
 });
