@@ -9,55 +9,55 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Default dark theme variables */
-  --bg-page: #0a0a0a;
-  --bg-card: #1f2937;
-  --bg-card-alt: #171717;
-  --bg-input: #262626;
-  --bg-button: #404040;
+  /* Default dark theme variables - Avans huisstijl */
+  --bg-page: #121212;
+  --bg-card: #1e1e1e;
+  --bg-card-alt: #2a2a2a;
+  --bg-input: #333333;
+  --bg-button: #3d3d3d;
   --text-primary: #ffffff;
-  --text-secondary: #d1d5db;
-  --text-muted: #9ca3af;
-  --text-accent: #a78bfa;
-  --border: #374151;
-  --accent: #c4b5fd;
-  --accent-hover: #a78bfa;
+  --text-secondary: #b3b3b3;
+  --text-muted: #808080;
+  --text-accent: #e38094;
+  --border: #404040;
+  --accent: #e38094;
+  --accent-hover: #c6002a;
 }
 
-/* Dark theme (default) */
+/* Dark theme (default) - Avans huisstijl */
 :root.dark,
 html.dark {
   color-scheme: dark;
-  --bg-page: #0a0a0a;
-  --bg-card: #1f2937;
-  --bg-card-alt: #171717;
-  --bg-input: #262626;
-  --bg-button: #404040;
+  --bg-page: #121212;
+  --bg-card: #1e1e1e;
+  --bg-card-alt: #2a2a2a;
+  --bg-input: #333333;
+  --bg-button: #3d3d3d;
   --text-primary: #ffffff;
-  --text-secondary: #d1d5db;
-  --text-muted: #9ca3af;
-  --text-accent: #a78bfa;
-  --border: #374151;
-  --accent: #c4b5fd;
-  --accent-hover: #a78bfa;
+  --text-secondary: #b3b3b3;
+  --text-muted: #808080;
+  --text-accent: #e38094;
+  --border: #404040;
+  --accent: #e38094;
+  --accent-hover: #c6002a;
 }
 
-/* Light theme */
+/* Light theme - Avans huisstijl */
 :root.light,
 html.light {
   color-scheme: light;
-  --bg-page: #f1f5f9;
+  --bg-page: #f5f5f5;
   --bg-card: #ffffff;
-  --bg-card-alt: #e2e8f0;
-  --bg-input: #f8fafc;
-  --bg-button: #cbd5e1;
-  --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
-  --text-accent: #7c3aed;
-  --border: #cbd5e1;
-  --accent: #8b5cf6;
-  --accent-hover: #7c3aed;
+  --bg-card-alt: #fafafa;
+  --bg-input: #ffffff;
+  --bg-button: #e5e5e5;
+  --text-primary: #171717;
+  --text-secondary: #525252;
+  --text-muted: #737373;
+  --text-accent: #e38094;
+  --border: #e5e5e5;
+  --accent: #e38094;
+  --accent-hover: #d4607a;
 }
 
 /* Theme utility classes */
