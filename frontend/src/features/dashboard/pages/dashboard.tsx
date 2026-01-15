@@ -62,7 +62,7 @@ export default function Dashboard({
         if (onModuleClick) {
             onModuleClick(moduleId);
         } else {
-            navigate(`/keuzemodules/${moduleId}`);
+            navigate(`/keuzemodules/${moduleId}`, { state: { from: '/dashboard' } });
         }
     };
 

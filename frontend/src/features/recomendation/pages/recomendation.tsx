@@ -69,7 +69,7 @@ export default function Recomendation() {
         try {
             const mongoId = await resolveMongoId(rec);
             if (mongoId) {
-                navigate(`/keuzemodules/${mongoId}`);
+                navigate(`/keuzemodules/${mongoId}`, { state: { from: '/recomendation' } });
                 return;
             }
         } catch {
@@ -79,7 +79,7 @@ export default function Recomendation() {
         try {
             const results = await moduleService.searchModules(rec.name);
             if (results.length > 0) {
-                navigate(`/keuzemodules/${results[0].id}`);
+                navigate(`/keuzemodules/${results[0].id}`, { state: { from: '/recomendation' } });
             }
         } catch {
             // ignore
