@@ -184,7 +184,7 @@ export default function SkillsAndIntrests(): JSX.Element {
                                 {skills.map((tag, i) => (
                                     <span
                                         key={i}
-                                        className="bg-[#e38094]/20 text-[#e38094] px-3 py-1 rounded-full text-sm flex items-center"
+                                        className="bg-[#312A48] text-[#A89ECD] px-3 py-1 rounded-full text-sm flex items-center"
                                     >
                                         {tag}
                                         <button
@@ -303,7 +303,7 @@ export default function SkillsAndIntrests(): JSX.Element {
                                 {interests.map((tag, i) => (
                                     <span
                                         key={i}
-                                        className="bg-[#e38094]/20 text-[#e38094] px-3 py-1 rounded-full text-sm flex items-center"
+                                        className="bg-[#312A48] text-[#A89ECD] px-3 py-1 rounded-full text-sm flex items-center"
                                     >
                                         {tag}
                                         <button
