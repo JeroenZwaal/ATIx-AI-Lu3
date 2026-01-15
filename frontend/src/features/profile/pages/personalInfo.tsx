@@ -184,8 +184,7 @@ export default function PersonalInfo() {
                             </button>
                         </label>
 
-                        <input
-                            type="text"
+                        <select
                             id="studielocatie"
                             value={studielocatie}
                             onChange={(e) => {
@@ -194,7 +193,12 @@ export default function PersonalInfo() {
                                 setLocalError(null);
                             }}
                             className="w-full theme-card-alt theme-text-primary rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
-                        />
+                        >
+                            <option value="">Selecteer studielocatie</option>
+                            <option value="Breda">Breda</option>
+                            <option value="Tilburg">Tilburg</option>
+                            <option value="Den Bosch">Den Bosch</option>
+                        </select>
                     </div>
 
                     <div>

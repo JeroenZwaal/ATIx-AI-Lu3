@@ -23,6 +23,20 @@ const truncateDescription = (text: string | undefined, maxLength: number): strin
     return text.substring(0, maxLength).trim() + '...';
 };
 
+const normalizeLocationKey = (value: string): string => value.trim().toLowerCase();
+
+const parseLocationParts = (location: string | undefined): string[] => {
+    if (!location) return [];
+    const cleaned = location.replace(/\s+/g, ' ').trim();
+    if (!cleaned) return [];
+
+    // Split on common separators and Dutch/English conjunctions.
+    return cleaned
+        .split(/\s*(?:,|;|\||\/|&|\+|\s+en\s+|\s+and\s+)\s*/gi)
+        .map((p) => p.trim())
+        .filter(Boolean);
+};
+
 export default function Keuzemodules() {
     const navigate = useNavigate();
     const { t } = useLanguage();
@@ -122,16 +136,18 @@ export default function Keuzemodules() {
     }, [allModules]);
 
     const availableLocations = useMemo(() => {
-        const locations = new Set<string>();
+        const locations = new Map<string, string>();
         allModules.forEach((module) => {
             if (module.location) {
-                const location = module.location.trim();
-                if (location) {
-                    locations.add(location);
-                }
+                parseLocationParts(module.location).forEach((part) => {
+                    const key = normalizeLocationKey(part);
+                    if (key && !locations.has(key)) locations.set(key, part);
+                });
             }
         });
-        return Array.from(locations).sort();
+        return Array.from(locations.values()).sort((a, b) =>
+            a.localeCompare(b, 'nl', { sensitivity: 'base' }),
+        );
     }, [allModules]);
 
     // Apply filters live
@@ -165,7 +181,13 @@ export default function Keuzemodules() {
         }
 
         if (filters.locations.size > 0) {
-            filtered = filtered.filter((module) => filters.locations.has(module.location.trim()));
+            const selectedLocationKeys = new Set(
+                Array.from(filters.locations).map((l) => normalizeLocationKey(l)),
+            );
+            filtered = filtered.filter((module) => {
+                const parts = parseLocationParts(module.location);
+                return parts.some((p) => selectedLocationKeys.has(normalizeLocationKey(p)));
+            });
         }
 
         return filtered;
