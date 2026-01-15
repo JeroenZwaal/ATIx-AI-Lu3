@@ -90,6 +90,42 @@ Gedetailleerde documentatie is beschikbaar in de `Documentatie` directory:
 - Testplan
 - UX-ontwerp
 
+## Testen
+
+**Backend:**
+```bash
+cd backend
+npm test
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm test
+```
+
+### Test Documentatie
+
+#### Backend - auth.service.spec.ts
+- **login met valide credentials**: Controleert of access token wordt gegenereerd bij correcte inloggegevens
+- **login met onbekende gebruiker**: Verifieert dat UnauthorizedException wordt gegooid voor niet-bestaande gebruikers
+- **login met fout wachtwoord**: Test dat UnauthorizedException wordt gegooid bij incorrect wachtwoord
+- **registratie nieuwe gebruiker**: Controleert of nieuwe gebruiker wordt aangemaakt en access token wordt gegenereerd
+- **registratie bestaande gebruiker**: Verifieert dat ConflictException wordt gegooid als email al bestaat
+
+#### Backend - app.controller.spec.ts
+- **root endpoint**: Test of "Hello World!" wordt geretourneerd
+
+#### Frontend - keuzemodules.spec.tsx
+- **pagina titel**: Controleert of de titel "Keuzemodules" wordt weergegeven
+- **modules laden**: Test of modules correct worden opgehaald en getoond
+- **lange beschrijvingen afkappen**: Verifieert dat beschrijvingen langer dan 180 karakters worden afgekapt met "..."
+- **module metadata**: Controleert of ECTS, locatie en andere metadata correct worden weergegeven
+- **zoekfunctie**: Test of het zoekveld aanwezig is
+- **loading state**: Verifieert dat "Laden..." wordt getoond tijdens het ophalen van data
+- **error state**: Test of foutmeldingen correct worden getoond bij API errors
+- **favoriet toggle**: Controleert of toggleFavorite functie wordt aangeroepen bij klikken op favoriet button
+
 ## Licentie
 
 UNLICENSED

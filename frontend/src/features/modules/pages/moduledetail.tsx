@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { moduleService } from '../services/module.service';
 import type { Module } from '../../../shared/types/index';
 import { useLanguage } from '../../../shared/contexts/useLanguage';
@@ -7,6 +7,7 @@ import { useLanguage } from '../../../shared/contexts/useLanguage';
 export default function ModuleDetail() {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
     const { t } = useLanguage();
     const [module, setModule] = useState<Module | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -41,7 +42,17 @@ export default function ModuleDetail() {
     };
 
     const handleBack = () => {
-        navigate('/keuzemodules');
+        const from = location.state?.from;
+
+        if (from) {
+            navigate(from);
+        } else {
+            if (window.history.length > 1) {
+                navigate(-1);
+            } else {
+                navigate('/keuzemodules');
+            }
+        }
     };
 
     const getUniqueTexts = () => {

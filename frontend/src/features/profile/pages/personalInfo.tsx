@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 // PersonalInfo.tsx
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -16,43 +17,25 @@ export default function PersonalInfo() {
     const [showError, setShowError] = useState(false);
     const [localError, setLocalError] = useState<string | null>(null);
 
-    // Track if we've done the initial prefill
-    const prefillDoneRef = useRef(false);
+    const hasPrefilled = useRef(false);
 
-    // Only prefill once when userProfile becomes available
     useEffect(() => {
-        if (!userProfile || prefillDoneRef.current) return;
+        if (!userProfile || hasPrefilled.current) return;
 
-        prefillDoneRef.current = true;
+        hasPrefilled.current = true;
 
-        // Avoid calling setState synchronously within an effect (eslint rule)
-        let cancelled = false;
-        queueMicrotask(() => {
-            if (cancelled) return;
-            setOpleiding(userProfile.studyProgram ?? '');
-            setLeerjaar(String(userProfile.yearOfStudy ?? ''));
-            setStudiepunten(String(userProfile.studyCredits ?? ''));
-            setStudielocatie(userProfile.studyLocation ?? '');
-        });
-
-        return () => {
-            cancelled = true;
-        };
+        // Set the form fields with existing profile data
+        setOpleiding(userProfile.studyProgram ?? '');
+        setLeerjaar(String(userProfile.yearOfStudy ?? ''));
+        setStudiepunten(String(userProfile.studyCredits ?? ''));
+        setStudielocatie(userProfile.studyLocation ?? '');
     }, [userProfile]);
 
-    // If the provider reports an error (server-side), show it
+    // Show error from provider if it exists
     useEffect(() => {
         if (error) {
-            let cancelled = false;
-            queueMicrotask(() => {
-                if (cancelled) return;
-                setLocalError(null);
-                setShowError(true);
-            });
-
-            return () => {
-                cancelled = true;
-            };
+            setLocalError(null);
+            setShowError(true);
         }
     }, [error]);
 

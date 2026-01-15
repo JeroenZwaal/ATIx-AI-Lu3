@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../../shared/contexts/useLanguage';
 import type { RecommendationItem } from '../types/recommendation.types';
 import recommendationService from '../services/recommendation.service';
 import { moduleService } from '../../modules/services/module.service';
 import authService from '../../auth/services/auth.service';
+import type { Module } from '../../../shared/types/index';
+import ModuleCompareModal from '../../modules/components/ModuleCompareModal';
 
 export default function Recomendation() {
     const navigate = useNavigate();
@@ -16,6 +18,45 @@ export default function Recomendation() {
     const [favorites, setFavorites] = useState<Set<string>>(new Set());
     const [moduleIdByExternalId, setModuleIdByExternalId] = useState<Record<number, string>>({});
     const [pendingFavorites, setPendingFavorites] = useState<Set<number>>(new Set());
+    const [selectedForCompare, setSelectedForCompare] = useState<Set<string>>(new Set());
+    const [showCompareModal, setShowCompareModal] = useState(false);
+    const [allModules, setAllModules] = useState<Module[]>([]);
+
+    const loadFavorites = async () => {
+        try {
+            const favoriteModules = await authService.getFavorites();
+            const favoriteIds = new Set(favoriteModules.map((module) => module.id));
+            setFavorites(favoriteIds);
+        } catch {
+            // Ignore
+        }
+    };
+
+    const loadAllModules = useCallback(async () => {
+        try {
+            const mongoIds = await Promise.all(
+                items.map(async (rec) => {
+                    const mongoId = await resolveMongoId(rec);
+                    return mongoId;
+                }),
+            );
+            const validIds = mongoIds.filter((id): id is string => id !== null);
+            const modules = await Promise.all(
+                validIds.map(async (id) => {
+                    try {
+                        return await moduleService.getModuleById(id);
+                    } catch {
+                        return null;
+                    }
+                }),
+            );
+            setAllModules(modules.filter((m): m is Module => m !== null));
+        } catch {
+            // Ignore
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [items]);
 
     useEffect(() => {
         void loadRecommendations();
@@ -27,15 +68,9 @@ export default function Recomendation() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [items, moduleIdByExternalId]);
 
-    const loadFavorites = async () => {
-        try {
-            const favoriteModules = await authService.getFavorites();
-            const favoriteIds = new Set(favoriteModules.map((module) => module.id));
-            setFavorites(favoriteIds);
-        } catch {
-            // silently ignore; page can still render recommendations
-        }
-    };
+    useEffect(() => {
+        void loadAllModules();
+    }, [items, loadAllModules]);
 
     const loadRecommendations = async () => {
         try {
@@ -69,7 +104,7 @@ export default function Recomendation() {
         try {
             const mongoId = await resolveMongoId(rec);
             if (mongoId) {
-                navigate(`/keuzemodules/${mongoId}`);
+                navigate(`/keuzemodules/${mongoId}`, { state: { from: '/recomendation' } });
                 return;
             }
         } catch {
@@ -79,7 +114,7 @@ export default function Recomendation() {
         try {
             const results = await moduleService.searchModules(rec.name);
             if (results.length > 0) {
-                navigate(`/keuzemodules/${results[0].id}`);
+                navigate(`/keuzemodules/${results[0].id}`, { state: { from: '/recomendation' } });
             }
         } catch {
             // ignore
@@ -170,6 +205,29 @@ export default function Recomendation() {
         }
     };
 
+    const toggleCompareSelection = (mongoId: string) => {
+        setSelectedForCompare((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(mongoId)) {
+                newSet.delete(mongoId);
+            } else {
+                if (newSet.size >= 4) {
+                    return prev;
+                }
+                newSet.add(mongoId);
+            }
+            return newSet;
+        });
+    };
+
+    const handleCompare = () => {
+        if (selectedForCompare.size >= 2) {
+            setShowCompareModal(true);
+        }
+    };
+
+    const selectedModules = allModules.filter((m) => selectedForCompare.has(m.id));
+
     return (
         <div className="max-w-6xl mx-auto p-6">
             <div className="mb-6">
@@ -212,90 +270,216 @@ export default function Recomendation() {
                     </button>
                 </div>
             ) : (
-                <div className="space-y-6">
-                    {sortedItems.map((rec) => (
-                        <div key={rec.id} className="bg-gray-800 rounded-lg p-6">
-                            <div className="flex gap-2 mb-3 flex-wrap">
-                                <span className="bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">
-                                    {rec.level || t.modules.unknown}
-                                </span>
-                                <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">
-                                    {getCredits(rec) ?? t.modules.unknown} ECTS
-                                </span>
-                                <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-medium">
-                                    {rec.location || t.modules.unknown}
-                                </span>
-                                <span className="bg-violet-600 text-white px-3 py-1 rounded text-sm font-medium">
-                                    {Math.round((rec.similarity ?? 0) * 100)}%
-                                </span>
-                            </div>
-
-                            <h2 className="text-lg font-semibold text-white mb-2">{rec.name}</h2>
-                            <p className="text-gray-300 mb-4">{rec.shortdescription}</p>
-
-                            {rec.match_terms?.length ? (
-                                <div className="flex gap-2 flex-wrap mb-4">
-                                    {rec.match_terms.slice(0, 8).map((term) => (
-                                        <span
-                                            key={term}
-                                            className="bg-gray-900 text-gray-200 px-2 py-1 rounded text-xs"
-                                        >
-                                            {term}
-                                        </span>
-                                    ))}
+                <>
+                    {selectedForCompare.size > 0 && (
+                        <div className="fixed md:static bottom-0 left-0 right-0 theme-card-alt md:bg-violet-900 md:bg-opacity-30 border-t md:border border-violet-700 md:rounded-lg p-4 mb-0 md:mb-8 z-40 shadow-lg md:shadow-none">
+                            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div className="flex items-center gap-3 w-full md:w-auto">
+                                    <div className="theme-text-primary font-medium">
+                                        {t.modules.compare.selected.replace(
+                                            '{count}',
+                                            String(selectedForCompare.size),
+                                        )}
+                                    </div>
+                                    {selectedForCompare.size < 2 && (
+                                        <div className="text-sm theme-text-secondary hidden md:block">
+                                            ({t.modules.compare.selectMin})
+                                        </div>
+                                    )}
+                                    {selectedForCompare.size >= 4 && (
+                                        <div className="text-sm text-yellow-400 hidden md:block">
+                                            ({t.modules.compare.selectMax})
+                                        </div>
+                                    )}
                                 </div>
-                            ) : null}
-
-                            {getReason(rec) ? (
-                                <p className="text-gray-300 mb-4">{getReason(rec)}</p>
-                            ) : null}
-
-                            <div className="flex items-center gap-4 justify-end">
-                                <button
-                                    onClick={() => void toggleFavorite(rec)}
-                                    disabled={pendingFavorites.has(rec.id)}
-                                    className="p-2 hover:opacity-70 transition-opacity disabled:opacity-40"
-                                    aria-label="Toggle favorite"
-                                    title="Favoriet"
-                                >
-                                    {(() => {
-                                        const mongoId = moduleIdByExternalId[rec.id];
-                                        const isFav = mongoId ? favorites.has(mongoId) : false;
-                                        return isFav ? (
-                                            <svg
-                                                className="w-6 h-6 text-white fill-current"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                            </svg>
-                                        ) : (
-                                            <svg
-                                                className="w-6 h-6 text-white"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                                                />
-                                            </svg>
-                                        );
-                                    })()}
-                                </button>
-                                <button
-                                    onClick={() => void openDetails(rec)}
-                                    style={{ backgroundColor: '#c4b5fd' }}
-                                    className="text-black px-6 py-2.5 rounded-lg font-medium hover:bg-violet-400 transition-colors"
-                                >
-                                    {t.modules.learnMore}
-                                </button>
+                                <div className="flex gap-3 w-full md:w-auto">
+                                    <button
+                                        onClick={() => setSelectedForCompare(new Set())}
+                                        className="flex-1 md:flex-initial theme-button-secondary px-4 py-2 rounded-lg font-medium transition-colors"
+                                    >
+                                        {t.modules.compare.remove}
+                                    </button>
+                                    <button
+                                        onClick={handleCompare}
+                                        disabled={selectedForCompare.size < 2}
+                                        style={{
+                                            backgroundColor:
+                                                selectedForCompare.size >= 2
+                                                    ? 'var(--accent)'
+                                                    : 'var(--bg-button)',
+                                        }}
+                                        className={`flex-1 md:flex-initial px-6 py-2 rounded-lg font-medium transition-colors ${
+                                            selectedForCompare.size >= 2
+                                                ? 'text-black hover:opacity-80 cursor-pointer'
+                                                : 'theme-text-muted cursor-not-allowed'
+                                        }`}
+                                    >
+                                        {t.modules.compare.button}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    ))}
-                </div>
+                    )}
+
+                    <div
+                        className={`space-y-6 ${selectedForCompare.size > 0 ? 'pb-32 md:pb-8' : ''}`}
+                    >
+                        {sortedItems.map((rec) => {
+                            const mongoId = moduleIdByExternalId[rec.id];
+                            return (
+                                <div
+                                    key={rec.id}
+                                    className="theme-card rounded-lg p-6 relative flex"
+                                >
+                                    {/* Compare Checkbox */}
+                                    <div className="absolute top-4 right-4 z-10">
+                                        <label className="flex items-center gap-2 cursor-pointer group">
+                                            <div>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={
+                                                        mongoId
+                                                            ? selectedForCompare.has(mongoId)
+                                                            : false
+                                                    }
+                                                    onChange={() =>
+                                                        mongoId && toggleCompareSelection(mongoId)
+                                                    }
+                                                    disabled={
+                                                        !mongoId ||
+                                                        (!selectedForCompare.has(mongoId) &&
+                                                            selectedForCompare.size >= 4)
+                                                    }
+                                                    className="peer sr-only"
+                                                />
+                                                <div className="w-6 h-6 border-2 border-violet-400 rounded-md theme-card-alt peer-checked:bg-violet-600 peer-checked:border-violet-600 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center">
+                                                    <svg
+                                                        className={`w-4 h-4 text-white transition-all duration-200 ${
+                                                            mongoId &&
+                                                            selectedForCompare.has(mongoId)
+                                                                ? 'opacity-100 scale-100'
+                                                                : 'opacity-0 scale-50'
+                                                        }`}
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={3}
+                                                            d="M5 13l4 4L19 7"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <span className="text-sm theme-text-secondary hidden xl:inline whitespace-nowrap theme-card-alt px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                                                {t.modules.compare.button}
+                                            </span>
+                                        </label>
+                                    </div>
+
+                                    {/* Module Content */}
+                                    <div className="flex-1 pr-12 md:pr-16">
+                                        <div className="flex gap-2 mb-3 flex-wrap">
+                                            <span className="bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">
+                                                {rec.level || t.modules.unknown}
+                                            </span>
+                                            <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">
+                                                {getCredits(rec) ?? t.modules.unknown} ECTS
+                                            </span>
+                                            <span className="bg-purple-600 text-white px-3 py-1 rounded text-sm font-medium">
+                                                {rec.location || t.modules.unknown}
+                                            </span>
+                                            <span className="bg-violet-600 text-white px-3 py-1 rounded text-sm font-medium">
+                                                {Math.round((rec.similarity ?? 0) * 100)}%
+                                            </span>
+                                        </div>
+
+                                        <h2 className="text-lg font-semibold theme-text-primary mb-2">
+                                            {rec.name}
+                                        </h2>
+                                        <p className="theme-text-secondary mb-4">
+                                            {rec.shortdescription}
+                                        </p>
+
+                                        {rec.match_terms?.length ? (
+                                            <div className="flex gap-2 flex-wrap mb-4">
+                                                {rec.match_terms.slice(0, 8).map((term) => (
+                                                    <span
+                                                        key={term}
+                                                        className="theme-card-alt theme-text-secondary px-2 py-1 rounded text-xs"
+                                                    >
+                                                        {term}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        ) : null}
+
+                                        {getReason(rec) ? (
+                                            <p className="theme-text-secondary mb-4">
+                                                {getReason(rec)}
+                                            </p>
+                                        ) : null}
+
+                                        <div className="flex items-center gap-4 justify-end">
+                                            <button
+                                                onClick={() => void openDetails(rec)}
+                                                style={{ backgroundColor: 'var(--accent)' }}
+                                                className="text-black px-6 py-2.5 rounded-lg font-medium hover:opacity-80 transition-colors"
+                                            >
+                                                {t.modules.learnMore}
+                                            </button>
+                                            <button
+                                                onClick={() => void toggleFavorite(rec)}
+                                                disabled={pendingFavorites.has(rec.id)}
+                                                className="p-2 hover:opacity-70 transition-opacity disabled:opacity-40"
+                                                aria-label="Toggle favorite"
+                                                title="Favoriet"
+                                            >
+                                                {(() => {
+                                                    const isFav = mongoId
+                                                        ? favorites.has(mongoId)
+                                                        : false;
+                                                    return isFav ? (
+                                                        <svg
+                                                            className="w-6 h-6 theme-text-primary fill-current"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg
+                                                            className="w-6 h-6 theme-text-primary"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth={2}
+                                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                                                            />
+                                                        </svg>
+                                                    );
+                                                })()}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </>
+            )}
+
+            {/* Compare Modal */}
+            {showCompareModal && (
+                <ModuleCompareModal
+                    modules={selectedModules}
+                    onClose={() => setShowCompareModal(false)}
+                />
             )}
         </div>
     );

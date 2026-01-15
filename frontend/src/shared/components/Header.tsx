@@ -154,6 +154,15 @@ export default function Header() {
 
     const closeMobileMenu = () => setMobileMenuOpen(false);
 
+    const getActiveNavPath = () => {
+        if (location.pathname.startsWith('/keuzemodules/') && location.state?.from) {
+            return location.state.from;
+        }
+        return location.pathname;
+    };
+
+    const activeNavPath = getActiveNavPath();
+
     return (
         <>
             {mobileMenuOpen && (
@@ -177,8 +186,8 @@ export default function Header() {
                                 key={link.path}
                                 link={link}
                                 isActive={
-                                    location.pathname === link.path ||
-                                    location.pathname.startsWith(link.path + '/')
+                                    activeNavPath === link.path ||
+                                    activeNavPath.startsWith(link.path + '/')
                                 }
                             />
                         ))}
@@ -217,8 +226,8 @@ export default function Header() {
                                         key={link.path}
                                         link={link}
                                         isActive={
-                                            location.pathname === link.path ||
-                                            location.pathname.startsWith(link.path + '/')
+                                            activeNavPath === link.path ||
+                                            activeNavPath.startsWith(link.path + '/')
                                         }
                                         onClick={closeMobileMenu}
                                     />

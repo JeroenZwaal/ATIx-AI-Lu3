@@ -67,17 +67,18 @@ export default function SkillsAndIntrests(): JSX.Element {
     const location = useLocation();
     const { createProfile, draft, userProfile, fetchUserProfile, error } = useProfile();
 
-    // if we have a profile from the backend, prefill skills/interests, but only once
-    // when the page first loads, not every time the user clears the arrays
+    // Prefill skills and interests from existing profile (only once)
     React.useEffect(() => {
-        // fetch if not present yet
+        // Only prefill once
+        if (prefillDoneRef.current) return;
+
+        // If no userProfile yet, try to fetch it
         if (!userProfile) {
             fetchUserProfile().catch(() => {});
             return;
         }
 
-        // Only prefill once on mount
-        if (prefillDoneRef.current) return;
+        // Now we have userProfile, do the prefill
         prefillDoneRef.current = true;
 
         if (skills.length === 0 && userProfile?.skills?.length) {
@@ -86,7 +87,7 @@ export default function SkillsAndIntrests(): JSX.Element {
         if (interests.length === 0 && userProfile?.interests?.length) {
             setInterests(userProfile.interests);
         }
-    }, [userProfile, fetchUserProfile, interests.length, skills.length]);
+    }, [userProfile, fetchUserProfile, skills.length, interests.length]);
 
     // If the provider reports an error (server-side), show it
     React.useEffect(() => {

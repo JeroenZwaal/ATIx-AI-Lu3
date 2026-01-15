@@ -394,10 +394,7 @@ export default function Keuzemodules() {
                         {t.modules.filters}
                     </button>
                     <button
-                        onClick={() => {
-                            setShowAiKeuze(true);
-                            setShowFilters(false);
-                        }}
+                        onClick={() => navigate('/recomendation')}
                         style={{ backgroundColor: showAiKeuze ? '#c4b5fd' : '#a78bfa' }}
                         className={`px-6 py-3 rounded-lg font-medium text-base transition-colors ${
                             showAiKeuze
@@ -682,7 +679,9 @@ export default function Keuzemodules() {
                                         <div className="flex items-center gap-4 justify-end">
                                             <button
                                                 onClick={() =>
-                                                    navigate(`/keuzemodules/${module.id}`)
+                                                    navigate(`/keuzemodules/${module.id}`, {
+                                                        state: { from: '/keuzemodules' },
+                                                    })
                                                 }
                                                 style={{ backgroundColor: 'var(--accent)' }}
                                                 className="text-black px-6 py-2.5 rounded-lg font-medium hover:opacity-80 transition-colors"
