@@ -233,11 +233,11 @@ export default function Recomendation() {
             <div className="mb-6">
                 <h1
                     lang={language}
-                    className="text-2xl font-bold text-white mb-2 break-words leading-tight text-center"
+                    className="text-2xl font-bold theme-text-primary mb-2 break-words leading-tight text-center"
                 >
                     {t.nav.aiModules}
                 </h1>
-                <p className="text-gray-300 text-center">{t.recommendations.subtitle}</p>
+                <p className="theme-text-secondary text-center">{t.recommendations.subtitle}</p>
             </div>
 
             {isLoading ? (
@@ -254,11 +254,11 @@ export default function Recomendation() {
                     </button>
                 </div>
             ) : sortedItems.length === 0 ? (
-                <div className="text-center py-12 text-gray-600">
-                    <p className="text-white text-lg font-semibold mb-2">
+                <div className="text-center py-12 theme-text-muted">
+                    <p className="theme-text-primary text-lg font-semibold mb-2">
                         {t.recommendations.noProfileTitle}
                     </p>
-                    <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
+                    <p className="theme-text-secondary mb-6 max-w-2xl mx-auto">
                         {t.recommendations.noProfileBody}
                     </p>
                     <button
