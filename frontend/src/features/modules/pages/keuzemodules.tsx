@@ -715,7 +715,37 @@ export default function Keuzemodules() {
 
                         {/* Pagination */}
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-center gap-4 mt-8">
+                            <div className="flex items-center justify-center gap-2 mt-8">
+                                <button
+                                    onClick={() => handlePageChange(1)}
+                                    disabled={currentPage === 1}
+                                    style={{
+                                        backgroundColor:
+                                            currentPage === 1
+                                                ? 'var(--bg-button)'
+                                                : 'var(--accent)',
+                                    }}
+                                    className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                                        currentPage === 1
+                                            ? 'theme-text-muted cursor-not-allowed'
+                                            : 'text-black hover:opacity-80'
+                                    }`}
+                                >
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+                                        />
+                                    </svg>
+                                </button>
+
                                 <button
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 1}
@@ -740,7 +770,7 @@ export default function Keuzemodules() {
                                     </svg>
                                 </button>
 
-                                <span className="theme-text-primary font-medium">
+                                <span className="theme-text-primary font-medium px-4">
                                     {currentPage} / {totalPages}
                                 </span>
 
@@ -764,6 +794,36 @@ export default function Keuzemodules() {
                                             strokeLinejoin="round"
                                             strokeWidth={2}
                                             d="M9 5l7 7-7 7"
+                                        />
+                                    </svg>
+                                </button>
+
+                                <button
+                                    onClick={() => handlePageChange(totalPages)}
+                                    disabled={currentPage === totalPages}
+                                    style={{
+                                        backgroundColor:
+                                            currentPage === totalPages
+                                                ? 'var(--bg-button)'
+                                                : 'var(--accent)',
+                                    }}
+                                    className={`px-3 py-2 rounded-lg font-medium transition-colors ${
+                                        currentPage === totalPages
+                                            ? 'theme-text-muted cursor-not-allowed'
+                                            : 'text-black hover:opacity-80'
+                                    }`}
+                                >
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M13 5l7 7-7 7M5 5l7 7-7 7"
                                         />
                                     </svg>
                                 </button>
