@@ -1,10 +1,16 @@
-name: Security (SCA/SAST/DAST)
+name: Security (SCA/SAST/SBOM)
 
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      demo_fail:
+        description: "Run an intentional failing job to demonstrate security gates"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: security-${{ github.ref }}
@@ -13,7 +19,6 @@ concurrency:
 permissions:
   contents: read
   security-events: write
-  issues: write
 
 jobs:
   codeql:
@@ -46,6 +51,22 @@ jobs:
 
       - name: Analyze
         uses: github/codeql-action/analyze@v3
+        with:
+          output: codeql-results
+
+      - name: Gate - fail on CodeQL error-level results
+        run: |
+          set -euo pipefail
+          if ! compgen -G "codeql-results/**/*.sarif" > /dev/null; then
+            echo "No SARIF files found in codeql-results; skipping gate."
+            exit 0
+          fi
+          error_count=$(jq '[.runs[].results[]? | select(.level == "error")] | length' codeql-results/**/*.sarif | awk '{s+=$1} END {print s+0}')
+          echo "CodeQL error-level findings: ${error_count}"
+          if [ "${error_count}" -gt 0 ]; then
+            echo "Failing build due to CodeQL error-level findings."
+            exit 1
+          fi
 
   trivy:
     name: SCA (Trivy fs scan)
@@ -67,7 +88,7 @@ jobs:
 
       - name: Upload SARIF to GitHub Security
         uses: github/codeql-action/upload-sarif@v4
-        continue-on-error: true
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
         with:
           sarif_file: trivy-results.sarif
 
@@ -83,6 +104,22 @@ jobs:
           scanners: vuln,secret,misconfig
           exit-code: "0"
           skip-setup-trivy: true
+
+      - name: Gate - fail on Trivy findings (HIGH/CRITICAL vulns, any secrets)
+        run: |
+          set -euo pipefail
+          vuln_count=$(jq '[.Results[].Vulnerabilities[]? | select(.Severity == "HIGH" or .Severity == "CRITICAL")] | length' trivy-results.json)
+          misconfig_count=$(jq '[.Results[].Misconfigurations[]? | select(.Severity == "HIGH" or .Severity == "CRITICAL")] | length' trivy-results.json)
+          secret_count=$(jq '[.Results[].Secrets[]?] | length' trivy-results.json)
+
+          echo "Trivy HIGH/CRITICAL vulnerabilities: ${vuln_count}"
+          echo "Trivy HIGH/CRITICAL misconfigurations: ${misconfig_count}"
+          echo "Trivy secrets found: ${secret_count}"
+
+          if [ "${vuln_count}" -gt 0 ] || [ "${misconfig_count}" -gt 0 ] || [ "${secret_count}" -gt 0 ]; then
+            echo "Failing build due to Trivy findings."
+            exit 1
+          fi
 
       - name: Upload Trivy reports
         uses: actions/upload-artifact@v4
@@ -106,15 +143,17 @@ jobs:
 
       - name: Backend npm audit (JSON)
         run: |
+          set -euo pipefail
           cd backend
           npm ci
-          npm audit --json > ../backend-npm-audit.json || true
+          npm audit --audit-level=high --json | tee ../backend-npm-audit.json
 
       - name: Frontend npm audit (JSON)
         run: |
+          set -euo pipefail
           cd frontend
           npm ci
-          npm audit --json > ../frontend-npm-audit.json || true
+          npm audit --audit-level=high --json | tee ../frontend-npm-audit.json
 
       - name: Upload npm audit reports
         uses: actions/upload-artifact@v4
@@ -125,166 +164,63 @@ jobs:
             frontend-npm-audit.json
           retention-days: 30
 
-  dast:
-    name: DAST (OWASP ZAP baseline)
+  sbom:
+    name: SBOM + CVE gate (Trivy)
     runs-on: ubuntu-latest
-    env:
-      FASTAPI_TARGET: http://127.0.0.1:8000/docs
-      BACKEND_TARGET: http://127.0.0.1:3000
-      FRONTEND_TARGET: http://127.0.0.1:4173
-    services:
-      mongodb:
-        image: mongo:7
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.adminCommand(\"ping\")'"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install Trivy CLI
+        uses: aquasecurity/setup-trivy@7483281e2107e7eecac919ed9d4f5ce2d89e4614
+        with:
+          version: latest
+
+      - name: Generate SBOM (CycloneDX)
+        run: |
+          set -euo pipefail
+          trivy fs --format cyclonedx --output sbom.cdx.json .
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: sbom.cdx.json
+          retention-days: 30
+
+      - name: Gate - scan SBOM for HIGH/CRITICAL CVEs
+        run: |
+          set -euo pipefail
+          trivy sbom --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 sbom.cdx.json
+
+  gate-demo:
+    name: Fail-example (intentional)
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.demo_fail }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: |
-            backend/package-lock.json
-            frontend/package-lock.json
 
-      - name: Use Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: api-recommender/requirements.txt
-
-      - name: Install backend dependencies
+      - name: Create intentionally vulnerable npm project
         run: |
-          cd backend
-          npm ci
+          set -euo pipefail
+          mkdir -p /tmp/vuln-demo
+          cd /tmp/vuln-demo
+          cat > package.json << 'JSON'
+          {
+            "name": "vuln-demo",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "lodash": "4.17.20"
+            }
+          }
+          JSON
+          npm install --package-lock-only
 
-      - name: Build backend
+      - name: Demonstrate SCA gate (expected to fail)
         run: |
-          cd backend
-          npm run build
-
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm ci
-
-      - name: Build frontend
-        run: |
-          cd frontend
-          npm run build
-
-      - name: Install FastAPI dependencies
-        run: |
-          cd api-recommender
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Start NestJS backend
-        if: ${{ vars.DAST_TARGET == '' }}
-        env:
-          MONGODB_URI: mongodb://localhost:27017/test-db
-          JWT_SECRET: test-jwt-secret-for-dast-scan
-          PORT: 3000
-        run: |
-          cd backend
-          nohup npm run start:prod > ../backend.log 2>&1 &
-
-      - name: Start FastAPI
-        if: ${{ vars.DAST_TARGET == '' }}
-        run: |
-          cd api-recommender
-          nohup uvicorn main:app --host 0.0.0.0 --port 8000 > ../uvicorn.log 2>&1 &
-
-      - name: Start frontend
-        if: ${{ vars.DAST_TARGET == '' }}
-        run: |
-          cd frontend
-          nohup npm run preview -- --host 0.0.0.0 --port 4173 > ../frontend.log 2>&1 &
-
-      - name: Wait for NestJS backend
-        if: ${{ vars.DAST_TARGET == '' }}
-        run: |
-          for i in {1..60}; do
-            if curl -fsS "$BACKEND_TARGET" > /dev/null; then
-              echo "Backend is up: $BACKEND_TARGET"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Backend did not become ready"
-          echo "--- backend.log ---"
-          tail -n 200 backend.log || true
-          exit 1
-
-      - name: Wait for FastAPI
-        if: ${{ vars.DAST_TARGET == '' }}
-        run: |
-          for i in {1..60}; do
-            if curl -fsS "$FASTAPI_TARGET" > /dev/null; then
-              echo "FastAPI is up: $FASTAPI_TARGET"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "FastAPI did not become ready"
-          echo "--- uvicorn.log ---"
-          tail -n 200 uvicorn.log || true
-          exit 1
-
-      - name: Wait for frontend
-        if: ${{ vars.DAST_TARGET == '' }}
-        run: |
-          for i in {1..60}; do
-            if curl -fsS "$FRONTEND_TARGET" > /dev/null; then
-              echo "Frontend is up: $FRONTEND_TARGET"
-              exit 0
-            fi
-            sleep 2
-          done
-          echo "Frontend did not become ready"
-          echo "--- frontend.log ---"
-          tail -n 200 frontend.log || true
-          exit 1
-
-      - name: ZAP Baseline Scan - NestJS Backend
-        uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25
-        with:
-          target: ${{ vars.DAST_TARGET != '' && vars.DAST_TARGET || env.BACKEND_TARGET }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fail_action: false
-          artifact_name: zap-baseline-report-backend
-
-      - name: ZAP Baseline Scan - FastAPI
-        uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25
-        with:
-          target: ${{ vars.DAST_TARGET != '' && vars.DAST_TARGET || env.FASTAPI_TARGET }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fail_action: false
-          artifact_name: zap-baseline-report-fastapi
-
-      - name: ZAP Baseline Scan - Frontend
-        uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25
-        with:
-          target: ${{ vars.DAST_TARGET != '' && vars.DAST_TARGET || env.FRONTEND_TARGET }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fail_action: false
-          artifact_name: zap-baseline-report-frontend
-
-      - name: Upload server logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dast-logs
-          path: |
-            backend.log
-            uvicorn.log
-            frontend.log
-          retention-days: 30
+          set -euo pipefail
+          cd /tmp/vuln-demo
+          npm audit --audit-level=high

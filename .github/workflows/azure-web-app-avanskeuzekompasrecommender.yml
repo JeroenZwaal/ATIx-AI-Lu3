@@ -12,15 +12,25 @@ on:
     paths:
       - 'api-recommender/**'
   workflow_dispatch:
+    inputs:
+      target_environment:
+        description: "GitHub Environment to deploy to (dev/acc/prd)"
+        required: true
+        default: prd
+        type: choice
+        options:
+          - dev
+          - acc
+          - prd
 
 concurrency:
   group: azure-webapp-recommender-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  AZURE_WEBAPP_NAME: 'avanskeuzekompasrecommender'
-  AZURE_WEBAPP_PACKAGE_PATH: './api-recommender'
-  PYTHON_VERSION: '3.11'
+  AZURE_WEBAPP_NAME: ${{ vars.AZURE_WEBAPP_NAME || 'avanskeuzekompasrecommender' }}
+  AZURE_WEBAPP_PACKAGE_PATH: ${{ vars.AZURE_WEBAPP_PACKAGE_PATH || './api-recommender' }}
+  PYTHON_VERSION: ${{ vars.PYTHON_VERSION || '3.11' }}
 
 jobs:
   build:
@@ -51,6 +61,7 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     needs: build
+    environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target_environment || 'prd' }}
     permissions:
       id-token: write
       contents: read
