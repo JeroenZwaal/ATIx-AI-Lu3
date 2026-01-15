@@ -3,6 +3,7 @@ import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../../domain/entities/user.entity';
 import type { IUserRepository } from '../../domain/repositories/user.repository.interface';
+import type { ITokenBlacklistRepository } from '../../domain/repositories/token-blacklist.repository.interface';
 import { LoginDto, RegisterDto, AuthResponseDto } from '../../interfaces/presenters/auth.dto';
 import { JwtPayload } from '../../infrastructure/auth/jwt.strategy';
 
@@ -11,7 +12,11 @@ export class AuthService {
     private readonly jwtSecret = process.env.JWT_SECRET || 'defaultsecret';
     private readonly jwtExpiresIn = '24h';
 
-    constructor(@Inject('IUserRepository') private readonly userRepository: IUserRepository) {}
+    constructor(
+        @Inject('IUserRepository') private readonly userRepository: IUserRepository,
+        @Inject('ITokenBlacklistRepository')
+        private readonly tokenBlacklistRepository: ITokenBlacklistRepository,
+    ) {}
 
     async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
         // Normalize email to lowercase
@@ -116,5 +121,21 @@ export class AuthService {
         } catch {
             throw new UnauthorizedException('Invalid token');
         }
+    }
+
+    async invalidateToken(token: string): Promise<void> {
+        try {
+            const payload = this.verifyToken(token);
+            const decoded = jwt.decode(token) as { exp?: number };
+            const expiresAt = decoded.exp ? new Date(decoded.exp * 1000) : new Date(Date.now() + 24 * 60 * 60 * 1000);
+            await this.tokenBlacklistRepository.addToken(token, expiresAt);
+        } catch (error) {
+            // Als token niet valide is, hoeven we het niet toe te voegen aan blacklist
+            // maar we gooien geen error om logout altijd te laten slagen
+        }
+    }
+
+    async isTokenBlacklisted(token: string): Promise<boolean> {
+        return await this.tokenBlacklistRepository.isTokenBlacklisted(token);
     }
 }

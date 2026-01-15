@@ -23,6 +23,12 @@ export class JwtAuthGuard implements CanActivate {
         }
 
         try {
+            // Check of token in blacklist staat
+            const isBlacklisted = await this.authService.isTokenBlacklisted(token);
+            if (isBlacklisted) {
+                throw new UnauthorizedException('Token has been invalidated');
+            }
+
             const payload = this.authService.verifyToken(token);
             const user = await this.authService.validateUserById(payload.sub);
 
@@ -32,7 +38,10 @@ export class JwtAuthGuard implements CanActivate {
 
             request.user = user;
             return true;
-        } catch {
+        } catch (error) {
+            if (error instanceof UnauthorizedException) {
+                throw error;
+            }
             throw new UnauthorizedException('Invalid token');
         }
     }

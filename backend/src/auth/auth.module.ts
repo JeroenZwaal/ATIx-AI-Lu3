@@ -6,7 +6,9 @@ import { AuthService } from '../application/services/auth.service';
 import { AuthController } from '../interfaces/controllers/auth.controller';
 import { JwtStrategy } from '../infrastructure/auth/jwt.strategy';
 import { UserRepository } from '../infrastructure/repositories/user.repository';
+import { TokenBlacklistRepository } from '../infrastructure/repositories/token-blacklist.repository';
 import { USERSCHEMA } from '../infrastructure/schemas/user.schema';
+import { BLACKLISTED_TOKEN_SCHEMA } from '../infrastructure/schemas/blacklisted-token.schema';
 
 @Module({
     imports: [
@@ -15,7 +17,10 @@ import { USERSCHEMA } from '../infrastructure/schemas/user.schema';
             secret: process.env.JWT_SECRET,
             signOptions: { expiresIn: '24h' },
         }),
-        MongooseModule.forFeature([{ name: 'User', schema: USERSCHEMA }]),
+        MongooseModule.forFeature([
+            { name: 'User', schema: USERSCHEMA },
+            { name: 'BlacklistedToken', schema: BLACKLISTED_TOKEN_SCHEMA },
+        ]),
     ],
     controllers: [AuthController],
     providers: [
@@ -25,6 +30,10 @@ import { USERSCHEMA } from '../infrastructure/schemas/user.schema';
             provide: 'IUserRepository',
             useClass: UserRepository,
         },
+        {
+            provide: 'ITokenBlacklistRepository',
+            useClass: TokenBlacklistRepository,
+        },
     ],
     exports: [
         AuthService,
@@ -32,6 +41,10 @@ import { USERSCHEMA } from '../infrastructure/schemas/user.schema';
         {
             provide: 'IUserRepository',
             useClass: UserRepository,
+        },
+        {
+            provide: 'ITokenBlacklistRepository',
+            useClass: TokenBlacklistRepository,
         },
     ],
 })
