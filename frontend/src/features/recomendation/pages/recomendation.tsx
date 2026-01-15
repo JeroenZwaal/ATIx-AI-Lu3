@@ -388,21 +388,21 @@ export default function Recomendation() {
                                     {/* Module Content */}
                                     <div className="flex-1 pr-12 md:pr-16">
                                         <div className="flex gap-2 mb-3 flex-wrap">
-                                            <span className="bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-green-700/20 text-green-400 px-3 py-1 rounded text-sm font-medium">
                                                 {rec.level || t.modules.unknown}
                                             </span>
-                                            <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded text-sm font-medium">
                                                 {getCredits(rec) ?? t.modules.unknown} ECTS
                                             </span>
-                                            <span className="bg-[#e38094] text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded text-sm font-medium">
                                                 {rec.location || t.modules.unknown}
                                             </span>
-                                            <span className="bg-[#d4607a] text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-[#d4607a]/20 text-[#d4607a] px-3 py-1 rounded text-sm font-medium">
                                                 {Math.round((rec.similarity ?? 0) * 100)}%
                                             </span>
                                         </div>
 
-                                        <h2 className="text-lg font-semibold theme-text-primary mb-2">
+                                        <h2 className="text-xl font-bold theme-text-primary mb-2">
                                             {rec.name}
                                         </h2>
                                         <p className="theme-text-secondary mb-4">

@@ -655,13 +655,13 @@ export default function Keuzemodules() {
                                     <div className="flex-1 pr-12 md:pr-16">
                                         {/* Tags */}
                                         <div className="flex gap-2 mb-3 flex-wrap">
-                                            <span className="bg-green-700 text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-green-700/20 text-green-400 px-3 py-1 rounded text-sm font-medium">
                                                 {getLevelTag(module.level)}
                                             </span>
-                                            <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded text-sm font-medium">
                                                 {module.studycredit} ECTS
                                             </span>
-                                            <span className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-medium">
+                                            <span className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded text-sm font-medium">
                                                 {module.location || t.modules.unknown}
                                             </span>
                                         </div>
