@@ -724,7 +724,7 @@ export default function Keuzemodules() {
 
                         {/* Pagination */}
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-center gap-2 mt-8">
+                            <div className="flex flex-wrap items-center justify-center gap-2 mt-8 px-2">
                                 <button
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 1}
@@ -734,7 +734,7 @@ export default function Keuzemodules() {
                                                 ? 'var(--bg-button)'
                                                 : 'var(--accent)',
                                     }}
-                                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                    className={`px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base rounded-lg font-medium transition-colors ${
                                         currentPage === 1
                                             ? 'theme-text-muted cursor-not-allowed'
                                             : 'text-black hover:opacity-80'
@@ -743,7 +743,7 @@ export default function Keuzemodules() {
                                     {t.modules.previous}
                                 </button>
 
-                                <div className="flex gap-2">
+                                <div className="flex flex-wrap justify-center gap-2 max-w-full">
                                     {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                                         (page) => {
                                             if (
@@ -761,7 +761,7 @@ export default function Keuzemodules() {
                                                                     ? 'var(--accent)'
                                                                     : 'var(--accent-hover)',
                                                         }}
-                                                        className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                                        className={`px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base rounded-lg font-medium transition-colors ${
                                                             currentPage === page
                                                                 ? 'text-black hover:opacity-80'
                                                                 : 'text-black hover:opacity-80'
@@ -797,7 +797,7 @@ export default function Keuzemodules() {
                                                 ? 'var(--bg-button)'
                                                 : 'var(--accent)',
                                     }}
-                                    className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                    className={`px-3 py-2 text-sm sm:px-4 sm:py-2 sm:text-base rounded-lg font-medium transition-colors ${
                                         currentPage === totalPages
                                             ? 'theme-text-muted cursor-not-allowed'
                                             : 'text-black hover:opacity-80'
