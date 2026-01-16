@@ -30,8 +30,9 @@ class AuthService {
         });
 
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || 'Registration failed');
+            // Generieke error om account enumeration te voorkomen
+            // Toon altijd dezelfde error message, ongeacht de backend response
+            throw new Error('REGISTRATION_FAILED');
         }
 
         return response.json();

@@ -99,7 +99,12 @@ export default function Register() {
                 <form onSubmit={handleSubmit} className="theme-card rounded-3xl p-6 space-y-4">
                     {(showError && error) || validationError ? (
                         <div className="bg-red-500/20 border border-red-500 rounded-lg p-3 mb-4">
-                            <p className="text-red-300 text-sm">{validationError || error}</p>
+                            <p className="text-red-300 text-sm">
+                                {validationError ||
+                                    (error === 'REGISTRATION_FAILED'
+                                        ? t.auth.validation.registrationFailed
+                                        : error)}
+                            </p>
                         </div>
                     ) : null}
 

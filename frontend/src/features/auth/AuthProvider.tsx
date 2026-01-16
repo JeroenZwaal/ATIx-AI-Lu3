@@ -85,8 +85,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             localStorage.setItem('token', response.access_token);
             localStorage.setItem('user', JSON.stringify(response.user));
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred');
-            throw err;
+            // Generieke error message voor registratie om account enumeration te voorkomen
+            const errorMessage =
+                err instanceof Error && err.message === 'REGISTRATION_FAILED'
+                    ? 'REGISTRATION_FAILED'
+                    : err instanceof Error
+                      ? err.message
+                      : 'An error occurred';
+            setError(errorMessage);
+            throw new Error(errorMessage);
         } finally {
             setIsLoading(false);
         }
