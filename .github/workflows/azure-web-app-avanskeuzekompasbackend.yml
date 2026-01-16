@@ -5,14 +5,15 @@ on:
     branches:
       - main
     paths:
-      - 'backend/**'
+      - "backend/**"
 
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - main
     paths:
-      - 'backend/**'
+      - "backend/**"
+
   workflow_dispatch:
     inputs:
       target_environment:
@@ -37,6 +38,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -44,26 +46,32 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: 'backend/package-lock.json'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
         run: |
+          set -euo pipefail
           echo "Installing dependencies..."
           npm ci
 
       - name: Lint
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-        run: npx eslint "{src,apps,libs,test}/**/*.ts"
+        run: |
+          set -euo pipefail
+          npx eslint "{src,apps,libs,test}/**/*.ts"
 
       - name: Test
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
-        run: npm test
+        run: |
+          set -euo pipefail
+          npm test
 
       - name: Build
         working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
         run: |
+          set -euo pipefail
           echo "Cleaning previous builds..."
           rm -rf dist node_modules/.cache
           echo "Building application..."
@@ -71,17 +79,32 @@ jobs:
           echo "Build output:"
           ls -la dist/
 
+      # Package once so deploy doesn't need to checkout the repo again
+      - name: Package app for deployment
+        if: ${{ github.event_name != 'pull_request' }}
+        working-directory: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+        run: |
+          set -euo pipefail
+          zip -r ../backend.zip .
+          cd ..
+          ls -la backend.zip
+
       - name: Upload artifact for deployment
+        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          path: backend.zip
+          retention-days: 7
 
   deploy:
-    if: github.event_name != 'pull_request'
+    # Never deploy from PRs. Deploys happen only on pushes to main or manual dispatch.
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     needs: build
+
     environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target_environment || 'prd' }}
+
     permissions:
       id-token: write
       contents: read
@@ -103,6 +126,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          package: .
-          startup-command: "npm run start"
-
+          package: backend.zip
+          startup-command: npm run start

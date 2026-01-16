@@ -214,7 +214,7 @@ jobs:
             "version": "1.0.0",
             "private": true,
             "dependencies": {
-              "lodash": "4.17.20"
+              "minimist": "1.2.5"
             }
           }
           JSON

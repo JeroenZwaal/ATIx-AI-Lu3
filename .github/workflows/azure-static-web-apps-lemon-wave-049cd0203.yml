@@ -5,14 +5,14 @@ on:
     branches:
       - main
     paths:
-      - 'frontend/**'
+      - "frontend/**"
 
   pull_request:
     types: [opened, synchronize, reopened]
     branches:
       - main
     paths:
-      - 'frontend/**'
+      - "frontend/**"
 
   workflow_dispatch:
     inputs:
@@ -26,11 +26,19 @@ on:
           - acc
           - prd
 
+concurrency:
+  group: azure-swa-frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  build_job:
-    if: github.event_name == 'pull_request'
+  build_pr:
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     name: Build (PR)
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,21 +54,33 @@ jobs:
 
       - name: Install
         working-directory: frontend
-        run: npm ci
+        run: |
+          set -euo pipefail
+          npm ci
 
       - name: Lint
         working-directory: frontend
-        run: npm run lint
+        run: |
+          set -euo pipefail
+          npm run lint
 
       - name: Build
         working-directory: frontend
-        run: npm run build
+        run: |
+          set -euo pipefail
+          npm run build
 
-  build_and_deploy_job:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+  deploy:
+    # Never deploy from PRs. Deploy happens on pushes to main or manual dispatch.
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
-    name: Build and Deploy Job
+    name: Build and Deploy
     environment: ${{ github.event_name == 'workflow_dispatch' && inputs.target_environment || 'prd' }}
+
+    # Needs write to create/update SWA deployment; keep as tight as possible
+    permissions:
+      contents: read
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -76,29 +96,31 @@ jobs:
 
       - name: Install
         working-directory: frontend
-        run: npm ci
+        run: |
+          set -euo pipefail
+          npm ci
 
       - name: Lint
         working-directory: frontend
-        run: npm run lint
+        run: |
+          set -euo pipefail
+          npm run lint
 
       - name: Build
         working-directory: frontend
-        run: npm run build
+        run: |
+          set -euo pipefail
+          npm run build
 
-      - name: Build And Deploy
-        id: builddeploy
+      - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
-          action: "upload"
-          ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "./frontend/" # App source code path
-          api_location: "" # Api source code path - optional
-          output_location: "dist/" # Built app content directory - optional
-          ###### End of Repository/Build Configurations ######
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: upload
+          app_location: "./frontend/"
+          api_location: ""
+          output_location: "dist/"
         env:
-          NODE_VERSION: '22'
-          NPM_VERSION: '10'
+          NODE_VERSION: "22"
+          NPM_VERSION: "10"
