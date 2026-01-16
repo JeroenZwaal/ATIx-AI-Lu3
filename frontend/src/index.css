@@ -10,36 +10,36 @@
   -moz-osx-font-smoothing: grayscale;
 
   /* Default dark theme variables - Avans huisstijl */
-  --bg-page: #121212;
-  --bg-card: #1e1e1e;
-  --bg-card-alt: #2a2a2a;
-  --bg-input: #333333;
-  --bg-button: #3d3d3d;
+  --bg-page: #000000;
+  --bg-card: #1a1f2e;
+  --bg-card-alt: #232938;
+  --bg-input: #2a3142;
+  --bg-button: #3d4557;
   --text-primary: #ffffff;
   --text-secondary: #b3b3b3;
   --text-muted: #808080;
-  --text-accent: #e38094;
-  --border: #404040;
-  --accent: #e38094;
-  --accent-hover: #c6002a;
+  --text-accent: #a78bfa;
+  --border: #2a3142;
+  --accent: #a78bfa;
+  --accent-hover: #8b5cf6;
 }
 
 /* Dark theme (default) - Avans huisstijl */
 :root.dark,
 html.dark {
   color-scheme: dark;
-  --bg-page: #121212;
-  --bg-card: #1e1e1e;
-  --bg-card-alt: #2a2a2a;
-  --bg-input: #333333;
-  --bg-button: #3d3d3d;
+  --bg-page: #000000;
+  --bg-card: #1a1f2e;
+  --bg-card-alt: #232938;
+  --bg-input: #2a3142;
+  --bg-button: #3d4557;
   --text-primary: #ffffff;
   --text-secondary: #b3b3b3;
   --text-muted: #808080;
-  --text-accent: #e38094;
-  --border: #404040;
-  --accent: #e38094;
-  --accent-hover: #c6002a;
+  --text-accent: #a78bfa;
+  --border: #2a3142;
+  --accent: #a78bfa;
+  --accent-hover: #8b5cf6;
 }
 
 /* Light theme - Avans huisstijl */
@@ -54,10 +54,10 @@ html.light {
   --text-primary: #171717;
   --text-secondary: #525252;
   --text-muted: #737373;
-  --text-accent: #e38094;
+  --text-accent: #8b5cf6;
   --border: #e5e5e5;
-  --accent: #e38094;
-  --accent-hover: #d4607a;
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
 }
 
 /* Theme utility classes */
@@ -106,7 +106,7 @@ html.light {
 /* ===== BUTTON SYSTEM ===== */
 /* Button 1: Primary action button (accent color - pink/red) */
 .btn-primary {
-  background-color: var(--btn-primary-bg, #e38094);
+  background-color: var(--btn-primary-bg, #a78bfa);
   color: var(--btn-primary-text, #ffffff);
   padding: 0.625rem 1.5rem;
   border-radius: 0.5rem;
@@ -114,7 +114,7 @@ html.light {
   transition: all 0.2s ease;
 }
 .btn-primary:hover {
-  background-color: var(--btn-primary-hover, #d4607a);
+  background-color: var(--btn-primary-hover, #8b5cf6);
   border-color: transparent;
 }
 .btn-primary:disabled {
@@ -181,36 +181,36 @@ html.light {
 :root,
 :root.dark,
 html.dark {
-  --btn-primary-bg: #ffffff;
-  --btn-primary-text: #000000;
-  --btn-primary-hover: #e5e5e5;
+  --btn-primary-bg: #a78bfa;
+  --btn-primary-text: #ffffff;
+  --btn-primary-hover: #8b5cf6;
   
   --btn-secondary-bg: var(--bg-button);
   --btn-secondary-text: var(--text-primary);
   --btn-secondary-hover: var(--bg-card-alt);
   
-  --btn-accent-bg: #ffffff;
-  --btn-accent-text: #000000;
+  --btn-accent-bg: #a78bfa;
+  --btn-accent-text: #ffffff;
   
   --btn-outline-text: var(--text-primary);
   --btn-outline-border: var(--border);
   --btn-outline-hover-bg: var(--bg-card-alt);
   
-  --checkbox-bg: #ffffff;
-  --checkbox-border: #ffffff;
+  --checkbox-bg: #a78bfa;
+  --checkbox-border: #a78bfa;
 }
 
 :root.light,
 html.light {
-  --btn-primary-bg: #000000;
+  --btn-primary-bg: #8b5cf6;
   --btn-primary-text: #ffffff;
-  --btn-primary-hover: #333333;
+  --btn-primary-hover: #7c3aed;
   
-  --btn-accent-bg: #000000;
+  --btn-accent-bg: #8b5cf6;
   --btn-accent-text: #ffffff;
   
-  --checkbox-bg: #000000;
-  --checkbox-border: #000000;
+  --checkbox-bg: #8b5cf6;
+  --checkbox-border: #8b5cf6;
 }
 
 .theme-border {
@@ -260,6 +260,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s, background-color 0.2s ease, color 0.2s ease;
 }
+
 button:hover {
   border-color: var(--accent);
 }

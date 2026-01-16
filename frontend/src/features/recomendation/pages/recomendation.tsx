@@ -380,59 +380,63 @@ export default function Recomendation() {
                                     </div>
 
                                     {/* Module Content */}
-                                    <div className="flex-1 pr-12 md:pr-16">
-                                        <div className="flex gap-2 mb-3 flex-wrap">
-                                            <span className="bg-green-700/20 text-green-400 px-3 py-1 rounded text-sm font-medium">
-                                                {rec.level || t.modules.unknown}
-                                            </span>
-                                            <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded text-sm font-medium">
-                                                {getCredits(rec) ?? t.modules.unknown} ECTS
-                                            </span>
-                                            <span className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded text-sm font-medium">
-                                                {rec.location || t.modules.unknown}
-                                            </span>
-                                            <span className="bg-[#d4607a]/20 text-[#d4607a] px-3 py-1 rounded text-sm font-medium">
-                                                {Math.round((rec.similarity ?? 0) * 100)}%
-                                            </span>
+                                    <div className="flex-1">
+                                        {/* Text/content gets right padding to avoid overlap with compare checkbox */}
+                                        <div className="pr-12 md:pr-16">
+                                            <div className="flex gap-2 mb-3 flex-wrap">
+                                                <span className="bg-green-700/20 text-green-400 px-3 py-1 rounded text-sm font-medium">
+                                                    {rec.level || t.modules.unknown}
+                                                </span>
+                                                <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded text-sm font-medium">
+                                                    {getCredits(rec) ?? t.modules.unknown} ECTS
+                                                </span>
+                                                <span className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded text-sm font-medium">
+                                                    {rec.location || t.modules.unknown}
+                                                </span>
+                                                <span className="bg-[#d4607a]/20 text-[#d4607a] px-3 py-1 rounded text-sm font-medium">
+                                                    {Math.round((rec.similarity ?? 0) * 100)}%
+                                                </span>
+                                            </div>
+
+                                            <h2 className="text-xl font-bold theme-text-primary mb-2">
+                                                {rec.name}
+                                            </h2>
+                                            <p className="theme-text-secondary mb-4">
+                                                {rec.shortdescription}
+                                            </p>
+
+                                            {rec.match_terms?.length ? (
+                                                <div className="flex gap-2 flex-wrap mb-4">
+                                                    {rec.match_terms.slice(0, 8).map((term) => (
+                                                        <span
+                                                            key={term}
+                                                            className="theme-card-alt theme-text-secondary px-2 py-1 rounded text-xs"
+                                                        >
+                                                            {term}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            ) : null}
+
+                                            {getReason(rec) ? (
+                                                <p className="theme-text-secondary mb-4">
+                                                    {getReason(rec)}
+                                                </p>
+                                            ) : null}
                                         </div>
 
-                                        <h2 className="text-xl font-bold theme-text-primary mb-2">
-                                            {rec.name}
-                                        </h2>
-                                        <p className="theme-text-secondary mb-4">
-                                            {rec.shortdescription}
-                                        </p>
-
-                                        {rec.match_terms?.length ? (
-                                            <div className="flex gap-2 flex-wrap mb-4">
-                                                {rec.match_terms.slice(0, 8).map((term) => (
-                                                    <span
-                                                        key={term}
-                                                        className="theme-card-alt theme-text-secondary px-2 py-1 rounded text-xs"
-                                                    >
-                                                        {term}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        ) : null}
-
-                                        {getReason(rec) ? (
-                                            <p className="theme-text-secondary mb-4">
-                                                {getReason(rec)}
-                                            </p>
-                                        ) : null}
-
-                                        <div className="flex items-center gap-4 justify-end">
+                                        {/* Action Buttons (centered group) */}
+                                        <div className="flex items-center justify-center gap-4">
                                             <button
                                                 onClick={() => void openDetails(rec)}
-                                                className="btn-accent"
+                                                className="btn-accent whitespace-nowrap shrink-0"
                                             >
                                                 {t.modules.learnMore}
                                             </button>
                                             <button
                                                 onClick={() => void toggleFavorite(rec)}
                                                 disabled={pendingFavorites.has(rec.id)}
-                                                className="p-2 hover:opacity-70 transition-opacity disabled:opacity-40"
+                                                className="p-2 hover:opacity-70 transition-opacity disabled:opacity-40 shrink-0"
                                                 aria-label="Toggle favorite"
                                                 title="Favoriet"
                                             >
@@ -442,7 +446,8 @@ export default function Recomendation() {
                                                         : false;
                                                     return isFav ? (
                                                         <svg
-                                                            className="w-6 h-6 theme-text-primary fill-current"
+                                                            className="w-6 h-6 fill-current"
+                                                            style={{ color: '#ff3b3b' }}
                                                             viewBox="0 0 24 24"
                                                         >
                                                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />

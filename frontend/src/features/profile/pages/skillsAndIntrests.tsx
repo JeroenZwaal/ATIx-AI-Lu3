@@ -146,8 +146,8 @@ export default function SkillsAndIntrests(): JSX.Element {
     };
 
     return (
-        <div className="min-h-screen theme-page flex items-center justify-center px-6 py-4">
-            <div className="w-full max-w-sm">
+        <div className="min-h-screen theme-page flex flex-col items-center justify-center px-6 py-4">
+            <div className="w-full max-w-sm mb-8">
                 <h1 className="theme-text-primary text-4xl text-center mb-8">Profiel aanmaken</h1>
 
                 <div className="theme-card rounded-3xl p-6 space-y-4">
@@ -184,7 +184,7 @@ export default function SkillsAndIntrests(): JSX.Element {
                                 {skills.map((tag, i) => (
                                     <span
                                         key={i}
-                                        className="bg-[#e38094]/20 text-[#e38094] px-3 py-1 rounded-full text-sm flex items-center"
+                                        className="bg-[#312A48] text-[#A89ECD] px-3 py-1 rounded-full text-sm flex items-center"
                                     >
                                         {tag}
                                         <button
@@ -303,7 +303,7 @@ export default function SkillsAndIntrests(): JSX.Element {
                                 {interests.map((tag, i) => (
                                     <span
                                         key={i}
-                                        className="bg-[#e38094]/20 text-[#e38094] px-3 py-1 rounded-full text-sm flex items-center"
+                                        className="bg-[#312A48] text-[#A89ECD] px-3 py-1 rounded-full text-sm flex items-center"
                                     >
                                         {tag}
                                         <button
@@ -428,8 +428,11 @@ export default function SkillsAndIntrests(): JSX.Element {
                 </div>
             </div>
 
-            <div className="fixed bottom-4 left-4">
-                <AvansLogo />
+            {/* AvansLogo staat nu linksonder */}
+            <div className="mt-auto w-full">
+                <div className="ml-4 mb-6">
+                    <AvansLogo />
+                </div>
             </div>
         </div>
     );

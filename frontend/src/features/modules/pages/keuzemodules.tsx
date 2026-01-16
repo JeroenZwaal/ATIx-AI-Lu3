@@ -639,54 +639,60 @@ export default function Keuzemodules() {
                                     </div>
 
                                     {/* Module Content */}
-                                    <div className="flex-1 pr-12 md:pr-16">
-                                        {/* Tags */}
-                                        <div className="flex gap-2 mb-3 flex-wrap">
-                                            <span className="bg-green-700/20 text-green-400 px-3 py-1 rounded text-sm font-medium">
-                                                {getLevelTag(module.level)}
-                                            </span>
-                                            <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded text-sm font-medium">
-                                                {module.studycredit} ECTS
-                                            </span>
-                                            <span className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded text-sm font-medium">
-                                                {module.location || t.modules.unknown}
-                                            </span>
+                                    <div className="flex-1">
+                                        {/* Text/content gets right padding to avoid overlap with compare checkbox */}
+                                        <div className="pr-12 md:pr-16">
+                                            {/* Tags */}
+                                            <div className="flex gap-2 mb-3 flex-wrap">
+                                                <span className="bg-green-700/20 text-green-400 px-3 py-1 rounded text-sm font-medium">
+                                                    {getLevelTag(module.level)}
+                                                </span>
+                                                <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded text-sm font-medium">
+                                                    {module.studycredit} ECTS
+                                                </span>
+                                                <span className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded text-sm font-medium">
+                                                    {module.location || t.modules.unknown}
+                                                </span>
+                                            </div>
+
+                                            {/* Title */}
+                                            <h2 className="text-xl font-bold theme-text-primary mb-2">
+                                                {module.name ||
+                                                    'Lorem ipsum dolor sit amet, consectetur'}
+                                            </h2>
+
+                                            {/* Description */}
+                                            <p className="theme-text-secondary mb-4">
+                                                {truncateDescription(
+                                                    module.shortdescription || module.description,
+                                                    MAX_DESCRIPTION_LENGTH,
+                                                ) ||
+                                                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...'}
+                                            </p>
                                         </div>
 
-                                        {/* Title */}
-                                        <h2 className="text-xl font-bold theme-text-primary mb-2">
-                                            {module.name ||
-                                                'Lorem ipsum dolor sit amet, consectetur'}
-                                        </h2>
-
-                                        {/* Description */}
-                                        <p className="theme-text-secondary mb-4">
-                                            {truncateDescription(
-                                                module.shortdescription || module.description,
-                                                MAX_DESCRIPTION_LENGTH,
-                                            ) ||
-                                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua...'}
-                                        </p>
-
-                                        {/* Action Buttons */}
-                                        <div className="flex items-center gap-4 justify-end">
+                                        {/* Action Buttons (centered group) */}
+                                        <div className="flex items-center justify-center gap-4">
                                             <button
                                                 onClick={() =>
                                                     navigate(`/keuzemodules/${module.id}`, {
                                                         state: { from: '/keuzemodules' },
                                                     })
                                                 }
-                                                className="btn-accent"
+                                                className="btn-accent whitespace-nowrap shrink-0"
                                             >
                                                 {t.modules.learnMore}
                                             </button>
                                             <button
                                                 onClick={() => toggleFavorite(module.id)}
-                                                className="p-2 hover:opacity-70 transition-opacity"
+                                                className="p-2 hover:opacity-70 transition-opacity shrink-0"
+                                                aria-label="Toggle favorite"
+                                                title="Favoriet"
                                             >
                                                 {favorites.has(module.id) ? (
                                                     <svg
-                                                        className="w-6 h-6 theme-text-primary fill-current"
+                                                        className="w-6 h-6 fill-current"
+                                                        style={{ color: '#ff3b3b' }}
                                                         viewBox="0 0 24 24"
                                                     >
                                                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />

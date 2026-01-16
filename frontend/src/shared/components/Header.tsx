@@ -36,7 +36,7 @@ function LogoutButton({
     label: string;
 }) {
     return (
-        <button onClick={onClick} className={`btn-primary px-4 py-3 ${className}`}>
+        <button onClick={onClick} className={`px-4 py-3 ${className}`}>
             {label}
         </button>
     );

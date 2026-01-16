@@ -64,7 +64,7 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen theme-page flex items-center justify-center px-6 py-4">
+        <div className="min-h-screen theme-page flex flex-col items-center justify-center px-6 py-4">
             {/* Language Switcher */}
             <button
                 onClick={toggleLanguage}

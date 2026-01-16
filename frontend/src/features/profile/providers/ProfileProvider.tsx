@@ -8,8 +8,10 @@ import type {
 } from '../types/profile.types';
 import { profileService } from '../services/profile.service';
 import { PROFILE_CONTEXT } from '../contexts/profileContext';
+import { useAuth } from '../../auth/hooks/useAuth';
 
 export function ProfileProvider({ children }: { children: ReactNode }) {
+    const { token } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [draft, setDraft] = useState<Partial<CreateProfileDto> | null>(null);
@@ -17,7 +19,17 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     // Holds the last-fetched profile from the backend
     const [userProfile, setUserProfile] = useState<ProfileApi | null>(null);
 
+    // Tracks which auth token the current cached profile belongs to.
+    // Prevents briefly showing a previous user's profile after switching accounts.
+    const [profileToken, setProfileToken] = useState<string | null>(null);
+
+    const effectiveUserProfile = token === profileToken ? userProfile : null;
+
     const fetchUserProfile = useCallback(async (): Promise<ProfileApi | null> => {
+        if (!token) {
+            setUserProfile(null);
+            return null;
+        }
         setIsLoading(true);
         setError(null);
         try {
@@ -30,7 +42,7 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [token]);
 
     const createProfile = useCallback(
         async (createProfileData: CreateProfileDto): Promise<UpdateProfileResponse> => {
@@ -55,23 +67,31 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
         [fetchUserProfile],
     );
 
-    // Try to fetch the profile on mount so it's available to pages that consume the context
-    // (silently ignore failures; components can call fetchUserProfile explicitly if needed)
+    // Keep profile state in sync with authentication.
+    // - On logout: clear cached profile and draft.
+    // - On login / token change: clear cached profile and refetch.
     useEffect(() => {
-        void fetchUserProfile();
-    }, [fetchUserProfile]);
+        setProfileToken(token);
+        setUserProfile(null);
+        setDraft(null);
+        setError(null);
+
+        if (token) {
+            void fetchUserProfile();
+        }
+    }, [token, fetchUserProfile]);
 
     const value = useMemo<ProfileContextType>(
         () => ({
             createProfile,
             draft,
             setDraft,
-            userProfile,
+            userProfile: effectiveUserProfile,
             fetchUserProfile,
             isLoading,
             error,
         }),
-        [createProfile, draft, userProfile, fetchUserProfile, isLoading, error],
+        [createProfile, draft, effectiveUserProfile, fetchUserProfile, isLoading, error],
     );
 
     return <PROFILE_CONTEXT.Provider value={value}>{children}</PROFILE_CONTEXT.Provider>;

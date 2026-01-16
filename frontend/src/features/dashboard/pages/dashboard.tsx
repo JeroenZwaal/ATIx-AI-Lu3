@@ -200,19 +200,12 @@ export default function Dashboard({
 
     return (
         <div className="min-h-screen theme-page w-full overflow-x-hidden">
-            <div className="max-w-6xl mx-auto px-10 py-8 ">
+            <div className="max-w-6xl mx-auto px-4 sm:px-10 py-8 ">
                 <h1 className="text-4xl font-bold theme-text-primary mb-4 text-center">
                     {t.dashboard.title}
                 </h1>
 
                 <div className="flex flex-col items-center gap-4 mb-8">
-                    <button
-                        onClick={() => navigate('/keuzemodules')}
-                        className="group relative px-8 py-3 bg-slate-600 hover:bg-slate-700 text-white font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
-                    >
-                        Bekijk Keuzemodules
-                    </button>
-
                     <button
                         onClick={() => navigate('/recomendation')}
                         className="btn-primary group relative px-8 py-3 shadow-sm hover:shadow-md"
@@ -278,7 +271,7 @@ export default function Dashboard({
                                     {userProfile.skills?.map((s) => (
                                         <span
                                             key={s}
-                                            className="inline-block bg-[#fde6ea] text-[#e30613] px-3 py-1 rounded-full text-sm font-medium"
+                                            className="inline-block bg-[#F89BD1] text-[#4E0734] px-3 py-1 rounded-full text-sm font-medium"
                                         >
                                             {s}
                                         </span>
@@ -294,7 +287,7 @@ export default function Dashboard({
                                     {userProfile.interests?.map((i) => (
                                         <span
                                             key={i}
-                                            className="inline-block bg-[#fde6ea] text-[#e30613] px-3 py-1 rounded-full text-sm font-medium"
+                                            className="inline-block bg-[#A0C5F9] text-[#08284D] px-3 py-1 rounded-full text-sm font-medium"
                                         >
                                             {i}
                                         </span>
@@ -304,7 +297,7 @@ export default function Dashboard({
 
                             <button
                                 onClick={() => navigate('/profile/createProfile')}
-                                className="btn-accent w-full sm:w-auto"
+                                className="btn-secondary w-full sm:w-auto"
                             >
                                 {t.dashboard.profile.editProfile}
                             </button>
@@ -366,48 +359,59 @@ export default function Dashboard({
                     {!isLoading && !error && favoriteModules.length > 0 && (
                         <div className="space-y-6">
                             {favoriteModules.map((module) => (
-                                <div key={module.id} className="theme-card-alt rounded-lg p-4">
-                                    <div className="flex gap-2 mb-3">
-                                        <span className="bg-green-700/20 text-green-400 px-3 py-1 rounded text-sm font-medium">
-                                            {getLevelTag(module.level)}
-                                        </span>
-                                        <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded text-sm font-medium">
-                                            {module.studycredit} ETC
-                                        </span>
-                                        <span className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded text-sm font-medium">
-                                            {module.location || t.dashboard.unknown}
-                                        </span>
-                                    </div>
+                                <div
+                                    key={module.id}
+                                    className="theme-card-alt rounded-lg p-6 relative"
+                                >
+                                    {/* Module Content */}
+                                    <div className="flex-1">
+                                        {/* Tags */}
+                                        <div className="flex gap-2 mb-3 flex-wrap">
+                                            <span className="bg-green-700/20 text-green-400 px-3 py-1 rounded text-sm font-medium">
+                                                {getLevelTag(module.level)}
+                                            </span>
+                                            <span className="bg-red-600/20 text-red-400 px-3 py-1 rounded text-sm font-medium">
+                                                {module.studycredit} ECTS
+                                            </span>
+                                            <span className="bg-blue-600/20 text-blue-400 px-3 py-1 rounded text-sm font-medium">
+                                                {module.location || t.dashboard.unknown}
+                                            </span>
+                                        </div>
 
-                                    <h3 className="text-xl font-semibold theme-text-primary mb-2">
-                                        {module.name}
-                                    </h3>
+                                        {/* Title */}
+                                        <h3 className="text-xl font-bold theme-text-primary mb-2 break-words hyphens-auto">
+                                            {module.name}
+                                        </h3>
 
-                                    <p className="theme-text-secondary mb-4">
-                                        {module.shortdescription ||
-                                            module.description ||
-                                            t.dashboard.noDescription}
-                                    </p>
+                                        {/* Description */}
+                                        <p className="theme-text-secondary mb-4 break-words">
+                                            {module.shortdescription ||
+                                                module.description ||
+                                                t.dashboard.noDescription}
+                                        </p>
 
-                                    <div className="flex items-center justify-end gap-4">
-                                        <button
-                                            onClick={() => handleModuleClick(module.id)}
-                                            className="bg-blue-800 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors"
-                                        >
-                                            {t.dashboard.learnMore}
-                                        </button>
-                                        <button
-                                            onClick={() => handleToggleFavorite(module.id)}
-                                            className="p-2 hover:opacity-70 transition-opacity"
-                                            aria-label="Toggle favorite"
-                                        >
-                                            <svg
-                                                className="w-6 h-6 text-yellow-400 fill-current"
-                                                viewBox="0 0 24 24"
+                                        {/* Action Buttons */}
+                                        <div className="flex items-center justify-center gap-4">
+                                            <button
+                                                onClick={() => handleModuleClick(module.id)}
+                                                className="btn-accent whitespace-nowrap shrink-0"
                                             >
-                                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                            </svg>
-                                        </button>
+                                                {t.dashboard.learnMore}
+                                            </button>
+                                            <button
+                                                onClick={() => handleToggleFavorite(module.id)}
+                                                className="p-2 hover:opacity-70 transition-opacity shrink-0"
+                                                aria-label="Toggle favorite"
+                                            >
+                                                <svg
+                                                    className="w-6 h-6 fill-current"
+                                                    style={{ color: '#ff3b3b' }}
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

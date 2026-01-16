@@ -5,8 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import AvansLogo from '../../../shared/components/AvansLogo';
 
-// import { CreateProfileDto } from '../types/profile.types';
-
 export default function PersonalInfo() {
     const [showStudielocatieInfo, setShowStudielocatieInfo] = useState(false);
     const [opleiding, setOpleiding] = useState('');
@@ -61,8 +59,8 @@ export default function PersonalInfo() {
     }
 
     return (
-        <div className="min-h-screen theme-page flex items-center justify-center px-6 py-4">
-            <div className="w-full max-w-sm">
+        <div className="min-h-screen theme-page flex flex-col items-center justify-center px-6 py-4">
+            <div className="w-full max-w-sm mb-8">
                 <h1 className="theme-text-primary text-4xl font-normal text-center mb-8">
                     Profiel aanmaken
                 </h1>
@@ -217,8 +215,11 @@ export default function PersonalInfo() {
                 </div>
             </div>
 
-            <div className="fixed bottom-4 left-4">
-                <AvansLogo />
+            {/* AvansLogo staat nu linksonder */}
+            <div className="mt-auto w-full">
+                <div className="ml-4 mb-6">
+                    <AvansLogo />
+                </div>
             </div>
         </div>
     );
