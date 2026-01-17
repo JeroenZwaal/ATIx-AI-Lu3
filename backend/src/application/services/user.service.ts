@@ -165,7 +165,7 @@ export class UserService {
     async getFavorites(authenticatedUser: User, userId: string): Promise<Module[]> {
         // Verifieer dat userId overeenkomt met geauthenticeerde user
         if (authenticatedUser._id.toString() !== userId.toString()) {
-            throw new UnauthorizedException('Not authorized to access this user\'s favorites');
+            throw new UnauthorizedException("Not authorized to access this user's favorites");
         }
 
         const user = await this.userRepository.findById(userId);
@@ -182,7 +182,7 @@ export class UserService {
     async addFavorite(authenticatedUser: User, userId: string, moduleId: string): Promise<void> {
         // Verifieer dat userId overeenkomt met geauthenticeerde user
         if (authenticatedUser._id.toString() !== userId.toString()) {
-            throw new UnauthorizedException('Not authorized to modify this user\'s favorites');
+            throw new UnauthorizedException("Not authorized to modify this user's favorites");
         }
 
         const user = await this.userRepository.findById(userId);
@@ -210,7 +210,7 @@ export class UserService {
     async removeFavorite(authenticatedUser: User, userId: string, moduleId: string): Promise<void> {
         // Verifieer dat userId overeenkomt met geauthenticeerde user
         if (authenticatedUser._id.toString() !== userId.toString()) {
-            throw new UnauthorizedException('Not authorized to modify this user\'s favorites');
+            throw new UnauthorizedException("Not authorized to modify this user's favorites");
         }
 
         const user = await this.userRepository.findById(userId);

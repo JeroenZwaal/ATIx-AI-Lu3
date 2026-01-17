@@ -1,4 +1,3 @@
-
 import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { Module } from '../../domain/entities/module.entity';
@@ -48,10 +47,10 @@ export class ModuleService {
         if (!query || typeof query !== 'string') {
             throw new BadRequestException('Invalid search query');
         }
-        
+
         // Sanitize query: verwijder gevaarlijke MongoDB operators en speciale tekens
         const sanitizedQuery = this.sanitizeSearchQuery(query);
-        
+
         return await this.moduleRepository.search(sanitizedQuery);
     }
 
@@ -59,15 +58,15 @@ export class ModuleService {
         // Verwijder MongoDB operators die kunnen worden misbruikt
         // $text search accepteert alleen strings, maar we willen zeker zijn
         let sanitized = query.trim();
-        
+
         // Verwijder gevaarlijke tekens die kunnen worden gebruikt voor injection
         // MongoDB $text search is relatief veilig, maar we sanitizen voor extra beveiliging
         // Toegestaan: letters, cijfers, spaties, en enkele speciale tekens voor zoeken
         sanitized = sanitized.replace(/[<>{}[\]$]/g, '');
-        
+
         // Normaliseer meerdere spaties naar één spatie
         sanitized = sanitized.replace(/\s+/g, ' ');
-        
+
         return sanitized;
     }
 
