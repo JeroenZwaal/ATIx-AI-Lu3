@@ -102,6 +102,11 @@ export class UserService {
 
             const MAX_TAGS = 50;
             const MAX_LENGTH = 100;
+
+            if (arr.length > MAX_TAGS) {
+                throw new BadRequestException(`${fieldName} has too many items`);
+            }
+
             const cleaned: string[] = [];
 
             for (const item of arr as unknown[]) {
@@ -118,10 +123,6 @@ export class UserService {
 
                 if (!cleaned.includes(t)) {
                     cleaned.push(t);
-                }
-
-                if (cleaned.length > MAX_TAGS) {
-                    throw new BadRequestException(`${fieldName} has too many items`);
                 }
             }
 
