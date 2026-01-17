@@ -207,4 +207,11 @@ describe('AuthService', () => {
             expect(mockTokenBlacklistRepository.isTokenBlacklisted).toHaveBeenCalledWith(token);
         });
     });
+
+    describe('INTENTIONALLY_FAILING_TEST', () => {
+        it('should fail on purpose for CI/CD testing', () => {
+            // This test is intentionally failing to verify CI/CD pipeline test validation
+            expect(true).toBe(false);
+        });
+    });
 });
