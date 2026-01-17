@@ -19,14 +19,20 @@ export class TokenBlacklistRepository implements ITokenBlacklistRepository {
     }
 
     async isTokenBlacklisted(token: string): Promise<boolean> {
-        const blacklistedToken = await this.blacklistModel.findOne({ token });
+        // Valideer token om NoSQL injection te voorkomen
+        if (!token || typeof token !== 'string') {
+            return false;
+        }
+
+        // Gebruik $eq operator om expliciete vergelijking te forceren
+        const blacklistedToken = await this.blacklistModel.findOne({ token: { $eq: token } });
         if (!blacklistedToken) {
             return false;
         }
 
         // Verwijder token als het verlopen is
         if (blacklistedToken.expiresAt < new Date()) {
-            await this.blacklistModel.deleteOne({ token });
+            await this.blacklistModel.deleteOne({ token: { $eq: token } });
             return false;
         }
 

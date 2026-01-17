@@ -148,6 +148,7 @@ export const en = {
             passwordMinLength: 'Password must be at least 6 characters',
             passwordComplexity:
                 'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character (!@#$%^&*)',
+            registrationFailed: 'Registration failed. Please check your information and try again.',
         },
     },
 };

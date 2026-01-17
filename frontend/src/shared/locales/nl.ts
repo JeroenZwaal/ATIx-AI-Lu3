@@ -148,6 +148,8 @@ export const nl = {
             passwordMinLength: 'Wachtwoord moet minimaal 6 tekens bevatten',
             passwordComplexity:
                 'Wachtwoord moet minimaal 1 hoofdletter, 1 kleine letter, 1 cijfer en 1 speciaal teken (!@#$%^&*) bevatten',
+            registrationFailed:
+                'Registratie mislukt. Controleer je gegevens en probeer het opnieuw.',
         },
     },
 };

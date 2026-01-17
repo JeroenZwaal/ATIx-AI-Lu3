@@ -22,7 +22,6 @@ export class UserService {
     ) {}
     async updateProfile(currentUser: User, profileData: UpdateUserDto): Promise<void> {
         if (!currentUser) {
-            console.log(currentUser, 'this is current user');
             throw new UnauthorizedException('User not found');
         }
 
@@ -103,6 +102,11 @@ export class UserService {
 
             const MAX_TAGS = 50;
             const MAX_LENGTH = 100;
+
+            if (arr.length > MAX_TAGS) {
+                throw new BadRequestException(`${fieldName} has too many items`);
+            }
+
             const cleaned: string[] = [];
 
             for (const item of arr as unknown[]) {
@@ -119,10 +123,6 @@ export class UserService {
 
                 if (!cleaned.includes(t)) {
                     cleaned.push(t);
-                }
-
-                if (cleaned.length > MAX_TAGS) {
-                    throw new BadRequestException(`${fieldName} has too many items`);
                 }
             }
 
@@ -163,7 +163,12 @@ export class UserService {
         return responseUser;
     }
 
-    async getFavorites(userId: string): Promise<Module[]> {
+    async getFavorites(authenticatedUser: User, userId: string): Promise<Module[]> {
+        // Verifieer dat userId overeenkomt met geauthenticeerde user
+        if (authenticatedUser._id.toString() !== userId.toString()) {
+            throw new UnauthorizedException("Not authorized to access this user's favorites");
+        }
+
         const user = await this.userRepository.findById(userId);
         if (!user) {
             throw new NotFoundException('User not found');
@@ -175,7 +180,12 @@ export class UserService {
         return modules.filter((module): module is Module => module !== null);
     }
 
-    async addFavorite(userId: string, moduleId: string): Promise<void> {
+    async addFavorite(authenticatedUser: User, userId: string, moduleId: string): Promise<void> {
+        // Verifieer dat userId overeenkomt met geauthenticeerde user
+        if (authenticatedUser._id.toString() !== userId.toString()) {
+            throw new UnauthorizedException("Not authorized to modify this user's favorites");
+        }
+
         const user = await this.userRepository.findById(userId);
         if (!user) {
             throw new NotFoundException('User not found');
@@ -198,7 +208,12 @@ export class UserService {
         await this.userRepository.addFavorite(userId, favorite);
     }
 
-    async removeFavorite(userId: string, moduleId: string): Promise<void> {
+    async removeFavorite(authenticatedUser: User, userId: string, moduleId: string): Promise<void> {
+        // Verifieer dat userId overeenkomt met geauthenticeerde user
+        if (authenticatedUser._id.toString() !== userId.toString()) {
+            throw new UnauthorizedException("Not authorized to modify this user's favorites");
+        }
+
         const user = await this.userRepository.findById(userId);
         if (!user) {
             throw new NotFoundException('User not found');

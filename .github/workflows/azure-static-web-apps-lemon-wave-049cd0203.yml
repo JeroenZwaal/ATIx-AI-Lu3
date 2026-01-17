@@ -64,6 +64,12 @@ jobs:
           set -euo pipefail
           npm run lint
 
+      - name: Test
+        working-directory: frontend
+        run: |
+          set -euo pipefail
+          npm run test
+
       - name: Build
         working-directory: frontend
         run: |
@@ -105,6 +111,12 @@ jobs:
         run: |
           set -euo pipefail
           npm run lint
+
+      - name: Test
+        working-directory: frontend
+        run: |
+          set -euo pipefail
+          npm run test
 
       - name: Build
         working-directory: frontend

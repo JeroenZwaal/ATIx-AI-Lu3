@@ -78,6 +78,10 @@ export class UserRepository implements IUserRepository {
     }
 
     async update(id: string, userData: Partial<UpdateUserDto>): Promise<User | null> {
+        // Valideer en sanitize ID om NoSQL injection te voorkomen
+        if (!id || typeof id !== 'string' || !Types.ObjectId.isValid(id)) {
+            throw new Error(`Invalid user ID: ${id}`);
+        }
         const user = await this.userModel.findById(new Types.ObjectId(id));
         if (!user) {
             throw new Error(`User with ID ${id} not found`);

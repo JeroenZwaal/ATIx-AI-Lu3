@@ -8,6 +8,7 @@ import {
     Get,
     Delete,
     Param,
+    BadRequestException,
 } from '@nestjs/common';
 import { UserService } from '../../application/services/user.service';
 import { UpdateUserDto } from '../presenters/user.dto';
@@ -15,6 +16,7 @@ import { CURRENTUSER } from '../decorators/current.user.decorator';
 import { User } from '../../domain/entities/user.entity';
 import { JwtAuthGuard } from '../../infrastructure/auth/jwt.auth.guard';
 import { Module } from '../../domain/entities/module.entity';
+import { Types } from 'mongoose';
 
 @Controller('api/user')
 export class UserController {
@@ -54,7 +56,7 @@ export class UserController {
     @Get('favorites')
     @UseGuards(JwtAuthGuard)
     async getFavorites(@CURRENTUSER() user: User): Promise<Module[]> {
-        return await this.userService.getFavorites(user._id);
+        return await this.userService.getFavorites(user, user._id);
     }
 
     @Post('favorites/:moduleId')
@@ -63,7 +65,11 @@ export class UserController {
         @CURRENTUSER() user: User,
         @Param('moduleId') moduleId: string,
     ): Promise<{ message: string }> {
-        await this.userService.addFavorite(user._id, moduleId);
+        // Valideer moduleId om XSS en NoSQL injection te voorkomen
+        if (!moduleId || typeof moduleId !== 'string' || !Types.ObjectId.isValid(moduleId)) {
+            throw new BadRequestException('Invalid module ID');
+        }
+        await this.userService.addFavorite(user, user._id, moduleId);
         return { message: 'Favorite added successfully' };
     }
 
@@ -73,7 +79,11 @@ export class UserController {
         @CURRENTUSER() user: User,
         @Param('moduleId') moduleId: string,
     ): Promise<{ message: string }> {
-        await this.userService.removeFavorite(user._id, moduleId);
+        // Valideer moduleId om XSS en NoSQL injection te voorkomen
+        if (!moduleId || typeof moduleId !== 'string' || !Types.ObjectId.isValid(moduleId)) {
+            throw new BadRequestException('Invalid module ID');
+        }
+        await this.userService.removeFavorite(user, user._id, moduleId);
         return { message: 'Favorite removed successfully' };
     }
 }

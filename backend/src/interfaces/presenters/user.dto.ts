@@ -1,17 +1,22 @@
 import { IsString, IsArray, IsNumber, IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
+    @IsOptional()
     @IsString()
-    studyProgram: string;
+    studyProgram?: string;
     @IsOptional()
     @IsString()
     studyLocation?: string;
+    @IsOptional()
     @IsNumber()
-    studyCredits: number;
+    studyCredits?: number;
+    @IsOptional()
     @IsNumber()
-    yearOfStudy: number;
+    yearOfStudy?: number;
+    @IsOptional()
     @IsArray()
-    skills: string[];
+    skills?: string[];
+    @IsOptional()
     @IsArray()
-    interests: string[];
+    interests?: string[];
 }

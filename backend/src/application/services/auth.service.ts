@@ -25,7 +25,9 @@ export class AuthService {
         // Check if user already exists
         const existingUser = await this.userRepository.findByEmail(normalizedEmail);
         if (existingUser) {
-            throw new ConflictException('User with this email already exists');
+            // Generieke foutmelding om account enumeration te voorkomen
+            // Gebruik generieke melding die niet verraadt of account bestaat
+            throw new ConflictException('Unable to complete registration');
         }
 
         // Hash password
@@ -71,15 +73,23 @@ export class AuthService {
     async login(loginDto: LoginDto): Promise<AuthResponseDto> {
         // Normalize email to lowercase
         const normalizedEmail = loginDto.email.toLowerCase();
-        // Find user by email
-        const user = await this.userRepository.findByEmail(normalizedEmail);
-        if (!user) {
-            throw new UnauthorizedException('Invalid credentials');
-        }
 
-        // Verify password
-        const isPasswordValid = await bcrypt.compare(loginDto.passwordHash, user.passwordHash);
-        if (!isPasswordValid) {
+        // Account enumeration bescherming: altijd dezelfde operaties uitvoeren
+        // om timing attacks te voorkomen
+        const user = await this.userRepository.findByEmail(normalizedEmail);
+
+        // Altijd password hash vergelijken, ook als gebruiker niet bestaat
+        // Dit voorkomt timing verschillen tussen bestaande en niet-bestaande accounts
+        const dummyHash = '$2a$10$dummyhashfordummycomparisonpurposesonly';
+        const hashToCompare = user?.passwordHash || dummyHash;
+
+        // Password verificatie altijd uitvoeren voor consistente timing
+        const isPasswordValid = user
+            ? await bcrypt.compare(loginDto.passwordHash, hashToCompare)
+            : await bcrypt.compare(loginDto.passwordHash, dummyHash);
+
+        // Generieke foutmelding om account enumeration te voorkomen
+        if (!user || !isPasswordValid) {
             throw new UnauthorizedException('Invalid credentials');
         }
 

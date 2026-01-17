@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Module } from '../../domain/entities/module.entity';
 import { IModuleRepository } from '../../domain/repositories/module.repository.interface';
 import { ModuleDocument, ModuleModel } from '../schemas/module.schema';
@@ -63,8 +63,12 @@ export class ModuleRepository implements IModuleRepository {
     }
 
     async findById(id: string): Promise<Module | null> {
+        // Valideer en sanitize ID om NoSQL injection te voorkomen
+        if (!id || typeof id !== 'string' || !Types.ObjectId.isValid(id)) {
+            return null;
+        }
         const doc = (await this.moduleModel
-            .findById(id)
+            .findById(new Types.ObjectId(id))
             .exec()) as unknown as ModuleDocument | null;
         return doc ? this.mapToEntity(doc) : null;
     }
@@ -85,8 +89,20 @@ export class ModuleRepository implements IModuleRepository {
     }
 
     async search(query: string): Promise<Module[]> {
+        // Valideer query type en lengte
+        if (!query || typeof query !== 'string') {
+            return [];
+        }
+
+        const trimmedQuery = query.trim();
+        if (trimmedQuery.length === 0) {
+            return [];
+        }
+
+        // MongoDB $text search is relatief veilig, maar extra validatie voor zekerheid
+        // $text search escapt automatisch speciale tekens, maar we willen geen lege queries
         const docs = (await this.moduleModel
-            .find({ $text: { $search: query } }, { score: { $meta: 'textScore' } })
+            .find({ $text: { $search: trimmedQuery } }, { score: { $meta: 'textScore' } })
             .sort({ score: { $meta: 'textScore' } })
             .exec()) as unknown as ModuleDocument[];
         return docs.map((doc) => this.mapToEntity(doc));

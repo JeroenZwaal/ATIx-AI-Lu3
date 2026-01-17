@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, BadRequestException } from '@nestjs/common';
 import { RecommendationService } from '../../application/services/recommendation.service';
 import { RecommendationsResponseDto } from '../presenters/recommendation.dto';
 import { JwtAuthGuard } from '../../infrastructure/auth/jwt.auth.guard';
@@ -18,6 +18,48 @@ export class RecommendationController {
         @Query('study_credit') study_credit?: number,
         @Query('level') level?: string,
     ): Promise<RecommendationsResponseDto> {
+        // Valideer en sanitize query parameters om XSS te voorkomen
+        let sanitizedStudyLocation: string | undefined;
+        if (study_location !== undefined) {
+            if (typeof study_location !== 'string') {
+                throw new BadRequestException('study_location must be a string');
+            }
+            sanitizedStudyLocation = study_location.trim();
+            if (sanitizedStudyLocation.length > 100) {
+                throw new BadRequestException('study_location too long (max 100 characters)');
+            }
+        }
+
+        let sanitizedLevel: string | undefined;
+        if (level !== undefined) {
+            if (typeof level !== 'string') {
+                throw new BadRequestException('level must be a string');
+            }
+            sanitizedLevel = level.trim();
+            if (sanitizedLevel.length > 50) {
+                throw new BadRequestException('level too long (max 50 characters)');
+            }
+        }
+
+        // Valideer numerieke parameters
+        let sanitizedK: number | undefined;
+        if (k !== undefined) {
+            const kNum = Number(k);
+            if (!Number.isFinite(kNum) || kNum < 1 || kNum > 100) {
+                throw new BadRequestException('k must be a number between 1 and 100');
+            }
+            sanitizedK = Math.floor(kNum);
+        }
+
+        let sanitizedStudyCredit: number | undefined;
+        if (study_credit !== undefined) {
+            const creditNum = Number(study_credit);
+            if (!Number.isFinite(creditNum) || creditNum < 0 || creditNum > 1000) {
+                throw new BadRequestException('study_credit must be a number between 0 and 1000');
+            }
+            sanitizedStudyCredit = Math.floor(creditNum);
+        }
+
         // Convert user favorites to string array
         const favorites = (user.favorites ?? []).map((fav) => fav.moduleName).filter(Boolean);
 
@@ -43,13 +85,14 @@ export class RecommendationController {
         const request = {
             study_year: user.yearOfStudy || 2,
             study_program: user.studyProgram || 'Informatica',
-            study_location: study_location || user.studyLocation,
-            study_credit: study_credit ? Number(study_credit) : user.studyCredits,
-            level: level,
+            study_location: sanitizedStudyLocation || user.studyLocation,
+            study_credit:
+                sanitizedStudyCredit !== undefined ? sanitizedStudyCredit : user.studyCredits,
+            level: sanitizedLevel,
             skills: user.skills || [],
             interests: user.interests || [],
             favorites: favorites,
-            k: k ? Number(k) : 5,
+            k: sanitizedK !== undefined ? sanitizedK : 5,
         };
 
         return this.recommendationService.getRecommendations(request);
